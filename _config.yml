@@ -88,6 +88,10 @@ googleplus_hidden: false
 # LinkedIn
 linkedin_user: robinhowlett
 
+# StackOverflow
+stackoverflow_user_id: 277133
+stackoverflow_user: robinhowlett
+
 # Pinboard
 pinboard_user:
 pinboard_count: 3
