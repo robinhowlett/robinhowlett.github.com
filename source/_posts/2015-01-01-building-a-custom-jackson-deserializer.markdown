@@ -15,8 +15,8 @@ A decision they made was to use `"yes"`/`"no"` values in the response, rather th
 ``` json
 {
 ...
-	exists: "yes",
-	has_ended: "no"
+	"exists": "yes",
+	"has_ended": "no"
 ...
 }
 ```
