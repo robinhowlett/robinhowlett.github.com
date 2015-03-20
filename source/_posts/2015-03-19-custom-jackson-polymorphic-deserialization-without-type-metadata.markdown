@@ -6,7 +6,7 @@ comments: true
 categories: 
 ---
 
-At [SportsLabs](http://sportslabs.com) we regularly encounter proprietary, non-standard APIs and formats. Our job is to integrate with these APIs, normalize them, and distribute the data is web- and mobile-friendly web services.
+At [SportsLabs](http://sportslabs.com) we regularly encounter proprietary, non-standard APIs and formats. Our job is to integrate with these APIs, normalize them, and distribute the data in web- and mobile-friendly web services.
 
 One of the scenarios we often encounter is a provider supplying multiple resource JSON-based APIs that share a lot of the same data in their responses, but without any particular field dedicated to identying the type of the resource e.g.
 
