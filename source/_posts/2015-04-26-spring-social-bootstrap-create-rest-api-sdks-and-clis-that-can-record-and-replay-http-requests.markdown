@@ -51,7 +51,7 @@ as well as guidelines on how to create developer-friendly features like query bu
 testApi.testOperations().qb().withPaging(1, 25, "name", Sort.Direction.ASC).query();
 ```
 
-I've advise taking a look at the [Spring Social Bootstrap SDK README](https://github.com/robinhowlett/spring-social-bootstrap/blob/master/spring-social-bootstrap-sdk/README.md) to learn more on how to create API clients based on Spring Social Bootstrap SDK.
+I'd advise taking a look at the [Spring Social Bootstrap SDK README](https://github.com/robinhowlett/spring-social-bootstrap/blob/master/spring-social-bootstrap-sdk/README.md) to learn more on how to create API clients based on Spring Social Bootstrap SDK.
 
 <p>
 ---
