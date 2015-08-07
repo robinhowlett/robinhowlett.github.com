@@ -10,6 +10,11 @@ After close to 5 years with [Silver Chalice/SportsLabs](http://sportslabs.com), 
 
 It has been a tremendous, life-changing journey.
 
+<!-- more -->
+
+<p>
+---
+
 #### Silver Chalice
 
 I joined Silver Chalice shortly after marrying [my wife](https://twitter.com/sarahprotz) and moving to America from Ireland. I had completed a [small social app for the 2010 Breeders' Cup](http://files.ntra.com/content.aspx?type=news&id=46097) and was finishing up my responsibilities as a server-side engineer for IBM, when I started looking for startups in the Denver/Boulder area that I could be a part of. I knew Boulder, with its [Techstars](http://www.techstars.com/) incubator, would be a great place to find fast-growing companies.
