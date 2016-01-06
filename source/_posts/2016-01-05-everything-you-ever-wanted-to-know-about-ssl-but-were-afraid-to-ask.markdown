@@ -136,7 +136,7 @@ Manages a Java KeyStore of cryptographic keys, X.509 certificate chains, and tru
 
 ## <p id="apache">Create a local SSL server with Apache
 
-Modified from: [https://gist.github.com/jonathantneal/774e4b0b3d4d739cbc53]()
+Modified from: [https://gist.github.com/jonathantneal/774e4b0b3d4d739cbc53](https://gist.github.com/jonathantneal/774e4b0b3d4d739cbc53)
 
 Configuring Apache
 
@@ -152,7 +152,7 @@ Within Terminal, start Apache:
 apachectl start
 ```
 
-In a web browser, visit [http://localhost](). You should see a message stating that **It works!**
+In a web browser, visit [http://localhost](http://localhost). You should see a message stating that **It works!**
 
 Configuring Apache for HTTP: Setting up a port 80 Virtual Host
 
@@ -243,13 +243,13 @@ Finally, create an HTML document within **localhost**:
 echo "<h1>localhost works</h1>" > ~/Sites/localhost/index.html
 ```
 
-Now, in a web browser, visit [http://localhost](). You should see a message stating that localhost works.
+Now, in a web browser, visit [http://localhost](http://localhost). You should see a message stating that localhost works.
 
 ### <p id="config-ssl">Configuring SSL
 
 _**Note**_: I used `snaplogic` for all passwords below
 
-Modified from: [http://www.stefanocapitanio.com/configuring-two-way-authentication-ssl-with-apache/]()
+Modified from: [http://www.stefanocapitanio.com/configuring-two-way-authentication-ssl-with-apache/](http://www.stefanocapitanio.com/configuring-two-way-authentication-ssl-with-apache/)
 
 Within **Terminal**, create a SSL directory:
 
@@ -779,7 +779,7 @@ Open `/etc/apache2/ssl` in Finder and double-click the client PKCS12 file (`clie
 
 ![Client cert added](https://snaplogic.box.com/shared/static/lbom67dygm4r2m07pf8merf6i0tm73we.png)
 
-Open [https://localhost]() in your browser again and select the client cert when prompted:
+Open [https://localhost](https://localhost) in your browser again and select the client cert when prompted:
 
 ![Select client cert](https://snaplogic.box.com/shared/static/4s5hq9ksyrqex4ghkhgeb5rdle5bj6yc.png)
 
