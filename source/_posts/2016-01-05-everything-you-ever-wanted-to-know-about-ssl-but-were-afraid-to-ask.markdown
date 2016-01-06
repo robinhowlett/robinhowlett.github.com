@@ -123,7 +123,7 @@ PKCS12 is a password-protected format that can contain multiple certificates and
 
 **Java KeyStore (JKS)**
 
-Java version of PKCS12 and also password protected. Entries in a JKS file must have an "alias" that is unique. If an alias is not specified, "mycert" is used by default. It's like a database for certs and keys.
+Java version of PKCS12 and also password protected. Entries in a JKS file must have an "alias" that is unique. If an alias is not specified, "mykey" is used by default. It's like a database for certs and keys.
 
 ### <p id="tools">Tools
 
