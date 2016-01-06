@@ -46,9 +46,10 @@ Two-way SSL authentication (also known as "mutual authentication", and "TLS/SSL 
 	<ul>
 		<li><a href="#integration-testing">Integration Testing SSL Authentication with Spring’s TestRestTemplate</a></li>
 	</ul>
+	<li><a href="#snaplogic">Two-Way SSL with SnapLogic's REST Snap</a></li>
 </ul>
 
-## <p id="terminology">Terminology</p>
+## <p id="terminology">Terminology
 
 **TLS vs SSL**
 
@@ -1793,4 +1794,8 @@ The following integration tests have also been included in the project:
 
 > The companion Spring Boot application [is available on GitHub](https://github.com/robinhowlett/everything-ssl)
 
+## <p id="snaplogic">Two-Way SSL with SnapLogic's REST Snap
 
+Naturally, SnapLogic's REST Snap makes this all very easy:
+
+![SnapLogic REST Snap](https://snaplogic.box.com/shared/static/xkv5tch8lk2k2jf1q0881ri6u0nio7a0.gif)
