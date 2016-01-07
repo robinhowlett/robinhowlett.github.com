@@ -61,7 +61,7 @@ The public half of a public/private key pair with some additional metadata about
 
 **Private Key**
 
-Used to sign or encrypt data. A private key can verify that its corresponding certificate was used to sign or encrypt things, and vice versa. It is never given out publicly.
+A private key can verify that its corresponding certificate/public key was used to encrypt data. It is never given out publicly.
 
 **Certificate Authority (CA)**
 
@@ -831,7 +831,7 @@ Apache's [HttpComponents](https://hc.apache.org/) provides [HttpClient](https://
 
 It also provides [HttpCore](https://hc.apache.org/httpcomponents-core-ga/index.html), which includes an embedded `HttpServer`, which can be used for unit testing. 
     
-Generate a PKCS12 (`.p12`) file from the public `server-cert.pem`, the private `server-key.pem`, and the CA cert `cacert.pem` created above to be used by the `LocalTestServer` instance:
+Generate a PKCS12 (`.p12`) file from the public `server-cert.pem`, the private `server-key.pem`, and the CA cert `cacert.pem` created above to be used by the local test `HttpServer` instance:
 
 	| rhowlett@SL-MBP-RHOWLETT.local:~/dev/robinhowlett/github/everything-ssl/src/main/resources/ssl 
 	| => openssl pkcs12 -export -in /etc/apache2/ssl/server-cert.pem -inkey /etc/apache2/ssl/private/server-key.pem -certfile /etc/apache2/ssl/cacert.pem -name "Server" -out server-cert.p12
@@ -978,7 +978,7 @@ View the client's truststore to confirm it contains the server's cert:
 
 #### <p id="one-way-unit">One-Way SSL
 
-At this point we have enough to demonstrate one-way SSL with the `LocalTestServer` instance. The `createLocalTestServer` method instantiates an embedded `HttpServer` instance with an (optional) `sslContext` (`null` meaning HTTP-only) and a `boolean` "forceSSLAuth" indicating if client certificates are required or not:
+At this point we have enough to demonstrate one-way SSL with the local test `HttpServer` instance. The `createLocalTestServer` method instantiates an embedded `HttpServer` instance with an (optional) `sslContext` (`null` meaning HTTP-only) and a `boolean` "forceSSLAuth" indicating if client certificates are required or not:
 
 ``` java
 
@@ -1079,7 +1079,7 @@ protected SSLContext createServerSSLContext(final String storeFileName, final ch
 }
 ```
 
-The following unit test shows making a HTTPS request to the `LocalTestServer` and validating the server's public certificate with the client's truststore:
+The following unit test shows making a HTTPS request to the local test `HttpServer` instance and validating the server's public certificate with the client's truststore:
 
 ``` java
 
