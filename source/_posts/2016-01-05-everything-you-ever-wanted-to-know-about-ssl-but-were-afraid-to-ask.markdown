@@ -139,7 +139,7 @@ Manages a Java KeyStore of cryptographic keys, X.509 certificate chains, and tru
 
 Modified from: [https://gist.github.com/jonathantneal/774e4b0b3d4d739cbc53](https://gist.github.com/jonathantneal/774e4b0b3d4d739cbc53)
 
-Configuring Apache
+**Configuring Apache**
 
 Switch to root: 
 
@@ -155,7 +155,7 @@ apachectl start
 
 In a web browser, visit [http://localhost](http://localhost). You should see a message stating that **It works!**
 
-Configuring Apache for HTTP: Setting up a port 80 Virtual Host
+**Configuring Apache for HTTP: Setting up a port 80 Virtual Host**
 
 Within Terminal, edit the Apache Configuration:
 
