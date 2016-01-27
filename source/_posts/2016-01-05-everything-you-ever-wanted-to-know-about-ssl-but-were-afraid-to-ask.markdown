@@ -29,6 +29,7 @@ Two-way SSL authentication (also known as "mutual authentication", and "TLS/SSL 
 		<li><a href="#two-way-ssl">Two-way SSL (server <-> client)</a></li>
 		<li><a href="#file-formats">File Formats for Certs and Keys</a></li>
 		<li><a href="#tools">Tools</a></li>
+		<li><a href="#chain-of-trust">PKI and the SSL Certificate Chain ("the Chain of Trust")</a></li>
 	</ul>
 	<li><a href="#apache">Create a local SSL server with Apache</a></li>
 	<ul>
@@ -65,7 +66,7 @@ A private key can verify that its corresponding certificate/public key was used 
 
 **Certificate Authority (CA)**
 
-A company that issues digital certificates. For SSL/TLS certificates, there are a small number of providers (e.g. Symantec/Versign/Thawte, Comodo, GoDaddy) whose certificates are included by most browsers and Operating Systems. They serve the purpose of a "trusted third party".
+A company that issues digital certificates. For SSL/TLS certificates, there are a small number of providers (e.g. Symantec/Versign/Thawte, Comodo, GoDaddy, LetsEncrypt) whose certificates are included by most browsers and Operating Systems. They serve the purpose of a "trusted third party".
 
 **Certificate Signing Request (CSR)**
 
@@ -134,6 +135,71 @@ An open source toolkit implementing the SSL (v2/v3) and TLS (v1) protocols, as w
 **Keytool**
 
 Manages a Java KeyStore of cryptographic keys, X.509 certificate chains, and trusted certificates. Ships with the JDK.
+
+**XCA**
+
+A graphical tool to create and manage certificates.
+
+### <p id="chain-of-trust">PKI and the SSL Certificate Chain ("the Chain of Trust")
+
+All SSL/TLS connections rely on a chain of trust called the SSL Certificate Chain. Part of [PKI (Public Key Infrastructure)](https://en.wikipedia.org/wiki/Public_key_infrastructure), this chain of trust is established by certificate authorities (CAs) who serve as trust anchors that verify the validity of the systems being communicated with. Each client (browser, OS, etc.) ships with a list of trusted CAs.
+
+#### CA-signed Certificates
+
+![Chain of Trust](https://snaplogic.box.com/shared/static/l4ycer6wclvp72var32be9ru0ykjzjzn.png)
+
+In the above example, the wildcard certificate for "`*.elastic.snaplogic.com`" has been issued by the "Go Daddy Secure Certificate Authority - G2" intermediate CA, which in turn was issued by the "Go Daddy Root Certificate Authority - G2" root CA.
+
+> Many organizations will create their own internal, self-signed root CA to be used to sign certificates for PKI use within that organization. Then, if each system trusts that CA, the certificates that are issued and signed by that CA will be trusted too.
+
+To trust a system that presents a the above certificate at a particular domain (e.g. `https://elastic.snaplogic.com`), the client system must trust both the intermediate CA and the root CA (the public certs of those CAs must exist in the client system's trust/CA store), as well as verifying the chain is valid (signatures match, domain names match, and other requirements of the X.509 standard). 
+
+Once a client trusts the intermediate and root CAs, all valid certificates signed by those CAs will be trusted by the client.
+
+> If only particular certificates signed by a trusted CA should be trusted, then either limiting the certificates in the CA store, or checking for certain certificate fingerprints, etc. should be considered instead. 
+
+#### Self-signed Certificates
+
+Self-signed certificates have a chain length of 1 - they are not signed by a CA but by the certificate creator itself. All root certificates are self-signed (a chain has to start somewhere). 
+
+For example, to create a self-signed certificate (plus private key) for `localhost`, the following OpenSSL command may be used:
+
+```
+| root@SL-MBP-RHOWLETT.local:/private/etc/apache2/ssl 
+| => openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout localhost_self-signed.key -out localhost_self-signed.pem
+Generating a 2048 bit RSA private key
+................................................+++
+..............................+++
+writing new private key to 'localhost_self-signed.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:US
+State or Province Name (full name) [Some-State]:Colorado
+Locality Name (eg, city) []:Boulder
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:SnapLogic
+Organizational Unit Name (eg, section) []:SnapTeam
+Common Name (e.g. server FQDN or YOUR name) []:localhost
+Email Address []:
+```
+
+> The `"Common Name"` must match the domain that will be presenting the certificate e.g. `localhost`
+
+To create a `.p12` file (that can be imported and trusted within OS X's Keychain application for example):
+
+```
+| root@SL-MBP-RHOWLETT.local:/private/etc/apache2/ssl 
+| => openssl pkcs12 -export -in /etc/apache2/ssl/localhost_self-signed.pem -inkey /etc/apache2/ssl/localhost_self-signed.key -name "SelfSignedServer" -out localhost_self-signed.p12
+Enter Export Password:
+Verifying - Enter Export Password:
+```
+
+When you want to specifically control a small number of certificates to use within an internal network you control, self-signed certificates can be very useful.
 
 ## <p id="apache">Create a local SSL server with Apache
 
@@ -402,7 +468,7 @@ vi openssl.cnf
 
 Note that I've set `default_md` to `sha512` so that modern browsers won't complain about [Weak Signature Algorithms](http://michaelwyres.com/2012/05/chrome-weak-signature-algorithm-solved/).
 
-Create a CA by creating a root certificate. This will create the private key (`private/cakey.pem`) and the public key (`cacert.pem`, a.k.a. the certificate) of the CA. Use the default **localhost** for the common name:
+Create a CA by creating a root certificate. This will create the private key (`private/cakey.pem`) and the public key (`cacert.pem`, a.k.a. the certificate) of the root CA. Use the default **localhost** for the common name:
 
 	| root@SL-MBP-RHOWLETT.local:/private/etc/apache2/ssl 
 	| => openssl req -new -x509 -extensions v3_ca -keyout private/cakey.pem -out cacert.pem -days 365 -config ./openssl.cnf
@@ -528,7 +594,7 @@ Have the CA sign the client's CSR. This will create the client's public certific
 	Write out database with 1 new entries
 	Data Base Updated
 
-Finally, create the PKCS12 file containing the client's private key, the client's public cert and the CA cert. This will create the (Mac-friendly) PKCS12 file (`client-cert.p12`):
+Finally, create the PKCS12 file using the client's private key, the client's public cert and the CA cert. This will create the (Mac-friendly) PKCS12 file (`client-cert.p12`):
 
 	| root@SL-MBP-RHOWLETT.local:/etc/apache2/ssl 
 	| => openssl pkcs12 -export -in client-cert.pem -inkey private/client-key.pem -certfile cacert.pem -name "Client" -out client-cert.p12 
@@ -1147,35 +1213,16 @@ The above unit test is included in the [`everything-ssl` GitHub project](https:/
 
 #### <p id="two-way-unit">Two-Way SSL (Client Certificates)
 
-To configure two-way SSL we have to update the server's keystore and create the client's keystore. 
+To configure two-way SSL we have to create the server's truststore and create the client's keystore. 
 
-Since the server's JKS file is used as both the server's keystore and truststore, import the client's public cert into the server's keystore:
-
-	| rhowlett@SL-MBP-RHOWLETT.local:~/dev/robinhowlett/github/everything-ssl/src/main/resources/ssl 
-	| => keytool -import -v -trustcacerts -keystore server_keystore.jks -storepass snaplogic -file /etc/apache2/ssl/client-cert.pem -alias client
-	Owner: CN=client, OU=SnapTeam, O=SnapLogic, ST=Colorado, C=US
-	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
-	Serial number: 100002
-	Valid from: Tue Oct 06 13:15:41 MDT 2015 until: Wed Oct 05 13:15:41 MDT 2016
-	Certificate fingerprints:
-		 MD5:  F1:EF:60:64:48:DC:9B:C1:92:37:61:90:ED:48:01:1C
-		 SHA1: C5:4B:1C:EF:85:C1:8C:5A:AA:74:54:49:F0:B5:97:F1:EC:34:49:6F
-		 SHA256: B0:00:E4:C1:AE:03:92:95:9C:A2:BB:DB:13:3A:B6:38:BE:B4:BF:04:D0:72:41:6D:62:A6:93:D0:46:7E:3C:97
-		 Signature algorithm name: SHA512withRSA
-		 Version: 1
-	Trust this certificate? [no]:  yes
-	Certificate was added to keystore
-	[Storing server_keystore.jks]
-	
-Since the client's certificate is self-signed by a CA we created ourselves, import the root CA cert into the server keystore:
+Since the client's certificate is signed by a CA we created ourselves, import the CA cert into the server truststore:
 
 	| rhowlett@SL-MBP-RHOWLETT.local:~/dev/robinhowlett/github/everything-ssl/src/main/resources/ssl 
-	| => keytool -keystore server_keystore.jks -import -file /etc/apache2/ssl/cacert.pem -alias cacert
-	Enter keystore password:  
+	| => keytool -import -v -trustcacerts -keystore server_truststore.jks -storepass snaplogic -file /etc/apache2/ssl/cacert.pem -alias cacert
 	Owner: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
 	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
 	Serial number: e4e00ed07233a969
-	Valid from: Tue Oct 06 13:14:51 MDT 2015 until: Wed Oct 05 13:14:51 MDT 2016
+	Valid from: Tue Oct 06 15:14:51 EDT 2015 until: Wed Oct 05 15:14:51 EDT 2016
 	Certificate fingerprints:
 		 MD5:  F3:5E:28:E4:28:47:F2:EC:82:E2:BD:16:31:DC:90:02
 		 SHA1: 6F:0F:49:BA:A9:30:01:E9:4C:60:B3:A1:85:7D:BB:C6:79:1F:41:7B
@@ -1211,105 +1258,27 @@ Since the client's certificate is self-signed by a CA we created ourselves, impo
 	
 	Trust this certificate? [no]:  yes
 	Certificate was added to keystore
+	[Storing server_truststore.jks]
 
-Viewing the server keystore again will now list three certificates in the keystore - the client's, the CA's, and the server's:
+Viewing the server truststore will show the CA's certificate:
 
 	| rhowlett@SL-MBP-RHOWLETT.local:~/dev/robinhowlett/github/everything-ssl/src/main/resources/ssl 
-	| => keytool -list -v -keystore server_keystore.jks 
+	| => keytool -list -v -keystore server_truststore.jks 
 	Enter keystore password:  
 	
 	Keystore type: JKS
 	Keystore provider: SUN
 	
-	Your keystore contains 3 entries
-	
-	Alias name: client
-	Creation date: Jan 4, 2016
-	Entry type: trustedCertEntry
-	
-	Owner: CN=client, OU=SnapTeam, O=SnapLogic, ST=Colorado, C=US
-	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
-	Serial number: 100002
-	Valid from: Tue Oct 06 13:15:41 MDT 2015 until: Wed Oct 05 13:15:41 MDT 2016
-	Certificate fingerprints:
-		 MD5:  F1:EF:60:64:48:DC:9B:C1:92:37:61:90:ED:48:01:1C
-		 SHA1: C5:4B:1C:EF:85:C1:8C:5A:AA:74:54:49:F0:B5:97:F1:EC:34:49:6F
-		 SHA256: B0:00:E4:C1:AE:03:92:95:9C:A2:BB:DB:13:3A:B6:38:BE:B4:BF:04:D0:72:41:6D:62:A6:93:D0:46:7E:3C:97
-		 Signature algorithm name: SHA512withRSA
-		 Version: 1
-	
-	
-	*******************************************
-	*******************************************
-	
+	Your keystore contains 1 entry
 	
 	Alias name: cacert
-	Creation date: Jan 4, 2016
+	Creation date: Jan 5, 2016
 	Entry type: trustedCertEntry
 	
 	Owner: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
 	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
 	Serial number: e4e00ed07233a969
-	Valid from: Tue Oct 06 13:14:51 MDT 2015 until: Wed Oct 05 13:14:51 MDT 2016
-	Certificate fingerprints:
-		 MD5:  F3:5E:28:E4:28:47:F2:EC:82:E2:BD:16:31:DC:90:02
-		 SHA1: 6F:0F:49:BA:A9:30:01:E9:4C:60:B3:A1:85:7D:BB:C6:79:1F:41:7B
-		 SHA256: A7:9D:25:E4:A6:34:8A:A3:5B:9A:CD:F3:62:D0:D8:2F:6A:A0:71:6A:6D:19:F3:04:A1:FD:BC:FB:21:40:DE:A1
-		 Signature algorithm name: SHA512withRSA
-		 Version: 3
-	
-	Extensions: 
-	
-	#1: ObjectId: 2.5.29.35 Criticality=false
-	AuthorityKeyIdentifier [
-	KeyIdentifier [
-	0000: 03 09 12 6E 8B DD 7A 80   FB F5 21 AB 75 D9 B8 49  ...n..z...!.u..I
-	0010: 79 5B 61 1F                                        y[a.
-	]
-	[CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US]
-	SerialNumber: [    e4e00ed0 7233a969]
-	]
-	
-	#2: ObjectId: 2.5.29.19 Criticality=false
-	BasicConstraints:[
-	  CA:true
-	  PathLen:2147483647
-	]
-	
-	#3: ObjectId: 2.5.29.14 Criticality=false
-	SubjectKeyIdentifier [
-	KeyIdentifier [
-	0000: 03 09 12 6E 8B DD 7A 80   FB F5 21 AB 75 D9 B8 49  ...n..z...!.u..I
-	0010: 79 5B 61 1F                                        y[a.
-	]
-	]
-	
-	
-	
-	*******************************************
-	*******************************************
-	
-	
-	Alias name: server
-	Creation date: Jan 4, 2016
-	Entry type: PrivateKeyEntry
-	Certificate chain length: 2
-	Certificate[1]:
-	Owner: CN=localhost, OU=SnapTeam, O=SnapLogic, ST=Colorado, C=US
-	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
-	Serial number: 100001
-	Valid from: Tue Oct 06 13:15:13 MDT 2015 until: Wed Oct 05 13:15:13 MDT 2016
-	Certificate fingerprints:
-		 MD5:  62:83:6B:84:1B:CB:DE:26:CA:E0:9D:E8:04:84:B6:C1
-		 SHA1: AD:D4:27:FF:9A:68:77:25:95:C3:A2:BE:F6:22:AD:82:5C:2B:AF:EB
-		 SHA256: 8D:8D:EA:E5:7C:7A:E9:42:C9:9E:71:2A:76:C7:BE:BE:34:CC:4A:CC:83:ED:FE:C8:8E:C6:06:D2:D8:89:59:4A
-		 Signature algorithm name: SHA512withRSA
-		 Version: 1
-	Certificate[2]:
-	Owner: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
-	Issuer: CN=localhost, OU=SnapTeam, O=SnapLogic, L=Boulder, ST=Colorado, C=US
-	Serial number: e4e00ed07233a969
-	Valid from: Tue Oct 06 13:14:51 MDT 2015 until: Wed Oct 05 13:14:51 MDT 2016
+	Valid from: Tue Oct 06 15:14:51 EDT 2015 until: Wed Oct 05 15:14:51 EDT 2016
 	Certificate fingerprints:
 		 MD5:  F3:5E:28:E4:28:47:F2:EC:82:E2:BD:16:31:DC:90:02
 		 SHA1: 6F:0F:49:BA:A9:30:01:E9:4C:60:B3:A1:85:7D:BB:C6:79:1F:41:7B
@@ -1424,6 +1393,8 @@ Viewing the created `client_keystore.jks` file will show the `client` entry in t
 	
 	*******************************************
 	*******************************************
+	
+> So, in summary, the server will present the certificate in its keystore to the client. The client will use its truststore to validate the server's certificate. The client will present its certificate in its keystore to the server, and the server will validate the client certificate's chain using the CA certificate in the server's truststore.
 
 The `HttpServer` instance can now be created with the `forceSSLAuth` parameter set to `true` (see the `TWO_WAY_SSL` boolean) which will require client certificates. The client's `SSLContext` now has both the client truststore and keystore loaded:
 
@@ -1799,3 +1770,7 @@ The following integration tests have also been included in the project:
 Naturally, SnapLogic's REST Snap makes this all very easy:
 
 ![SnapLogic REST Snap](https://snaplogic.box.com/shared/static/xkv5tch8lk2k2jf1q0881ri6u0nio7a0.gif)
+
+#### Thank Yous
+
+Thank you to Ed Heneghan for correcting my initial mistakes.
