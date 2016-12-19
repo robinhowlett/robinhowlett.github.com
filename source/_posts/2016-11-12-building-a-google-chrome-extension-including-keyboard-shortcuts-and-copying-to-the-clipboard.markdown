@@ -16,6 +16,8 @@ For whatever reason, our product had not provided an easy way of linking directl
 
 Over a weekend, I was pleasantly surprised by the ease and speed I was able to learn and implement a Chrome Extension that would address this gap, as well as add some features that I, in particular, value.
 
+![cropped](https://dl.dropboxusercontent.com/u/3519578/Screenshots/pipeline-linker-recording.gif)
+
 <!-- more -->
 
 <p>
@@ -24,8 +26,6 @@ Over a weekend, I was pleasantly surprised by the ease and speed I was able to l
 #### How it works
 
 The name of the Chrome Extension is [Pipeline Linker](https://chrome.google.com/webstore/detail/snaplogic-pipeline-linker/cmngkccmjnhnjhjcnmajoiacacnjefgb), and it makes it easier to share links to Pipelines by copying the direct link of the active Pipeline to your clipboard:
-
-![cropped](https://dl.dropboxusercontent.com/u/3519578/Screenshots/pipeline_linker_triggered_cropped.png)
 
 > I have open-sourced the extension's code on GitHub: [https://github.com/SnapLogic/pipeline-linker](https://github.com/SnapLogic/pipeline-linker)
 
