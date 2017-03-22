@@ -31,23 +31,23 @@ The name of the Chrome Extension is [Pipeline Linker](https://chrome.google.com/
 
 When installed, this Chrome Extension will initially be grayed out and disabled:
 
-![installed](images/NNhY.png)
+![installed](/images/NNhY.png)
 
 It will only be enabled if it detects the active tab is the [SnapLogic Designer](https://www.snaplogic.com/features/snaplogic-designer) (regardless of whether it was an internal or external environment):
 
-![enabled](images/X4su.png)
+![enabled](/images/X4su.png)
 
 When one wishes to share the direct link to the currently active pipeline in Designer, the extension's icon beside the Chrome address bar (see above) is clicked or the keyboard shortcut is used (default is `Ctrl+i`. Mac users, it is `control+i`, not `command(⌘)+i`:
 
 When triggered, a Chrome Notification indicates that the Pipeline Link was copied to your clipboard:
 
-![notification](images/vtlv.png)
+![notification](/images/vtlv.png)
 
 The notification message contains the name of the Pipeline, and the smaller contextual message below is the location of the pipeline and the Org name in parentheses.
 
 In your clipboard, a link like the following will be present and ready to be shared:
 
-![slack](images/MMps.png)
+![slack](/images/MMps.png)
 
 #### Writing the extension
 
@@ -116,7 +116,7 @@ The above manifest is quite simple - most of the properties are self-explanatory
 	
 	The `notifications` permission results in the user being prompted with the following reasonable request when installing the extension:
 	
-	![installation](images/5myi.png)
+	![installation](/images/5myi.png)
 	
 	Both `activeTab` and `declarativeContent` have the advantage of not generating any additional permission warnings to the user.
 
@@ -152,7 +152,7 @@ chrome.runtime.onInstalled.addListener(function () {
 
 The [`chrome.declarativeContent.PageStateMatcher`](https://developer.chrome.com/extensions/declarativeContent#type-PageStateMatcher) allows definiting the `hostSuffix` and `path` that, when matched, enables the extension. When the condition does not match, the extension icon shows us as grayed out and nothing happens when it is clicked:
 
-![enabled-disabled](images/CKyG.png)
+![enabled-disabled](/images/CKyG.png)
 
 **Parsing the HTML**
 
@@ -259,7 +259,7 @@ Defining a keyboard shortcut is done entirely within the `manifest.json` file:
 
 When the user performs the shorcut, the reserved [`_execute_page_action`](https://developer.chrome.com/extensions/commands) event is triggered. The `suggested_key` lists the default and/or OS-specific commands that are bound to the extension out-of-the-box. However, the user can change these to whatever they wish with a link at the bottom their `[chrome://extensions](chrome://extensions/) page:
 
-![chrome-extensions-page](images/KVH9.png)
+![chrome-extensions-page](/images/KVH9.png)
 
 There were two "gotchas" worth calling out; on Mac, I couldn't get a command with two or more combinations of Control/Shift/Command keys plus a letter (as per [this SO answer](http://stackoverflow.com/a/18541816/277133)) - hence the default of Ctrl+i. Other responses on that thread appear to have a different experience. 
 
