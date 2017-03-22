@@ -16,7 +16,7 @@ For whatever reason, our product had not provided an easy way of linking directl
 
 Over a weekend, I was pleasantly surprised by the ease and speed I was able to learn and implement a Chrome Extension that would address this gap, as well as add some features that I, in particular, value.
 
-![cropped](images/pipeline-linker-recording.gif)
+![cropped](/images/pipeline-linker-recording.gif)
 
 <!-- more -->
 
