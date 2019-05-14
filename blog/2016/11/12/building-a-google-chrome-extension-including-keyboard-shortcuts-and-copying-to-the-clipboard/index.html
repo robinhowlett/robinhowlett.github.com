@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+        <title>Building a Google Chrome Extension (Keyboard Shortcuts, Copying to the Clipboard, and Notifications)</title>
+        <meta name="description" content="I recently had the quite enjoyable and productive experience of writing Pipeline Linker, my first Google Chrome Extension. As part of my work with SnapLogic,...">
+        <link rel="canonical" href="/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/">
+    
+
+    <!-- Site Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/png" />
+
+    <!-- Font Embed Code -->
+	<link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i|Karla:400,400i,700,700i" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+</head>
+
+
+
+<body class="layout-post">
+    <div id="page" class="site">
+        <header id="masthead" class="site-header">
+    <div class="site-header-wrap">
+        <div class="site-header-inside">
+
+            <div class="site-branding">
+                
+                <p class="profile">
+                    <a href="/">
+                        <img src="/assets/images/authorimage_robin-gravatar.png" alt="'s Picture"
+                            class="avatar" />
+                    </a>
+                </p>
+                <div class="site-identity">
+                    
+                    <h1 class="site-title">
+                        <a href="/">The Boy Wonders</a>
+                    </h1>
+                    
+                    
+                    <p class="site-description">A Blog by Robin Howlett</p>
+                    
+                </div><!-- .site-identity -->
+                
+                <button id="menu-toggle" class="menu-toggle"><span class="screen-reader-text">Main Menu</span><span
+                        class="icon-menu" aria-hidden="true"></span></button>
+            </div><!-- .site-branding -->
+
+            <nav id="main-navigation" class="site-navigation" aria-label="Main Navigation">
+                <div class="site-nav-wrap">
+                    <div class="site-nav-inside">
+                    <ul class="menu">
+                        
+                    </ul>
+                    <p class="social-links">
+    
+    <a href="https://twitter.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    <a href="https://github.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+</p>
+                    </div><!-- .site-nav-inside -->
+                </div><!-- .site-nav-wrap -->
+            </nav><!-- .site-navigation -->
+
+        </div><!-- .site-header-inside -->
+    </div><!-- .site-header-wrap -->
+</header><!-- .site-header -->
+        <div id="content" class="site-content fadeInDown delay_075s">
+            <div class="inner-wide">
+                    <main id="main" class="site-main">
+    
+        <article class="post-full inner">
+
+            <header class="post-header">
+                <div class="post-meta">
+                    <time class="post-date" datetime="2016-11-12">November 12,
+                        2016</time>
+                </div><!-- .post-meta -->
+                <h1 class="post-title">Building a Google Chrome Extension (Keyboard Shortcuts, Copying to the Clipboard, and Notifications)</h1>
+                
+                <div class="post-tags">
+                     
+                    <a href='tag/chrome/'>chrome</a>
+                    
+                     
+                    <a href='tag/snaplogic/'>snaplogic</a>
+                    
+                    
+                </div>
+                
+            </header><!-- .post-header -->
+
+            
+            <div class="post-content">
+                <p>I recently had the quite enjoyable and productive experience of writing <a href="https://chrome.google.com/webstore/detail/snaplogic-pipeline-linker/cmngkccmjnhnjhjcnmajoiacacnjefgb">Pipeline Linker</a>, my first <a href="https://www.google.com/chrome/webstore/extensions.html">Google Chrome Extension</a>.</p>
+
+<p>As part of my work with <a href="http://www.snaplogic.com/">SnapLogic</a>, an enterprise integration platform-as-a-service (iPaaS) provider, I often have to navigate to Pipelines (hosted graphical representations of integrations) across multiple environments (both internal and customer-facing), client accounts, and project folders.</p>
+
+<p>In turn, as the manager of my team, I regularly direct team members to Pipelines that require attention through email, Hangouts, JIRA, Zendesk, and Slack.</p>
+
+<p>For whatever reason, our product had not provided an easy way of linking directly to these pipelines (you had to switch to a different tab and perform a search, before right-clicking on a table entry and copying the link).</p>
+
+<p>Over a weekend, I was pleasantly surprised by the ease and speed I was able to learn and implement a Chrome Extension that would address this gap, as well as add some features that I, in particular, value.</p>
+
+<p><img src="/assets/images/pipeline-linker-recording.gif" alt="cropped" /></p>
+
+<!-- more -->
+
+<h4 id="how-it-works">How it works</h4>
+
+<p>The name of the Chrome Extension is <a href="https://chrome.google.com/webstore/detail/snaplogic-pipeline-linker/cmngkccmjnhnjhjcnmajoiacacnjefgb">Pipeline Linker</a>, and it makes it easier to share links to Pipelines by copying the direct link of the active Pipeline to your clipboard:</p>
+
+<blockquote>
+  <p>I have open-sourced the extension’s code on GitHub: <a href="https://github.com/SnapLogic/pipeline-linker">https://github.com/SnapLogic/pipeline-linker</a></p>
+</blockquote>
+
+<p>When installed, this Chrome Extension will initially be grayed out and disabled:</p>
+
+<p><img src="/assets/images/NNhY.png" alt="installed" /></p>
+
+<p>It will only be enabled if it detects the active tab is the <a href="https://www.snaplogic.com/features/snaplogic-designer">SnapLogic Designer</a> (regardless of whether it was an internal or external environment):</p>
+
+<p><img src="/assets/images/X4su.png" alt="enabled" /></p>
+
+<p>When one wishes to share the direct link to the currently active pipeline in Designer, the extension’s icon beside the Chrome address bar (see above) is clicked or the keyboard shortcut is used (default is <code class="highlighter-rouge">Ctrl+i</code>. Mac users, it is <code class="highlighter-rouge">control+i</code>, not <code class="highlighter-rouge">command(⌘)+i</code>:</p>
+
+<p>When triggered, a Chrome Notification indicates that the Pipeline Link was copied to your clipboard:</p>
+
+<p><img src="/assets/images/vtlv.png" alt="notification" /></p>
+
+<p>The notification message contains the name of the Pipeline, and the smaller contextual message below is the location of the pipeline and the Org name in parentheses.</p>
+
+<p>In your clipboard, a link like the following will be present and ready to be shared:</p>
+
+<p><img src="/assets/images/MMps.png" alt="slack" /></p>
+
+<h4 id="writing-the-extension">Writing the extension</h4>
+
+<p>I had a short list of requirements for this extension:</p>
+
+<ol>
+  <li>It needed to retrieve the rendered HTML of the Designer page so it could be parsed for the information required to build the links.</li>
+  <li>The generated link should be copied to user’s clipboard.</li>
+  <li>A notficiation should be given to the user when the link has been copied.</li>
+  <li>The extension could be triggered with a keyboard shortcut.</li>
+  <li>The extension should only be enabled for the SnapLogic Designer.</li>
+</ol>
+
+<p>The <a href="https://developer.chrome.com/extensions/getstarted">Chrome Extension Developer Documentation</a> is required reading, so I’m assuming the reader has done that.</p>
+
+<p>For the above requirements, 3 files would comprise the entirety of the functionality needed to cover the above:</p>
+
+<ul>
+  <li>the <strong><a href="https://github.com/SnapLogic/pipeline-linker/blob/master/js/background.js">background.js</a></strong> script, containing the majority of the JavaScript logic for the extension.</li>
+  <li>the <strong><a href="https://github.com/SnapLogic/pipeline-linker/blob/master/js/content.js****">content.js</a></strong> script, which is injected into HTML document of the user’s current browser tab, and executes the callback function, passing back the page’s rendered HTML. This is how the <em>background.js</em> file receives the HTML to generate the Pipeline link.</li>
+  <li>the <strong><a href="https://github.com/SnapLogic/pipeline-linker/blob/master/manifest.json">manifest.json</a></strong> file, which specifies the browser permissions required, the background scripts, that it is a <em>page_action</em> (it applies to a specific page rather than some generic behavior), the image files used as icons, and the keyboard shortcut commands.</li>
+</ul>
+
+<p><strong>The Manifest</strong></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"SnapLogic Pipeline Linker"</span><span class="p">,</span>
+  <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Copy the Active Pipeline's Link to the Clipboard"</span><span class="p">,</span>
+  <span class="s2">"version"</span><span class="p">:</span> <span class="s2">"1.0"</span><span class="p">,</span>
+  <span class="s2">"manifest_version"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s2">"permissions"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">"activeTab"</span><span class="p">,</span>
+    <span class="s2">"notifications"</span><span class="p">,</span>
+    <span class="s2">"declarativeContent"</span>
+  <span class="p">],</span>
+  <span class="s2">"background"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"scripts"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">"js/background.js"</span>
+    <span class="p">],</span>
+    <span class="s2">"persistent"</span><span class="p">:</span> <span class="kc">false</span>
+  <span class="p">},</span>
+  <span class="s2">"page_action"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"default_icon"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"19"</span><span class="p">:</span> <span class="s2">"img/icon-19.png"</span><span class="p">,</span>
+      <span class="s2">"38"</span><span class="p">:</span> <span class="s2">"img/icon-38.png"</span>
+    <span class="p">},</span>
+    <span class="s2">"default_title"</span><span class="p">:</span> <span class="s2">"Copy the link to the active pipeline"</span>
+  <span class="p">},</span>
+  <span class="s2">"icons"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"128"</span><span class="p">:</span> <span class="s2">"img/icon-128.png"</span><span class="p">,</span>
+    <span class="s2">"48"</span><span class="p">:</span> <span class="s2">"img/icon-48.png"</span><span class="p">,</span>
+    <span class="s2">"16"</span><span class="p">:</span> <span class="s2">"img/icon-16.png"</span>
+  <span class="p">},</span>
+  <span class="s2">"commands"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"_execute_page_action"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Copy the link to the active pipeline"</span><span class="p">,</span>
+      <span class="s2">"suggested_key"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"Ctrl+I"</span><span class="p">,</span>
+        <span class="s2">"mac"</span><span class="p">:</span> <span class="s2">"MacCtrl+I"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The above manifest is quite simple - most of the properties are self-explanatory, but I’ll call out the following that are worth further discussion:</p>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">permissions</code> includes <code class="highlighter-rouge">activeTab</code> (the extension only cares about the tab the user is currently using), <code class="highlighter-rouge">notifications</code> (for pop-ups), and <code class="highlighter-rouge">declarativeContent</code> (to use the metadata for the current tab - especially the URL - to control whether the extension is enabled or not).</p>
+
+    <p>The <code class="highlighter-rouge">notifications</code> permission results in the user being prompted with the following reasonable request when installing the extension:</p>
+
+    <p><img src="/assets/images/5myi.png" alt="installation" /></p>
+
+    <p>Both <code class="highlighter-rouge">activeTab</code> and <code class="highlighter-rouge">declarativeContent</code> have the advantage of not generating any additional permission warnings to the user.</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">background</code> lists the scripts that run when the extension is active. A single script (<code class="highlighter-rouge">background.js</code>) is listed.</p>
+
+    <p>The <code class="highlighter-rouge">"persistent": false</code> identifies this as an <a href="https://developer.chrome.com/extensions/event_pages">Event Page</a> - a more performant and efficient solution that allows Chrome to load and unload the extension’s scripts automatically, based on the activity of the current page.</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">commands</code> enables keyboard shortcuts to be defined and configured. When the user performs the shorcut (either using the default, suggested keys or after customising it themselves in their Chrome settings), the reserved <a href="https://developer.chrome.com/extensions/commands"><code class="highlighter-rouge">_execute_page_action</code></a> event is triggered.</p>
+
+    <p>This event is special in that it doesn’t need to be handled - the extension plugin framework takes care of the execution itself.</p>
+  </li>
+</ul>
+
+<p><strong>Enabling the Extension only for particular pages</strong></p>
+
+<p>Page actions “represent actions that can be taken on the current page, but that aren’t applicable to all pages.” Therefore the <code class="highlighter-rouge">pageAction</code> API was used to add listeners etc.</p>
+
+<p>The <code class="highlighter-rouge">declarativeContent</code> permission mentioned earlier allows use of the <a href="https://developer.chrome.com/extensions/declarativeContent"><code class="highlighter-rouge">chrome.declarativeContent</code> API</a>. This API (available since Chrome 33) allows the extension “to take actions depending on the content of a page, without requiring permission to read the page’s content.”</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// only enable the extension on SnapLogic Designer</span>
+<span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onInstalled</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">chrome</span><span class="p">.</span><span class="nx">declarativeContent</span><span class="p">.</span><span class="nx">onPageChanged</span><span class="p">.</span><span class="nx">removeRules</span><span class="p">(</span><span class="kc">undefined</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">chrome</span><span class="p">.</span><span class="nx">declarativeContent</span><span class="p">.</span><span class="nx">onPageChanged</span><span class="p">.</span><span class="nx">addRules</span><span class="p">([{</span>
+            <span class="na">conditions</span><span class="p">:</span> <span class="p">[</span>
+                <span class="k">new</span> <span class="nx">chrome</span><span class="p">.</span><span class="nx">declarativeContent</span><span class="p">.</span><span class="nx">PageStateMatcher</span><span class="p">({</span>
+                    <span class="na">pageUrl</span><span class="p">:</span> <span class="p">{</span><span class="na">hostSuffix</span><span class="p">:</span> <span class="s2">"elastic.snaplogic.com"</span><span class="p">,</span> <span class="na">pathEquals</span><span class="p">:</span> <span class="s2">"/sl/designer.html"</span><span class="p">},</span>
+                <span class="p">})</span>
+            <span class="p">],</span>
+            <span class="na">actions</span><span class="p">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">chrome</span><span class="p">.</span><span class="nx">declarativeContent</span><span class="p">.</span><span class="nx">ShowPageAction</span><span class="p">()]</span>
+        <span class="p">}]);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The <a href="https://developer.chrome.com/extensions/declarativeContent#type-PageStateMatcher"><code class="highlighter-rouge">chrome.declarativeContent.PageStateMatcher</code></a> allows definiting the <code class="highlighter-rouge">hostSuffix</code> and <code class="highlighter-rouge">path</code> that, when matched, enables the extension. When the condition does not match, the extension icon shows us as grayed out and nothing happens when it is clicked:</p>
+
+<p><img src="/assets/images/CKyG.png" alt="enabled-disabled" /></p>
+
+<p><strong>Parsing the HTML</strong></p>
+
+<p>The <code class="highlighter-rouge">background.js</code> script isn’t able to access the HTML of the active tab. Instead, another script (<code class="highlighter-rouge">content.js</code>) is injected into the current page which then communicates with <code class="highlighter-rouge">background.js</code> by passing messages:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// when the PipelineLinker extension is triggered</span>
+<span class="nx">chrome</span><span class="p">.</span><span class="nx">pageAction</span><span class="p">.</span><span class="nx">onClicked</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">browserTab</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// execute the script that gets injected into page of the current tag</span>
+    <span class="nx">chrome</span><span class="p">.</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">executeScript</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">{</span><span class="na">file</span><span class="p">:</span> <span class="s2">"js/content.js"</span><span class="p">},</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// send a message to content script</span>
+        <span class="nx">chrome</span><span class="p">.</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">browserTab</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="s2">"Background page started."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// receive the HTML from the tab's page and convert it to a DOM Document</span>
+            <span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">htmlToDocument</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+			<span class="p">...</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">htmlToDocument</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// HTML5 &lt;template&gt; allows any element underneath it</span>
+    <span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">"template"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">content</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">template</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">str</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nx">template</span><span class="p">.</span><span class="nx">content</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To receive the HTML of the target page the extension wishes to interact with, the above code runs as part of the <code class="highlighter-rouge">background.js</code> script. It adds a listener to the page action that, when triggered, sends a message (using Chrome’s <a href="https://developer.chrome.com/extensions/messaging">Message Passing API</a>) to the <code class="highlighter-rouge">content.js</code> script.</p>
+
+<p>The <code class="highlighter-rouge">content.js</code> script is extremely simple:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">sendResponse</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">sendResponse</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">all</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">outerHTML</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>On receiving the message sent by the <code class="highlighter-rouge">background.js</code>, it executes the callback function, passing it <a href="http://stackoverflow.com/questions/8853784/get-html-from-a-selected-tab">the entire HTML (as a String)</a> of the active tab.</p>
+
+<p>The anonymous callback function that was passed in <code class="highlighter-rouge">background.js</code> then converts that HTML to a Document by using <a href="http://stackoverflow.com/a/35385518/277133">HTML5’s <code class="highlighter-rouge">&lt;template&gt;</code> element</a>, which “allows any other element type as a child”.</p>
+
+<p>The <a href="https://github.com/SnapLogic/pipeline-linker/blob/master/js/background.js#L20">rest of the function</a> is then just using selectors to navigate to the portion of the HTML of interest to the extension to build and copy the link, and the send the browser notification.</p>
+
+<p><strong>Copying to the Clipboard</strong></p>
+
+<p>This was surprisingly difficult to identify with Google searches. I tried a few different methods that did not work - it must have been something particular with how <code class="highlighter-rouge">background.js</code> executes in the context of the Chrome Extension architecture vs the browser. Anyway, I finally <a href="http://stackoverflow.com/a/18455088/277133">found a function</a> that worked well:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">copyToClipboard</span><span class="p">(</span><span class="nx">pipelineLink</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">"input"</span><span class="p">);</span>
+    <span class="nx">input</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">position</span> <span class="o">=</span> <span class="s2">"fixed"</span><span class="p">;</span>
+    <span class="nx">input</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">opacity</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">input</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">pipelineLink</span><span class="p">;</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
+    <span class="nx">input</span><span class="p">.</span><span class="nx">select</span><span class="p">();</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">execCommand</span><span class="p">(</span><span class="s2">"Copy"</span><span class="p">);</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p><strong>Triggering a Notification</strong></p>
+
+<p>Again, very straightforward thanks to the <a href="https://developer.chrome.com/apps/notifications"><code class="highlighter-rouge">chrome.notifications API</code></a>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createNotification</span><span class="p">(</span><span class="nx">pipelineName</span><span class="p">,</span> <span class="nx">pipelineLocation</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">opt</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s2">"basic"</span><span class="p">,</span>
+        <span class="na">title</span><span class="p">:</span> <span class="s2">"Pipeline Link Copied"</span><span class="p">,</span>
+        <span class="na">message</span><span class="p">:</span> <span class="nx">pipelineName</span><span class="p">,</span>
+        <span class="na">contextMessage</span><span class="p">:</span> <span class="nx">pipelineLocation</span><span class="p">,</span>
+        <span class="na">iconUrl</span><span class="p">:</span> <span class="s2">"img/icon-80.png"</span>
+    <span class="p">};</span>
+    <span class="nx">chrome</span><span class="p">.</span><span class="nx">notifications</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">opt</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">notificationId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">timer</span> <span class="o">=</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="nx">chrome</span><span class="p">.</span><span class="nx">notifications</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="nx">notificationId</span><span class="p">);</span>
+        <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Being able to control the duration of the popup was a nice extra.</p>
+
+<p><strong>Keyboard Shortcuts</strong></p>
+
+<p>Defining a keyboard shortcut is done entirely within the <code class="highlighter-rouge">manifest.json</code> file:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="p">...</span>
+  <span class="s2">"commands"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"_execute_page_action"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Copy the link to the active pipeline"</span><span class="p">,</span>
+      <span class="s2">"suggested_key"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"Ctrl+I"</span><span class="p">,</span>
+        <span class="s2">"mac"</span><span class="p">:</span> <span class="s2">"MacCtrl+I"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div></div>
+
+<p>When the user performs the shorcut, the reserved <a href="https://developer.chrome.com/extensions/commands"><code class="highlighter-rouge">_execute_page_action</code></a> event is triggered. The <code class="highlighter-rouge">suggested_key</code> lists the default and/or OS-specific commands that are bound to the extension out-of-the-box. However, the user can change these to whatever they wish with a link at the bottom their `<a href="chrome://extensions/">chrome://extensions</a> page:</p>
+
+<p><img src="/assets/images/KVH9.png" alt="chrome-extensions-page" /></p>
+
+<p>There were two “gotchas” worth calling out; on Mac, I couldn’t get a command with two or more combinations of Control/Shift/Command keys plus a letter (as per <a href="http://stackoverflow.com/a/18541816/277133">this SO answer</a>) - hence the default of Ctrl+i. Other responses on that thread appear to have a different experience.</p>
+
+<p>The other thing to watch out for is when OS-global shortcuts override your selected shortcut combination. My Evernote app had shortcuts defined that were interfering, sometimes silently.</p>
+
+<p><strong>Final Thoughts</strong></p>
+
+<p><a href="https://developer.chrome.com/webstore/publish">Publishing the extension</a> to the Chrome Web Store was straightforward. A fair number of logo sizes were recommended. My graphical skills are minimal but I was able to knock something out easily enough.</p>
+
+<p>Overall, creating a Chrome Extension is a concise but pleasant development experience and an extremely effective way of distributing “polyfill”-style features for existing web applications.</p>
+
+            </div>
+            <footer class="post-footer">
+                <div class="post-share">
+                    <span class="post-share-title">Share:</span>
+                    <a target="_blank" href="https://twitter.com/share?text=Building+a+Google+Chrome+Extension+%28Keyboard+Shortcuts%2C+Copying+to+the+Clipboard%2C+and+Notifications%29&amp;url=http://www.robinhowlett.com/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/">Twitter</a>
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.robinhowlett.com/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/">Facebook</a>
+                </div><!-- .share-post -->
+            </footer>
+            
+<section id="comments-area" class="comments-area">
+    <h2 class="comments-title">Comments</h2>
+    <div class="comments-inside">
+        <div id="disqus_thread"></div>
+    </div><!-- .comments-inside -->
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section><!-- .comments-area -->
+<script type="text/javascript">
+    var disqus_shortname = 'robinhowlett';
+    var disqus_developer = 0;
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+</section>
+
+        </article>
+        
+        <section class="read-next inner">
+            <h2 class="read-next-title">Read Next</h2>
+            
+            <article class="post">
+                <header class="post-header">
+                    <div class="post-meta">
+                        <time class="published" datetime="January 5, 2016">January 5, 2016</time>
+                    </div>
+                    <h3 class="post-title"><a href="/blog/2016/01/05/everything-you-ever-wanted-to-know-about-ssl-but-were-afraid-to-ask/">Everything you ever wanted to know about SSL (but were afraid to ask)</a></h3>
+                    <p class="post-tags">
+                        
+                        
+                        
+                        <a href='/tag/ssl/'>Ssl</a>
+                        
+                        
+                        
+                        <a href='/tag/tls/'>Tls</a>
+                        
+                        
+                        
+                        <a href='/tag/rest/'>Rest</a>
+                        
+                        
+                        
+                    </p>
+                </header>
+            </article>
+            
+            
+            <article class="post">
+                <header class="post-header">
+                    <div class="post-meta">
+                        <time class="published" datetime="August 12, 2018">August 12, 2018</time>
+                    </div>
+                    <h3 class="post-title"><a href="/blog/2018/08/12/visualizing-inefficient-multi-ticket-horizontal-wagering-tickets/">Visualizing inefficient multi-ticket horizontal wagering tickets</a></h3>
+                    <p class="post-tags">
+                        
+                        
+                        
+                        <a href='/tag/dataviz/'>Dataviz</a>
+                        
+                        
+                        
+                        <a href='/tag/horseracing/'>Horseracing</a>
+                        
+                        
+                        
+                        <a href='/tag/wagering/'>Wagering</a>
+                        
+                        
+                        
+                        <a href='/tag/sankey/'>Sankey</a>
+                        
+                        
+                        
+                    </p>
+                </header>
+            </article>
+            
+        </section><!-- .read-next -->
+
+        <!-- Create a sorted array of tags -->
+         
+        <section class="tagcloud inner">
+            <h2 class="tagcloud-title">Tags</h2>
+            <div class="tag-links">
+                
+                <a href='http://www.robinhowlett.com/tag/chrome/'>chrome</a>
+                
+                <a href='http://www.robinhowlett.com/tag/dataviz/'>dataviz</a>
+                
+                <a href='http://www.robinhowlett.com/tag/horseracing/'>horseracing</a>
+                
+                <a href='http://www.robinhowlett.com/tag/jackson/'>jackson</a>
+                
+                <a href='http://www.robinhowlett.com/tag/java/'>java</a>
+                
+                <a href='http://www.robinhowlett.com/tag/rest/'>rest</a>
+                
+                <a href='http://www.robinhowlett.com/tag/sankey/'>sankey</a>
+                
+                <a href='http://www.robinhowlett.com/tag/snaplogic/'>snaplogic</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring/'>spring</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring-shell/'>spring-shell</a>
+                
+                <a href='http://www.robinhowlett.com/tag/ssl/'>ssl</a>
+                
+                <a href='http://www.robinhowlett.com/tag/tls/'>tls</a>
+                
+                <a href='http://www.robinhowlett.com/tag/wagering/'>wagering</a>
+                
+            </div><!-- .tag-links -->
+        </section><!-- .tagcloud -->
+
+    </main><!-- .site-main -->
+
+                
+
+                
+                <footer id="colophon" class="site-footer">
+    <p class="site-info inner">
+        <a href="#">The Boy Wonders</a> &copy; 2019. Royce theme by
+        <a target="_blank" href="https://justgoodthemes.com/">JustGoodThemes</a>.
+        <br />
+        Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a>.
+    </p>
+    <a id="back-to-top" class="back-to-top" href="#page">
+        <span class="icon-arrow-up" aria-hidden="true"></span>
+        <span class="screen-reader-text">Back to top</span>
+    </a>
+</footer><!-- .site-footer -->
+            </div><!-- .inner-wide -->
+        </div><!-- .site-content -->
+    </div><!-- .site -->
+
+    
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-35552317-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-35552317-2', { 'anonymize_ip': true });
+  </script>
+
+    <!-- Javascript Assets -->
+    <script src="/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/custom.js"></script>
+
+</body>
+
+</html>

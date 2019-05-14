@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+        <title>Spring app migration: from XML to Java-based config</title>
+        <meta name="description" content="Our team recently built a Spring MVC 3.1 application for a web service API. We had used the traditional XML-based configuration but I wanted to see how easy ...">
+        <link rel="canonical" href="/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/">
+    
+
+    <!-- Site Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/png" />
+
+    <!-- Font Embed Code -->
+	<link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i|Karla:400,400i,700,700i" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+</head>
+
+
+
+<body class="layout-post">
+    <div id="page" class="site">
+        <header id="masthead" class="site-header">
+    <div class="site-header-wrap">
+        <div class="site-header-inside">
+
+            <div class="site-branding">
+                
+                <p class="profile">
+                    <a href="/">
+                        <img src="/assets/images/authorimage_robin-gravatar.png" alt="'s Picture"
+                            class="avatar" />
+                    </a>
+                </p>
+                <div class="site-identity">
+                    
+                    <h1 class="site-title">
+                        <a href="/">The Boy Wonders</a>
+                    </h1>
+                    
+                    
+                    <p class="site-description">A Blog by Robin Howlett</p>
+                    
+                </div><!-- .site-identity -->
+                
+                <button id="menu-toggle" class="menu-toggle"><span class="screen-reader-text">Main Menu</span><span
+                        class="icon-menu" aria-hidden="true"></span></button>
+            </div><!-- .site-branding -->
+
+            <nav id="main-navigation" class="site-navigation" aria-label="Main Navigation">
+                <div class="site-nav-wrap">
+                    <div class="site-nav-inside">
+                    <ul class="menu">
+                        
+                    </ul>
+                    <p class="social-links">
+    
+    <a href="https://twitter.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    <a href="https://github.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+</p>
+                    </div><!-- .site-nav-inside -->
+                </div><!-- .site-nav-wrap -->
+            </nav><!-- .site-navigation -->
+
+        </div><!-- .site-header-inside -->
+    </div><!-- .site-header-wrap -->
+</header><!-- .site-header -->
+        <div id="content" class="site-content fadeInDown delay_075s">
+            <div class="inner-wide">
+                    <main id="main" class="site-main">
+    
+        <article class="post-full inner">
+
+            <header class="post-header">
+                <div class="post-meta">
+                    <time class="post-date" datetime="2013-02-13">February 13,
+                        2013</time>
+                </div><!-- .post-meta -->
+                <h1 class="post-title">Spring app migration: from XML to Java-based config</h1>
+                
+                <div class="post-tags">
+                     
+                    <a href='tag/java/'>java</a>
+                    
+                     
+                    <a href='tag/spring/'>spring</a>
+                    
+                    
+                </div>
+                
+            </header><!-- .post-header -->
+
+            
+            <div class="post-content">
+                <p>Our team recently built a Spring MVC 3.1 application for a web service API. We had used the traditional XML-based configuration but I wanted to see how easy would it be to migrate a Spring application from an XML-based to a Java annotation-based configuration.</p>
+
+<p>I referenced three great resources for this migration:</p>
+
+<ul>
+  <li><a href="http://www.twitter.com/baeldung">@baeldung</a>’s excellent <a href="http://www.baeldung.com/2011/10/20/bootstraping-a-web-application-with-spring-3-1-and-java-based-configuration-part-1/">Bootstrapping a web application with Spring 3.1 and Java based Configuration</a> series</li>
+  <li><a href="http://www.twitter.com/doughaber">@doughaber</a>’s post, <a href="http://blog.fawnanddoug.com/2012/05/pagination-with-spring-mvc-spring-data.html">Pagination with Spring MVC, Spring Data and Java Config</a>, included some great “gotchas”, especially around web tier configuration</li>
+  <li><a href="http://www.twitter.com/cbeam">@cbeam</a> and <a href="http://www.twitter.com/rstoya05">@rstoya05</a>’s presentation, <a href="http://cbeams.github.com/spring-3.1-config">Configuration Enhancements in Spring 3.1</a>, laid out in terrific detail how Spring configuration has evolved and how most XML configurations could be achieved through Java annotations</li>
+</ul>
+
+<!-- more -->
+
+<p>The <code class="highlighter-rouge">web.xml</code> defined the context configuration and dispatch servlet locations:</p>
+
+<p>``` xml web.xml
+<?xml version="1.0" encoding="ISO-8859-1"?></p>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:META-INF/spring/root-context.xml</param-value>
+	</context-param>
+	...
+	<servlet>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:META-INF/spring/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+`root-context.xml` was intended to define shared resources visible to all other web components, servlets etc and for cross-cutting concerns like security - for the moment though it was just an empty `&lt;beans&gt;` XML file.
+
+`servlet-context.xml` was the `DispatcherServlet` and a wrapper around three other contexts; `persistence-context.xml` for Spring Data/JPA configuration, `bizniz-context.xml` for business/service configuration and `web-context.xml` for web service configuration:
+
+``` xml servlet-context.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"&gt;
+	
+	&lt;import resource="classpath:META-INF/spring/persistence-context.xml" /&gt;
+	&lt;import resource="classpath:META-INF/spring/bizniz-context.xml" /&gt;
+	&lt;import resource="classpath:META-INF/spring/web-context.xml" /&gt;
+&lt;/beans&gt;
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">web-context.xml</code> contained an <code class="highlighter-rouge">&lt;mvc:annotation-driven&gt;</code> declaration to enable Spring MVC’s annotation based model. This was the first place to start.</p>
+
+<p><strong>From <code class="highlighter-rouge">&lt;mvc:annotation-driven&gt;</code> to <code class="highlighter-rouge">@EnableWebMVC</code></strong></p>
+
+<p><code class="highlighter-rouge">&lt;mvc:annotation-driven&gt;</code> enables the Spring MVC <code class="highlighter-rouge">@Controller</code> programming model and adds support for <code class="highlighter-rouge">@RequestMapping</code> annotations etc.</p>
+
+<p>We had added to the web service a <code class="highlighter-rouge">PageableArgumentResolver</code> for Spring Data paging query parameter support and an instance of <code class="highlighter-rouge">MappingJackson2HttpMessageConverter</code> with a custom Jackson <code class="highlighter-rouge">ObjectMapper</code>. The custom <code class="highlighter-rouge">JacksonObjectMapper</code> just extended <code class="highlighter-rouge">ObjectMapper</code> and added a serialization inclusion configuration set to <code class="highlighter-rouge">NON_NULL</code>, so empty JSON properties would not be outputted.</p>
+
+<p>``` xml web-context.xml
+&lt;beans …&gt;</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>…
+
+&lt;mvc:annotation-driven&gt;
+	&lt;mvc:argument-resolvers&gt;
+		&lt;bean class="org.springframework.data.web.PageableArgumentResolver" /&gt;
+	&lt;/mvc:argument-resolvers&gt;
+	&lt;mvc:message-converters&gt;
+		&lt;bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"&gt;
+			&lt;property name="objectMapper" ref="jacksonObjectMapper" /&gt;
+		&lt;/bean&gt;
+	&lt;/mvc:message-converters&gt;
+&lt;/mvc:annotation-driven&gt;
+
+&lt;bean id="jacksonObjectMapper" class="com.silverchalice.contracts.json.mappers.JacksonObjectMapper" /&gt;
+
+…
+</code></pre></div></div>
+
+<p>&lt;/beans&gt;</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">The</span> <span class="n">first</span> <span class="n">thing</span> <span class="n">that</span> <span class="n">needed</span> <span class="k">to</span> <span class="n">be</span> <span class="n">done</span> <span class="n">was</span> <span class="k">to</span> <span class="nb">create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">configuration</span> <span class="n">class</span><span class="p">,</span> <span class="p">`</span><span class="n">WebConfig</span><span class="p">`,</span> <span class="n">annotated</span> <span class="k">with</span> <span class="p">`@</span><span class="n">Configuration</span><span class="p">`</span> <span class="k">and</span> <span class="p">`@</span><span class="n">EnableWebMVC</span><span class="p">`.</span> <span class="n">The</span> <span class="n">new</span> <span class="n">class</span> <span class="n">was</span> <span class="n">added</span> <span class="k">to</span> <span class="n">a</span> <span class="n">new</span> <span class="k">package</span><span class="p">,</span> <span class="p">`</span><span class="n">com</span><span class="p">.</span><span class="n">silverchalice</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">config</span><span class="p">`.</span>
+
+<span class="n">It</span> <span class="n">is</span> <span class="n">common</span> <span class="k">in</span> <span class="n">many</span> <span class="n">Spring</span> <span class="n">MVC</span> <span class="n">application</span> <span class="n">configurations</span> <span class="k">to</span> <span class="n">just</span> <span class="n">use</span> <span class="n">the</span> <span class="n">default</span> <span class="n">self</span><span class="p">-</span><span class="n">closing</span> <span class="p">`&lt;</span><span class="n">mvc</span><span class="p">:</span><span class="n">annotation</span><span class="p">-</span><span class="n">driven</span> <span class="p">/&gt;`</span> <span class="n">tag</span><span class="p">;</span> <span class="n">therefore</span> <span class="n">the</span> <span class="n">new</span> <span class="n">configuration</span> <span class="n">class</span> <span class="n">could</span> <span class="n">be</span> <span class="n">just</span> <span class="n">an</span> <span class="n">empty</span> <span class="n">class</span> <span class="n">annotated</span> <span class="k">with</span> <span class="p">`@</span><span class="n">EnableWebMVC</span><span class="p">`.</span>
+
+<span class="n">However</span><span class="p">,</span> <span class="n">since</span> <span class="n">we</span> <span class="n">had</span> <span class="n">added</span> <span class="n">an</span> <span class="n">argument</span> <span class="n">resolver</span> <span class="k">and</span> <span class="n">message</span> <span class="n">conveter</span> <span class="n">customizations</span><span class="p">,</span> <span class="n">the</span> <span class="n">config</span> <span class="n">class</span> <span class="n">would</span> <span class="n">need</span> <span class="k">to</span> <span class="n">be</span> <span class="n">able</span> <span class="k">to</span> <span class="n">configure</span> <span class="n">these</span> <span class="n">too</span><span class="p">.</span> <span class="n">This</span> <span class="n">was</span> <span class="n">acheived</span> <span class="n">by</span> <span class="n">extending</span> <span class="p">`</span><span class="n">WebMvcConfigurerAdapter</span><span class="p">`.</span> <span class="n">The</span> <span class="n">needed</span> <span class="n">customizations</span> <span class="n">could</span> <span class="k">then</span> <span class="n">be</span> <span class="n">added</span> <span class="n">by</span> <span class="n">simply</span> <span class="n">overriding</span> <span class="n">the</span> <span class="n">appropriate</span> <span class="n">method</span><span class="p">:</span>
+
+<span class="p">```</span> <span class="n">java</span> <span class="n">WebConfig</span><span class="p">.</span><span class="n">java</span>
+<span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">silverchalice</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">config</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">Spring</span> <span class="n">MVC</span> <span class="n">Configuration</span><span class="p">.</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="n">Extends</span> <span class="p">{@</span><span class="n">link</span> <span class="n">WebMvcConfigurerAdapter</span><span class="p">},</span> <span class="n">which</span> <span class="n">provides</span> <span class="n">convenient</span> <span class="n">callbacks</span> <span class="n">that</span> <span class="n">allow</span> <span class="n">us</span> <span class="k">to</span> <span class="n">customize</span> <span class="n">aspects</span> <span class="k">of</span> <span class="n">the</span> <span class="n">Spring</span> <span class="n">Web</span> <span class="n">MVC</span> <span class="n">framework</span><span class="p">.</span>
+ <span class="p">*</span> <span class="n">These</span> <span class="n">callbacks</span> <span class="n">allow</span> <span class="n">us</span> <span class="k">to</span> <span class="n">register</span> <span class="n">custom</span> <span class="n">interceptors</span><span class="p">,</span> <span class="n">message</span> <span class="n">converters</span><span class="p">,</span> <span class="n">argument</span> <span class="n">resovlers</span><span class="p">,</span> <span class="n">a</span> <span class="n">validator</span><span class="p">,</span> <span class="n">resource</span> <span class="n">handling</span><span class="p">,</span> <span class="k">and</span> <span class="n">other</span> <span class="n">things</span><span class="p">.</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">robin</span>
+ <span class="p">*</span> <span class="p">@</span><span class="n">see</span> <span class="n">WebMvcConfigurerAdapter</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">Configuration</span>
+<span class="p">@</span><span class="n">EnableWebMvc</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">WebConfig</span> <span class="n">extends</span> <span class="n">WebMvcConfigurerAdapter</span> <span class="p">{</span>
+
+	<span class="p">@</span><span class="n">Override</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">addArgumentResolvers</span><span class="p">(</span><span class="k">List</span><span class="p">&lt;</span><span class="n">HandlerMethodArgumentResolver</span><span class="p">&gt;</span> <span class="n">argumentResolvers</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">//</span> <span class="n">equivalent</span> <span class="k">to</span> <span class="p">&lt;</span><span class="n">mvc</span><span class="p">:</span><span class="n">argument</span><span class="p">-</span><span class="n">resolvers</span><span class="p">&gt;</span>
+	<span class="p">}</span>
+	
+	<span class="p">@</span><span class="n">Override</span>
+	<span class="k">public</span> <span class="n">void</span> <span class="n">configureMessageConverters</span><span class="p">(</span><span class="k">List</span><span class="p">&lt;</span><span class="n">HttpMessageConverter</span><span class="p">&lt;?&gt;&gt;</span> <span class="n">converters</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">//</span> <span class="n">equivalent</span> <span class="k">to</span> <span class="p">&lt;</span><span class="n">mvc</span><span class="p">:</span><span class="n">message</span><span class="p">-</span><span class="n">converters</span><span class="p">&gt;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To implement the above methods, we needed references to the beans that they used; <code class="highlighter-rouge">PageableArgumentResolver</code>, <code class="highlighter-rouge">MappingJackson2HttpMessageConverter</code> and <code class="highlighter-rouge">JacksonObjectMapper</code>.</p>
+
+<p>This was a simple as adding <code class="highlighter-rouge">@Bean</code> annotated methods that returned instances of each type that Spring would then manage. The overridden configuation methods could then just add those instances to their respective collections:</p>
+
+<p>``` java WebConfig.java
+package com.silverchalice.api.config;</p>
+
+<p>…</p>
+
+<p>@Configuration
+@EnableWebMvc
+public class WebConfig extends WebMvcConfigurerAdapter {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+public void addArgumentResolvers(List&lt;HandlerMethodArgumentResolver&gt; argumentResolvers) {
+    argumentResolvers.add(resolver());
+}
+
+@Override
+public void configureMessageConverters(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters) {
+	converters.add(converter());
+}
+
+@Bean
+public ServletWebArgumentResolverAdapter resolver() {
+	return new ServletWebArgumentResolverAdapter(pageable());
+}
+
+@Bean 
+public PageableArgumentResolver pageable() {
+	return new PageableArgumentResolver();
+}
+
+@Bean
+public MappingJackson2HttpMessageConverter converter() {
+	MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+	converter.setObjectMapper(mapper());
+	return converter;
+}
+
+/**
+ * Provides the Jackson ObjectMapper with custom configuration for our JSON serialization.
+ * @return The Jackson object mapper with non-null serialization configured
+ */
+@Bean
+public JacksonObjectMapper mapper() {
+	return new JacksonObjectMapper();
+} } ```
+</code></pre></div></div>
+
+<p>You may have noticed that the <code class="highlighter-rouge">PageableArgumentResolver</code> was wrapped in a <code class="highlighter-rouge">ServletWebArgumentResolverAdapter</code> before being added to the <code class="highlighter-rouge">argumentResolvers</code> list.</p>
+
+<p>This is because Spring Data’s <code class="highlighter-rouge">PageableArgumentResolver</code> interface uses the old <code class="highlighter-rouge">ArgumentResolver</code> interface instead of the new (Spring 3.1) <code class="highlighter-rouge">HandlerMethodArgumentResolver</code> interface. The XML config handles this behind the scenes but with a Java config it must be done manually. Thanks to <a href="http://www.twitter.com/doughaber">@doughaber</a> for this <a href="http://blog.fawnanddoug.com/2012/05/pagination-with-spring-mvc-spring-data.html">gotcha</a>.</p>
+
+<p>As the Spring MVC Java annotation-based configuration was complete, the references to the <code class="highlighter-rouge">&lt;mvc:annotation-driven&gt;</code> and <code class="highlighter-rouge">jacksonObjectMapper</code> beans in <code class="highlighter-rouge">web-context.xml</code> were removed.</p>
+
+<p>We now had an annotated configuration class that configured the container - but only the Spring MVC configuration. The dispatcher servlet configuration (<code class="highlighter-rouge">servlet-config.xml</code>) was still being referenced as the <code class="highlighter-rouge">contextConfigLocation</code> under <code class="highlighter-rouge">&lt;servlet&gt;</code> and we hadn’t actually replaced the application context (<code class="highlighter-rouge">root-context.xml</code>) with an annotated equivalent.</p>
+
+<p>So, a basic <code class="highlighter-rouge">@Configuration</code> annotated class <code class="highlighter-rouge">AppConfig</code> was created to replace <code class="highlighter-rouge">root-context.xml</code>:</p>
+
+<p>``` java AppConfig.java
+package com.silverchalice.api.config;</p>
+
+<p>import org.springframework.context.annotation.Configuration;</p>
+
+<p>/**</p>
+<ul>
+  <li>Configuation defining shared resources visible to all other web components,</li>
+  <li>servlets etc and for cross-cutting concerns like security</li>
+  <li></li>
+  <li>@author robin
+ */
+@Configuration
+public class AppConfig {</li>
+</ul>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="p">`</span><span class="n">root</span><span class="p">-</span><span class="n">context</span><span class="p">.</span><span class="n">xml</span><span class="p">`</span> <span class="n">was</span> <span class="k">then</span> <span class="n">deleted</span><span class="p">.</span>
+
+<span class="n">Similarly</span><span class="p">,</span> <span class="p">`</span><span class="n">ServletConfig</span><span class="p">`</span> <span class="n">was</span> <span class="n">created</span> <span class="k">to</span> <span class="n">replace</span> <span class="p">`</span><span class="n">servlet</span><span class="p">-</span><span class="n">context</span><span class="p">.</span><span class="n">xml</span><span class="p">`.</span> <span class="n">However</span><span class="p">,</span> <span class="n">we</span> <span class="n">had</span> <span class="n">only</span> <span class="n">partially</span> <span class="n">migrated</span> <span class="n">the</span> <span class="n">configuration</span><span class="p">.</span> <span class="n">We</span> <span class="n">needed</span> <span class="k">to</span> <span class="k">include</span> <span class="n">the</span> <span class="n">new</span> <span class="p">`</span><span class="n">WebConfig</span><span class="p">`</span> <span class="n">but</span> <span class="n">also</span> <span class="n">the</span> <span class="n">existing</span> <span class="p">`</span><span class="n">persistence</span><span class="p">-</span><span class="n">context</span><span class="p">.</span><span class="n">xml</span><span class="p">`,</span> <span class="p">`</span><span class="n">bizniz</span><span class="p">-</span><span class="n">context</span><span class="p">.</span><span class="n">xml</span><span class="p">`,</span> <span class="k">and</span> <span class="p">`</span><span class="n">web</span><span class="p">-</span><span class="n">context</span><span class="p">.</span><span class="n">xml</span><span class="p">`</span> <span class="n">XML</span><span class="p">-</span><span class="n">based</span> <span class="n">configurations</span><span class="p">.</span>
+
+<span class="n">This</span> <span class="n">was</span> <span class="n">done</span> <span class="n">using</span> <span class="n">the</span> <span class="p">`@</span><span class="n">Import</span><span class="p">`</span> <span class="k">and</span> <span class="p">`@</span><span class="n">ImportResource</span><span class="p">`</span> <span class="n">annotations</span> <span class="n">respectively</span><span class="p">:</span>
+
+<span class="p">```</span> <span class="n">java</span> <span class="n">ServletConfig</span><span class="p">.</span><span class="n">java</span>
+<span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">silverchalice</span><span class="p">.</span><span class="n">api</span><span class="p">.</span><span class="n">config</span><span class="p">;</span>
+
+<span class="err">…</span>
+	
+<span class="p">/**</span>
+ <span class="p">*</span> <span class="n">Configuation</span> <span class="n">intended</span> <span class="k">to</span> <span class="n">aggregate</span> <span class="n">the</span> <span class="n">context</span> <span class="n">for</span> 
+ <span class="p">*</span> <span class="n">each</span> <span class="n">architectural</span> <span class="n">layer</span> <span class="k">of</span> <span class="n">the</span> <span class="n">application</span>
+ <span class="p">*</span> 
+ <span class="p">*</span> <span class="p">@</span><span class="n">author</span> <span class="n">robin</span>
+ <span class="p">*/</span>
+<span class="p">@</span><span class="n">Configuration</span>
+<span class="p">@</span><span class="n">Import</span><span class="p">(</span><span class="n">WebConfig</span><span class="p">.</span><span class="n">class</span><span class="p">)</span>
+<span class="p">@</span><span class="n">ImportResource</span><span class="p">({</span>
+	<span class="s2">"classpath:META-INF/spring/persistence-context.xml"</span><span class="p">,</span>
+	<span class="s2">"classpath:META-INF/spring/bizniz-context.xml"</span><span class="p">,</span>
+	<span class="s2">"classpath:META-INF/spring/web-context.xml"</span>
+<span class="p">})</span>
+<span class="k">public</span> <span class="n">class</span> <span class="n">ServletConfig</span> <span class="p">{</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">WebConfig</code> configuration class was explicity imported using <code class="highlighter-rouge">@Import</code>. Since we didn’t need <code class="highlighter-rouge">servlet-context.xml</code> anymore, we used <code class="highlighter-rouge">@ImportResource</code> to import in the existing XML-based context configurations and deleted <code class="highlighter-rouge">servlet-context.xml</code>.</p>
+
+<p>Next, we needed to modify our <code class="highlighter-rouge">web.xml</code> so that the context knows about these Java annotation-based configurations.</p>
+
+<p>The only thing needed here was to add <code class="highlighter-rouge">contextClass</code> params for both the application and dispatch servlet contexts referencing <code class="highlighter-rouge">AnnotationConfigWebApplicationContext</code>, and modifying the <code class="highlighter-rouge">contextConfigLocation</code> params to use the appropriate configuration class:</p>
+
+<p>``` xml web.xml</p>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	…
+	
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+		   org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>com.silverchalice.api.config.AppConfig</param-value>
+	</context-param>
+	
+	…
+	
+	<servlet>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>
+				org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+			</param-value>
+		</init-param>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>com.silverchalice.api.config.ServletConfig</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring-mvc-dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+</web-app>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	
+The Spring MVC configuration was now completely Java annotation-based and the rest of the configuration, while still XML-based, was set up for incremental migration to our new way.
+
+After deploying to Tomcat 7, the logs show that the `AnnotationConfigWebApplicationContext` has worked for both the application and dispatcher servlet configurations (which, in turn, loads the web configuration), while still picking up the renaming XML configurations:
+
+``` logtalk
+INFO : org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Refreshing Root WebApplicationContext: startup date [Thu Dec 27 23:34:24 MST 2012]; root of context hierarchy
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Successfully resolved class for [com.silverchalice.api.config.AppConfig]
+
+…
+
+INFO : org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'spring-mvc-dispatcher': initialization started
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Refreshing WebApplicationContext for namespace 'spring-mvc-dispatcher-servlet': startup date [Thu Dec 27 23:34:24 MST 2012]; parent: Root WebApplicationContext
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Successfully resolved class for [com.silverchalice.api.config.ServletConfig]
+INFO : org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [META-INF/spring/persistence-context.xml]
+INFO : org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [META-INF/spring/bizniz-context.xml]
+INFO : org.springframework.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from class path resource [META-INF/spring/web-context.xml]
+</code></pre></div></div>
+
+<p />
+
+<hr />
+<p><strong>From <code class="highlighter-rouge">&lt;context:component-scan&gt;</code> to <code class="highlighter-rouge">@ComponentScan</code></strong></p>
+
+<p>Next was to convert how packages are scanned to register beans within the application context.</p>
+
+<p><code class="highlighter-rouge">web-context.xml</code> contained the following line:</p>
+
+<p><code class="highlighter-rouge">&lt;context:component-scan base-package="com.silverchalice.api.controller" /&gt;</code></p>
+
+<p>The <code class="highlighter-rouge">com.silverchalice.api.controller</code> package contains our Spring MVC components for the presentation layer (the web service interface we are exposing) e.g.</p>
+
+<p>``` java SportsController.java
+@Controller
+@RequestMapping(“/sports”)
+public class SportsController {
+	…
+}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+To replace this component scanning directive with its Java equivalent, the `@ComponentScan` annotation is added to the web configuration class:
+
+``` java WebConfig.java
+@ComponentScan(basePackageClasses = { SportsController.class })
+@Configuration
+@EnableWebMvc
+public class WebConfig extends WebMvcConfigurerAdapter {
+	...
+}
+</code></pre></div></div>
+
+<p>It would have been possible to just add <code class="highlighter-rouge">@ComponentScan("com.silverchalice.api.controller")</code> but by using the <code class="highlighter-rouge">basePackageClasses</code> specifier with a class reference(s), the packages of each class noted will be scanned, which is both type-safe and adds IDE support for future refactoring.</p>
+
+<blockquote>
+  <p>Indeed, Spring documentation suggests to “consider creating a special no-op marker class or interface in each package that serves no purpose other than being referenced by this attribute”.</p>
+</blockquote>
+
+<p><code class="highlighter-rouge">&lt;context:component-scan … /&gt;</code> was removed from <code class="highlighter-rouge">web-context.xml</code>.</p>
+
+<p />
+
+<hr />
+<p><strong>From <code class="highlighter-rouge">&lt;beans profile="…"&gt;</code> to <code class="highlighter-rouge">@Profile</code></strong></p>
+
+<p>With Spring 3.1 also came the ability to conditionally include beans under certain environment bean definition profiles.</p>
+
+<p><a href="http://swagger.wordnik.com/">Swagger</a> is a JSON-based specification for “describing, producing, consuming, and visualizing RESTful web services”. We forked <a href="https://twitter.com/marty_pitt">@marty_pitt</a>’s <a href="https://github.com/SilverChaliceNewMedia/swagger-springmvc">Swagger Spring MVC</a> implementation to provide deployment-tailored Swagger documentation for our web service.</p>
+
+<p>We used this functionality in <code class="highlighter-rouge">web-context.xml</code> to declare a <code class="highlighter-rouge">DocumentationController</code> bean for each deployment environment:</p>
+
+<p>``` xml web-context.xml
+…</p>
+
+<!-- Swagger integration -->
+<beans profile="dev">
+	<bean id="documentationController" class="com.mangofactory.swagger.springmvc.controller.DocumentationController" p:apiVersion="1.0" p:swaggerVersion="1.0" p:basePath="http://localhost:8080/webservice" />
+</beans>
+<beans profile="prod">
+        <bean id="documentationController" class="com.mangofactory.swagger.springmvc.controller.DocumentationController" p:apiVersion="1.0" p:swaggerVersion="1.0" p:basePath="http://webservice.silverchalice.com" />
+</beans>
+
+<p>…</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Depending on which profile is active at application context start, a `documentationController` bean will be available for the specified environment.
+
+[@cbeam](http://www.twitter.com/cbeam)'s blog post, [Spring 3.1 M1: Introducting @Profile](http://blog.springsource.org/2011/02/14/spring-3-1-m1-introducing-profile/), recommended *object-oriented configuration* by declaring configuration interfaces and then using `@Autowired` to inject the profile-dependent configuration themselves. I liked that, so we first created an interface for the application environment configuration:
+
+``` java AppEnvConfig.java
+/**
+ * Environment configuration interface for application
+ * 
+ * @author robin
+ */
+public interface AppEnvConfig {
+
+}
+</code></pre></div></div>
+
+<p>Before creating an environment configuration interface for the web layer, I created an interface for the Swagger configuration that would support profiles:</p>
+
+<p>``` java SwaggerConfig.java
+import com.mangofactory.swagger.springmvc.controller.DocumentationController;</p>
+
+<p>/**</p>
+<ul>
+  <li>Configuration for Swagger Spring MVC API Documentation support</li>
+  <li></li>
+  <li>
+    <p>@author robin
+ */
+public interface SwaggerConfig {</p>
+
+    <p>DocumentationController apiDocs();</p>
+  </li>
+</ul>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+The web environment configuration interface then extended both `AppEnvConfig` and `SwaggerConfig`:
+
+``` java WebEnvConfig.java
+/**
+ * Environment configuration interface for web layer
+ * 
+ * @author robin
+ */
+public interface WebEnvConfig extends AppEnvConfig, SwaggerConfig {
+
+}
+</code></pre></div></div>
+
+<p>Each web environment configuration that implemented this interface was then annotated with <code class="highlighter-rouge">@Profile</code> whose value specified they profile name:</p>
+
+<p>``` java WebEnvDevConfig.java
+/**</p>
+<ul>
+  <li>Environment configuration for the web layer (development profile)</li>
+  <li></li>
+  <li>
+    <p>@author robin
+ */
+@Configuration
+@Profile(“dev”)
+public class WebEnvDevConfig implements WebEnvConfig {</p>
+
+    <p>@Override
+ public DocumentationController apiDocs() {
+     DocumentationController docs = new DocumentationController();</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> docs.setApiVersion("1.0");
+ docs.setSwaggerVersion("1.0");
+ docs.setBasePath("http://localhost:8080/webservice");
+	
+ return docs;  }
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	
+The `apiDocs` method is then overridden per profile and the `DocumentationController` instance is configured for that environment. Similarly, the production environment configuration (`WebEnvProdConfig`) class would instantiate an instance customized for production URLs.
+
+&lt;p /&gt;
+---
+**From `&lt;context:property-placeholder location="…" /&gt;` to `@PropertySource`**
+
+However, the various implementations of `WebEnvConfig` with slightly modified `DocumentationController` instances felt like a ["code smell"](http://www.codinghorror.com/blog/2006/05/code-smells.html).
+
+Instead I preferred to use `.properties` files to detail environment-specific settings, for example, `web-dev.properties`:
+
+``` properties web-dev.properties
+apiVersion="1.0"
+swaggerVersion="1.0"
+basePath="http://localhost:8080/webservice"
+</code></pre></div></div>
+
+<p>To use properties previously with XML-based configuration, a property placeholder definition would be used:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;context:property-placeholder location="web-dev.properties" /&gt;
+</code></pre></div></div>
+
+<p>With Spring 3.1, the <code class="highlighter-rouge">Environment</code> abstraction allows <a href="http://blog.springsource.com/2011/02/15/spring-3-1-m1-unified-property-management/">searching for properties across a hierarchy of property sources</a>.</p>
+
+<p>The <code class="highlighter-rouge">@PropertySource</code> annotation will specifiy a location of properties that will be added to the environment. This makes it very easy to both add to and retrieve properties from the <code class="highlighter-rouge">Environment</code>.</p>
+
+<p>First, the <code class="highlighter-rouge">WebEnvConfig</code> abstract class (that now contains the <code class="highlighter-rouge">apiDocs</code> method) was altered to use the <code class="highlighter-rouge">@Autowired Environment</code> instance to retrieve the appropriate property value:</p>
+
+<p>``` java WebEnvConfig
+public abstract class WebEnvConfig implements AppEnvConfig, SwaggerConfig {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Autowired Environment env;
+
+@Override
+public DocumentationController apiDocs() {
+	DocumentationController docs = new DocumentationController();
+	
+	docs.setApiVersion(env.getProperty("apiVersion"));
+	docs.setSwaggerVersion(env.getProperty("swaggerVersion"));
+	docs.setBasePath(env.getProperty("basePath"));
+	
+	return docs;
+}
+</code></pre></div></div>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+The, for each `@Profile` annotated concrete web configuration class, the `@PropertySource` annotation's value denotes the location of the `.properties` file to be used:
+
+``` java WebEnvDevConfig
+@Configuration
+@Profile("dev")
+@PropertySource("classpath:web-dev.properties")
+public class WebEnvDevConfig extends WebEnvConfig {
+
+}
+</code></pre></div></div>
+
+<p>Therefore, for whatever the active profile was (for instance, if the JVM parameter <code class="highlighter-rouge">-Dspring.profiles.active=dev</code> was used), the <code class="highlighter-rouge">.properties</code> file for that profile was loaded.</p>
+
+<p>This meant that we could inject in a <code class="highlighter-rouge">WebEnvConfig</code> instance into our <code class="highlighter-rouge">WebConfig</code> class and expose our Swagger Spring MVC functionality that would be customized for the environment profile it was launched under.</p>
+
+<p>To do this, we needed to import the profile annotated configuration classes, autowire a configuration instance and them expose a single bean with the desired functionality:</p>
+
+<p>``` java WebConfig.java
+@ComponentScan(basePackageClasses = { SportsController.class })
+@Configuration
+@EnableWebMvc
+@Import({WebEnvDevConfig.class, WebEnvProdConfig.class})
+public class WebConfig extends WebMvcConfigurerAdapter {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// the web @Configuration class injected for this @Profile
+@Autowired WebEnvConfig webEnvConfig;
+
+…
+
+/**
+ * Swagger Spring MVC API Documentation support
+ * 
+ * @return swagger documentation controller
+ */
+@Bean
+public DocumentationController documentationController() {
+	return webEnvConfig.apiDocs();
+}
+</code></pre></div></div>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">Naturally</span><span class="p">,</span> <span class="n">this</span> <span class="n">approach</span> <span class="n">could</span> <span class="n">be</span> <span class="n">extended</span> <span class="n">across</span> <span class="n">all</span> <span class="n">application</span> <span class="n">layers</span><span class="p">.</span>
+
+<span class="p">&lt;</span><span class="n">p</span> <span class="p">/&gt;</span>
+<span class="p">---</span>
+<span class="p">**</span><span class="k">From</span> <span class="p">`</span><span class="n">web</span><span class="p">.</span><span class="n">xml</span><span class="p">`</span> <span class="k">to</span> <span class="p">`</span><span class="n">WebApplicationInitializer</span><span class="p">`**</span>
+
+<span class="n">The</span> <span class="n">last</span> <span class="n">piece</span> <span class="k">of</span> <span class="n">the</span> <span class="n">puzzle</span> <span class="k">of</span> <span class="n">converting</span> <span class="n">our</span> <span class="n">Spring</span> <span class="n">MVC</span> <span class="n">app</span><span class="s1">'s web layer to a fully Java annoatation-based configuration was the conversion of the deployment descriptor itself.
+
+At this moment, our web service was set up as a Servlet 2.5 application, but, since we were using Apache Tomcat 7 as our servlet container, we could use [Servlet 3.0 and its annotation support](http://explodingjava.blogspot.in/2010/05/servlet-30-annotations.html) instead. This also opened up the opportunity to replace most, if not all, of `web.xml` with a programmatic equivalent written in Java.
+
+In order to configure the `ServletContext` programmatically, we needed to create a class that implemented `WebApplicationInitializer`. Implementations of this interface would be detected automatically and bootstrapped by the Servlet 3.0 container.
+
+``` java WebInit.java
+package com.silverchalice.api.config;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
+import org.springframework.web.WebApplicationInitializer;
+
+public class WebInit implements WebApplicationInitializer {
+
+	@Override
+	public void onStartup(ServletContext container) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}
+</span></code></pre></div></div>
+
+<p>This is simply a matter of replicating our changes to <code class="highlighter-rouge">web.xml</code> within the <code class="highlighter-rouge">WebInit</code> class.</p>
+
+<p>As we are using <code class="highlighter-rouge">@Profile</code> now, we need to tell the container context what profile to use if no active profile has been configured (either as a JVM argument, an environment variable etc.). This was done in <code class="highlighter-rouge">web.xml</code> by setting a context init-param:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!- If no active profile is set via -Dspring.profiles.active or 
+some other mechanism then this will be used. --&gt;</span>
+<span class="nt">&lt;context-param&gt;</span>
+        <span class="nt">&lt;param-name&gt;</span>spring.profiles.default<span class="nt">&lt;/param-name&gt;</span>
+        <span class="nt">&lt;param-value&gt;</span>dev<span class="nt">&lt;/param-value&gt;</span>
+<span class="nt">&lt;/context-param&gt;</span>
+</code></pre></div></div>
+
+<p>In our new <code class="highlighter-rouge">WebInit</code> class, this is very easy:</p>
+
+<p>``` java WebInit.java
+public class WebInit implements WebApplicationInitializer {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+public void onStartup(ServletContext container) throws ServletException {
+	/*
+	 * If no active profile is set via -Dspring.profiles.active or 
+	 * some other mechanism then this will be used.
+	 */
+	container.setInitParameter("spring.profiles.default", "dev");
+	
+	…
+	
+}
+</code></pre></div></div>
+
+<p>}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	
+Next we created the root application context itself, set its display name, registered the root application configuration and added a context loader listener to bootstrap the container - all very standard stuff. We had set this all up earlier in `web.xml`:
+
+``` xml
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"&gt;
+...
+	&lt;display-name&gt;Silver Chalice Web API&lt;/display-name&gt;
+	&lt;context-param&gt;
+	        &lt;param-name&gt;contextClass&lt;/param-name&gt;
+	        &lt;param-value&gt;
+				org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+	        &lt;/param-value&gt;
+	&lt;/context-param&gt;
+	&lt;context-param&gt;
+	        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	        &lt;param-value&gt;com.silverchalice.api.config.AppConfig&lt;/param-value&gt;
+	&lt;/context-param&gt;
+	&lt;!-- Creates the Spring Container shared by all Servlets and Filters --&gt;
+	&lt;listener&gt;
+	        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+	&lt;/listener&gt;
+...
+&lt;/web-app&gt;
+</code></pre></div></div>
+
+<p>but it was very straightforward to do this through Java:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Creates the root application context</span>
+<span class="n">AnnotationConfigWebApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> 
+		<span class="k">new</span> <span class="nf">AnnotationConfigWebApplicationContext</span><span class="o">();</span>
+
+<span class="n">appContext</span><span class="o">.</span><span class="na">setDisplayName</span><span class="o">(</span><span class="s">"Silver Chalice Web API"</span><span class="o">);</span>
+
+<span class="c1">// Registers the application configuration with the root context</span>
+<span class="n">appContext</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">AppConfig</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+<span class="c1">// Creates the Spring Container shared by all Servlets and Filters</span>
+<span class="n">container</span><span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">new</span> <span class="n">ContextLoaderListener</span><span class="o">(</span><span class="n">appContext</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>Filters were straightforward to convert also:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;filter&gt;</span>
+        <span class="nt">&lt;filter-name&gt;</span>PerfLoggingFilter<span class="nt">&lt;/filter-name&gt;</span>
+        <span class="nt">&lt;filter-class&gt;</span>com.silverchalice.api.filter.PerfLoggingFilter<span class="nt">&lt;/filter-class&gt;</span>
+<span class="nt">&lt;/filter&gt;</span>
+<span class="nt">&lt;filter-mapping&gt;</span>
+        <span class="nt">&lt;filter-name&gt;</span>PerfLoggingFilter<span class="nt">&lt;/filter-name&gt;</span>
+        <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+<span class="nt">&lt;/filter-mapping&gt;</span>
+</code></pre></div></div>
+
+<p>became:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">container</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="s">"PerfLoggingFilter"</span><span class="o">,</span> <span class="n">PerfLoggingFilter</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+			<span class="o">.</span><span class="na">addMappingForUrlPatterns</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="s">"/*"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>Finally the <code class="highlighter-rouge">DispatchServlet</code> itself was migrated from:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;servlet&gt;</span>
+	<span class="nt">&lt;servlet-name&gt;</span>spring-mvc-dispatcher<span class="nt">&lt;/servlet-name&gt;</span>
+	<span class="nt">&lt;servlet-class&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="nt">&lt;/servlet-class&gt;</span>
+	<span class="nt">&lt;init-param&gt;</span>
+		<span class="nt">&lt;param-name&gt;</span>contextClass<span class="nt">&lt;/param-name&gt;</span>
+		<span class="nt">&lt;param-value&gt;</span>
+			org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		<span class="nt">&lt;/param-value&gt;</span>
+	<span class="nt">&lt;/init-param&gt;</span>
+	<span class="nt">&lt;init-param&gt;</span>
+		<span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+		<span class="nt">&lt;param-value&gt;</span>com.silverchalice.api.config.ServletConfig<span class="nt">&lt;/param-value&gt;</span>
+	<span class="nt">&lt;/init-param&gt;</span>
+	<span class="nt">&lt;load-on-startup&gt;</span>1<span class="nt">&lt;/load-on-startup&gt;</span>
+<span class="nt">&lt;/servlet&gt;</span>
+<span class="nt">&lt;servlet-mapping&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>spring-mvc-dispatcher<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;url-pattern&gt;</span>/<span class="nt">&lt;/url-pattern&gt;</span>
+<span class="nt">&lt;/servlet-mapping&gt;</span>
+</code></pre></div></div>
+
+<p>to:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Creates the dispatcher servlet context</span>
+<span class="n">AnnotationConfigWebApplicationContext</span> <span class="n">servletContext</span> <span class="o">=</span> 
+		<span class="k">new</span> <span class="nf">AnnotationConfigWebApplicationContext</span><span class="o">();</span>
+
+<span class="c1">// Registers the servlet configuraton with the dispatcher servlet context</span>
+<span class="n">servletContext</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">ServletConfig</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+<span class="c1">// Further configures the servlet context</span>
+<span class="n">ServletRegistration</span><span class="o">.</span><span class="na">Dynamic</span> <span class="n">dispatcher</span> <span class="o">=</span> 
+		<span class="n">container</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="s">"spring-mvc-dispatcher"</span><span class="o">,</span> 
+				<span class="k">new</span> <span class="nf">DispatcherServlet</span><span class="o">(</span><span class="n">servletContext</span><span class="o">));</span>
+<span class="n">dispatcher</span><span class="o">.</span><span class="na">setLoadOnStartup</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">dispatcher</span><span class="o">.</span><span class="na">addMapping</span><span class="o">(</span><span class="s">"/"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">web.xml</code> can be deleted now and the application starts just fine:</p>
+
+<pre><code class="language-logtalk">INFO : org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Refreshing Silver Chalice Web API: startup date [Tue Jan 01 19:21:33 MST 2013]; root of context hierarchy
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Registering annotated classes: [class com.silverchalice.api.config.AppConfig]
+…
+INFO : org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 323 ms
+DEBUG: com.silverchalice.api.filter.PerfLoggingFilter - initializing perf logging filter
+…
+INFO: Initializing Spring FrameworkServlet 'spring-mvc-dispatcher'
+INFO : org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'spring-mvc-dispatcher': initialization started
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Refreshing WebApplicationContext for namespace 'spring-mvc-dispatcher-servlet': startup date [Tue Jan 01 19:21:34 MST 2013]; parent: Silver Chalice Web API
+INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationContext - Registering annotated classes: [class com.silverchalice.api.config.ServletConfig]
+…
+</code></pre>
+
+<p>And that’s it.</p>
+
+<p />
+
+<hr />
+<p><strong>From <code class="highlighter-rouge">&lt;aop:aspectj-autoproxy /&gt;</code> to <code class="highlighter-rouge">@EnableAspectJAutoProxy</code></strong></p>
+
+<p>The single remaining item left in <code class="highlighter-rouge">web-context.xml</code> was this:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;beans</span> <span class="err">…</span><span class="nt">&gt;</span>
+		<span class="c">&lt;!-- Enable AspectJ auto-wiring --&gt;</span>
+		<span class="nt">&lt;aop:aspectj-autoproxy</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</code></pre></div></div>
+
+<p>We were using <a href="http://www.eclipse.org/aspectj/">AspectJ</a> with <a href="http://perf4j.codehaus.org/">Perf4J</a> to profile our web service. We had added the Perf4J <code class="highlighter-rouge">@Profiled</code> annotation (not to be confused with the Spring annotation <code class="highlighter-rouge">@Profile</code>) to our controllers and had created an <code class="highlighter-rouge">aop.xml</code> file configuring our timing aspect.</p>
+
+<p>To remove <code class="highlighter-rouge">web-context.xml</code> completely we just needed to add the <code class="highlighter-rouge">@EnableAspectJAutoProxy</code> annotation to our <code class="highlighter-rouge">WebConfig</code> configuration class:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackageClasses</span> <span class="o">=</span> <span class="o">{</span> <span class="n">SportsController</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableAspectJAutoProxy</span>
+<span class="nd">@EnableWebMvc</span>
+<span class="nd">@Import</span><span class="o">({</span><span class="n">WebEnvDevConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">WebEnvProdConfig</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WebConfig</span> <span class="kd">extends</span> <span class="n">WebMvcConfigurerAdapter</span> <span class="o">{</span>
+
+	<span class="err">…</span>
+	
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Then the reference to <code class="highlighter-rouge">web-context.xml</code> was removed from <code class="highlighter-rouge">ServletConfig</code> and the file itself was deleted.</p>
+
+            </div>
+            <footer class="post-footer">
+                <div class="post-share">
+                    <span class="post-share-title">Share:</span>
+                    <a target="_blank" href="https://twitter.com/share?text=Spring+app+migration%3A+from+XML+to+Java-based+config&amp;url=http://www.robinhowlett.com/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/">Twitter</a>
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.robinhowlett.com/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/">Facebook</a>
+                </div><!-- .share-post -->
+            </footer>
+            
+<section id="comments-area" class="comments-area">
+    <h2 class="comments-title">Comments</h2>
+    <div class="comments-inside">
+        <div id="disqus_thread"></div>
+    </div><!-- .comments-inside -->
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section><!-- .comments-area -->
+<script type="text/javascript">
+    var disqus_shortname = 'robinhowlett';
+    var disqus_developer = 0;
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+</section>
+
+        </article>
+        
+        <section class="read-next inner">
+            <h2 class="read-next-title">Read Next</h2>
+            
+            
+            <article class="post">
+                <header class="post-header">
+                    <div class="post-meta">
+                        <time class="published" datetime="January 1, 2015">January 1, 2015</time>
+                    </div>
+                    <h3 class="post-title"><a href="/blog/2015/01/01/building-a-custom-jackson-deserializer/">Building a Custom Jackson Deserializer</a></h3>
+                    <p class="post-tags">
+                        
+                        
+                        
+                        <a href='/tag/java/'>Java</a>
+                        
+                        
+                        
+                        <a href='/tag/jackson/'>Jackson</a>
+                        
+                        
+                        
+                    </p>
+                </header>
+            </article>
+            
+        </section><!-- .read-next -->
+
+        <!-- Create a sorted array of tags -->
+         
+        <section class="tagcloud inner">
+            <h2 class="tagcloud-title">Tags</h2>
+            <div class="tag-links">
+                
+                <a href='http://www.robinhowlett.com/tag/chrome/'>chrome</a>
+                
+                <a href='http://www.robinhowlett.com/tag/dataviz/'>dataviz</a>
+                
+                <a href='http://www.robinhowlett.com/tag/horseracing/'>horseracing</a>
+                
+                <a href='http://www.robinhowlett.com/tag/jackson/'>jackson</a>
+                
+                <a href='http://www.robinhowlett.com/tag/java/'>java</a>
+                
+                <a href='http://www.robinhowlett.com/tag/rest/'>rest</a>
+                
+                <a href='http://www.robinhowlett.com/tag/sankey/'>sankey</a>
+                
+                <a href='http://www.robinhowlett.com/tag/snaplogic/'>snaplogic</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring/'>spring</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring-shell/'>spring-shell</a>
+                
+                <a href='http://www.robinhowlett.com/tag/ssl/'>ssl</a>
+                
+                <a href='http://www.robinhowlett.com/tag/tls/'>tls</a>
+                
+                <a href='http://www.robinhowlett.com/tag/wagering/'>wagering</a>
+                
+            </div><!-- .tag-links -->
+        </section><!-- .tagcloud -->
+
+    </main><!-- .site-main -->
+
+                
+
+                
+                <footer id="colophon" class="site-footer">
+    <p class="site-info inner">
+        <a href="#">The Boy Wonders</a> &copy; 2019. Royce theme by
+        <a target="_blank" href="https://justgoodthemes.com/">JustGoodThemes</a>.
+        <br />
+        Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a>.
+    </p>
+    <a id="back-to-top" class="back-to-top" href="#page">
+        <span class="icon-arrow-up" aria-hidden="true"></span>
+        <span class="screen-reader-text">Back to top</span>
+    </a>
+</footer><!-- .site-footer -->
+            </div><!-- .inner-wide -->
+        </div><!-- .site-content -->
+    </div><!-- .site -->
+
+    
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-35552317-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-35552317-2', { 'anonymize_ip': true });
+  </script>
+
+    <!-- Javascript Assets -->
+    <script src="/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/custom.js"></script>
+
+</body>
+
+</html>
