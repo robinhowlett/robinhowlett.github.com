@@ -9,7 +9,7 @@
     
         <title>Tag Page</title>
         <meta name="description" content="A Blog by Robin Howlett">
-        <link rel="canonical" href="/tag/wagering/">
+        <link rel="canonical" href="/tag/maven/">
     
 
     <!-- Site Favicon -->
@@ -120,53 +120,45 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
                 <main id="main" class="site-main">
     <div class="post-feed inner">
         <header class="page-header">
-            <h1 class="page-title">wagering</h1>
+            <h1 class="page-title">maven</h1>
             <p class="page-description">A collection of 1 post</p>
         </header>
         <div class="post-feed inner-wide">
             <article class="post">
     <header class="post-header">
         <div class="post-meta">
-            <time class="published" datetime="2018-08-12">August 12, 2018</time>
+            <time class="published" datetime="2019-05-15">May 15, 2019</time>
         </div><!-- .post-meta -->
         <h2 class="post-title">
-            <a href="/blog/2018/08/12/visualizing-inefficient-multi-ticket-horizontal-wagering-tickets/" rel="bookmark">Visualizing inefficient multi-ticket horizontal wagering tickets</a>
+            <a href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/" rel="bookmark">Solved: When the Maven Deploy Plugin silently fails to deploy</a>
         </h2>
     </header><!-- .post-header -->
     <div class="post-content">
-        <p><p>Between PPs, result charts, and wagering ticket summaries, the way that horse racing information has been presented to regular fans hasn’t changed very much over the years. In this post, I use data visualizations to try to increase comprehension of advanced wagering advice.</p>
+        <p><p>At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly stopped, well, deploying. What was odd was that no error of any kind was being communicated, even in DEBUG mode.</p>
 
-<p>It was May of 2017 when, deep into the development of <a href="https://www.thoroughbreddailynews.com/getting-from-cease-and-desist-to-come-work-with-us/">Handycapper</a>, I took a break and browsed Twitter.</p>
+<p>Examining the history of the repository, what had changed was the addition of a new module (“slbugs”) to the existing multi-module Maven build. This module’s reposibility was to run some code health checks using Google’s <a href="https://github.com/google/error-prone">error-prone</a> static analysis tool to catch some programming mistakes that our developers occassionally made that had a negative effect at runtime.</p>
 
-<p>I saw a tweet from <a href="https://twitter.com/atTheTrack7">Darin Zoccali (@atTheTrack7)</a> referencing a column he published at DRF.com titled, <a href="https://wcms.weboapps.com/news/zoccali-trust-must-or-your-handicapping-game-bust">“Trust is a must or your handicapping game is a bust”</a> (archive link).</p>
+<p>What was different about this module versus the others was that it did not use the root POM as a parent (as it was sufficiently different from the other more product-focused modules). The other modules were also configured to use the <a href="https://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#deployAtEnd"><code class="highlighter-rouge">deployAtEnd</code></a> parameter of the parent’s <a href="https://maven.apache.org/plugins/maven-deploy-plugin"><code class="highlighter-rouge">maven-deploy-plugin</code></a> plugin configuration.</p>
 
-<p>In this column, Darin explained how a well-known wagering professional, <a href="https://twitter.com/InsideThePylons">@InsideThePylons</a> (ITP), had called out inefficiencies and mistakes in the construction of Pick 4 tickets Darin had posted in late 2016. Darin reported that this advice had helped him wager smarter, increase churn, and win far more when his opinion was correct.</p>
+<p>The problem was that each of the product modules would log that they would be deployed at the end of the build, but after the last module ran its <code class="highlighter-rouge">deploy</code> phase, nothing would happen - no uploading of artifacts would be attempted, no warnings or debug messages logged to explain the inaction, and the build would just end with a SUCCESS status.</p>
 
-<p>Intrigued, I wanted to find this conversation, and, with <a href="https://twitter.com/search?f=tweets&amp;q=from%3AatTheTrack7%20to%3AInsideThePylons%20since%3A2016-12-09%20until%3A2016-12-11&amp;src=typd">a little Twitter Search-fu</a>, I was able to locate the Pick 4 in question.</p>
-
-<p>As I tried to understand the finer points of ticket construction <a href="https://twitter.com/InsideThePylons">@InsideThePylons</a> was making, I remember making a mental note that this kind of feedback would be a great candidate to potentially benefit from data visualizations to aid understanding, for the average racing fan, of the interaction between Darin and ITP.</p>
-
-<p><img src="/assets/images/r9n7-highlight.png" alt="dataviz" /></p>
+<p>The solution turned out to be related to the wonderful world of Maven classloaders.</p>
 
 </p>
-        <p><a href="/blog/2018/08/12/visualizing-inefficient-multi-ticket-horizontal-wagering-tickets/">Read on &rarr;</a></p>
+        <p><a href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">Read on &rarr;</a></p>
         <p class="post-tags">
             
             
             
-            <a href='/tag/dataviz/'>dataviz</a>
+            <a href='/tag/code/'>code</a>
             
             
             
-            <a href='/tag/horseracing/'>horseracing</a>
+            <a href='/tag/maven/'>maven</a>
             
             
             
-            <a href='/tag/wagering/'>wagering</a>
-            
-            
-            
-            <a href='/tag/sankey/'>sankey</a>
+            <a href='/tag/snaplogic/'>snaplogic</a>
             
             
             

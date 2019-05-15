@@ -58,6 +58,18 @@
                     <div class="site-nav-inside">
                     <ul class="menu">
                         
+                        
+                        
+                        <li class="menu-item "><a href="/">Home</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/code/">Code</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/horseracing/">Horse Racing</a></li>
+                        
                     </ul>
                     <p class="social-links">
     
@@ -109,10 +121,50 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
     <div class="post-feed inner">
         <header class="page-header">
             <h1 class="page-title">snaplogic</h1>
-            <p class="page-description">A collection of 2 posts</p>
+            <p class="page-description">A collection of 3 posts</p>
         </header>
         <div class="post-feed inner-wide">
             <article class="post">
+    <header class="post-header">
+        <div class="post-meta">
+            <time class="published" datetime="2019-05-15">May 15, 2019</time>
+        </div><!-- .post-meta -->
+        <h2 class="post-title">
+            <a href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/" rel="bookmark">Solved: When the Maven Deploy Plugin silently fails to deploy</a>
+        </h2>
+    </header><!-- .post-header -->
+    <div class="post-content">
+        <p><p>At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly stopped, well, deploying. What was odd was that no error of any kind was being communicated, even in DEBUG mode.</p>
+
+<p>Examining the history of the repository, what had changed was the addition of a new module (“slbugs”) to the existing multi-module Maven build. This module’s reposibility was to run some code health checks using Google’s <a href="https://github.com/google/error-prone">error-prone</a> static analysis tool to catch some programming mistakes that our developers occassionally made that had a negative effect at runtime.</p>
+
+<p>What was different about this module versus the others was that it did not use the root POM as a parent (as it was sufficiently different from the other more product-focused modules). The other modules were also configured to use the <a href="https://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#deployAtEnd"><code class="highlighter-rouge">deployAtEnd</code></a> parameter of the parent’s <a href="https://maven.apache.org/plugins/maven-deploy-plugin"><code class="highlighter-rouge">maven-deploy-plugin</code></a> plugin configuration.</p>
+
+<p>The problem was that each of the product modules would log that they would be deployed at the end of the build, but after the last module ran its <code class="highlighter-rouge">deploy</code> phase, nothing would happen - no uploading of artifacts would be attempted, no warnings or debug messages logged to explain the inaction, and the build would just end with a SUCCESS status.</p>
+
+<p>The solution turned out to be related to the wonderful world of Maven classloaders.</p>
+
+</p>
+        <p><a href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">Read on &rarr;</a></p>
+        <p class="post-tags">
+            
+            
+            
+            <a href='/tag/code/'>code</a>
+            
+            
+            
+            <a href='/tag/maven/'>maven</a>
+            
+            
+            
+            <a href='/tag/snaplogic/'>snaplogic</a>
+            
+            
+            
+        </p>
+    </div><!-- .post-content -->
+</article><article class="post">
     <header class="post-header">
         <div class="post-meta">
             <time class="published" datetime="2016-11-12">November 12, 2016</time>
@@ -137,6 +189,10 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
 </p>
         <p><a href="/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/">Read on &rarr;</a></p>
         <p class="post-tags">
+            
+            
+            
+            <a href='/tag/code/'>code</a>
             
             
             
@@ -167,6 +223,10 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
 </p>
         <p><a href="/blog/2015/08/06/farewell-sportslabs/">Read on &rarr;</a></p>
         <p class="post-tags">
+            
+            
+            
+            <a href='/tag/career/'>career</a>
             
             
             

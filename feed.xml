@@ -5,9 +5,360 @@
     <description>A Blog by Robin Howlett</description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 14 May 2019 17:21:49 -0600</pubDate>
-    <lastBuildDate>Tue, 14 May 2019 17:21:49 -0600</lastBuildDate>
+    <pubDate>Wed, 15 May 2019 12:59:51 -0600</pubDate>
+    <lastBuildDate>Wed, 15 May 2019 12:59:51 -0600</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Solved: When the Maven Deploy Plugin silently fails to deploy</title>
+        <description>&lt;p&gt;At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly stopped, well, deploying. What was odd was that no error of any kind was being communicated, even in DEBUG mode.&lt;/p&gt;
+
+&lt;p&gt;Examining the history of the repository, what had changed was the addition of a new module (“slbugs”) to the existing multi-module Maven build. This module’s reposibility was to run some code health checks using Google’s &lt;a href=&quot;https://github.com/google/error-prone&quot;&gt;error-prone&lt;/a&gt; static analysis tool to catch some programming mistakes that our developers occassionally made that had a negative effect at runtime.&lt;/p&gt;
+
+&lt;p&gt;What was different about this module versus the others was that it did not use the root POM as a parent (as it was sufficiently different from the other more product-focused modules). The other modules were also configured to use the &lt;a href=&quot;https://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#deployAtEnd&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;deployAtEnd&lt;/code&gt;&lt;/a&gt; parameter of the parent’s &lt;a href=&quot;https://maven.apache.org/plugins/maven-deploy-plugin&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt;&lt;/a&gt; plugin configuration.&lt;/p&gt;
+
+&lt;p&gt;The problem was that each of the product modules would log that they would be deployed at the end of the build, but after the last module ran its &lt;code class=&quot;highlighter-rouge&quot;&gt;deploy&lt;/code&gt; phase, nothing would happen - no uploading of artifacts would be attempted, no warnings or debug messages logged to explain the inaction, and the build would just end with a SUCCESS status.&lt;/p&gt;
+
+&lt;p&gt;The solution turned out to be related to the wonderful world of Maven classloaders.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;p&gt;When the problem was reported and some obvious things had been tried (changing plugin versions etc.), I started to look into it. The first thing I did was create a standalone test that mirrored the basic structure of the multi-module project and chose what I deemed to be the pertinent configurations from the production POMs.&lt;/p&gt;
+
+&lt;p&gt;It looked like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/posts/2019/multi-module-layout.png&quot; alt=&quot;multi-module project layout&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Quite standard as you can see. &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; defines the modules (&lt;code class=&quot;highlighter-rouge&quot;&gt;module-one&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;module-two&lt;/code&gt;), where &lt;code class=&quot;highlighter-rouge&quot;&gt;module-one&lt;/code&gt; does not use &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; as its parent but &lt;code class=&quot;highlighter-rouge&quot;&gt;module-two&lt;/code&gt; does. All dependency and plugin versions are identical, but &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; (and therefore &lt;code class=&quot;highlighter-rouge&quot;&gt;module-two&lt;/code&gt; by inheritence) uses the &lt;code class=&quot;highlighter-rouge&quot;&gt;deployAtEnd&lt;/code&gt; configuration for the &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt;. For running the &lt;code class=&quot;highlighter-rouge&quot;&gt;deploy&lt;/code&gt; phase, I setup a local empty temporary repository via the &lt;code class=&quot;highlighter-rouge&quot;&gt;distributionManagement&lt;/code&gt; definition.&lt;/p&gt;
+
+&lt;p&gt;So, I ran &lt;code class=&quot;highlighter-rouge&quot;&gt;mvn clean deploy&lt;/code&gt; and expected to see the problem reproduced:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;gt; mvn clean deploy
+[MVNVM] Using maven: 3.5.2
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] module-one
+[INFO] pom-root
+[INFO] module-two
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building module-one 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ module-one ---
+[INFO] Deleting /Users/rhowlett/dev/tmp/pom-root/module-one/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ module-one ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-one/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ module-one ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-one/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ module-one ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-one/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ module-one ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-one/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ module-one ---
+[INFO] Surefire report directory: /Users/rhowlett/dev/tmp/pom-root/module-one/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.snaplogic.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ module-one ---
+[INFO] Building jar: /Users/rhowlett/dev/tmp/pom-root/module-one/target/module-one-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ module-one ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-one/target/module-one-1.0-SNAPSHOT.jar to /Users/rhowlett/.m2/repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-one/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-one ---
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.jar
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.jar (2.4 kB at 237 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.pom (1.4 kB at 702 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml (767 B at 192 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml (281 B at 94 kB/s)
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building pom-root 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ pom-root ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ pom-root ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ pom-root ---
+[INFO] Deploying com.snaplogic:pom-root:1.0-SNAPSHOT at end
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building module-two 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ module-two ---
+[INFO] Deleting /Users/rhowlett/dev/tmp/pom-root/module-two/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ module-two ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-two/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ module-two ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-two/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ module-two ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-two/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ module-two ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-two/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ module-two ---
+[INFO] Surefire report directory: /Users/rhowlett/dev/tmp/pom-root/module-two/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.snaplogic.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ module-two ---
+[INFO] Building jar: /Users/rhowlett/dev/tmp/pom-root/module-two/target/module-two-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ module-two ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-two/target/module-two-1.0-SNAPSHOT.jar to /Users/rhowlett/.m2/repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-two/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-two ---
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-20190515.171609-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-20190515.171609-1.pom (1.8 kB at 602 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml (594 B at 119 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml (279 B at 70 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.jar
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.jar (2.1 kB at 710 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.pom (533 B at 178 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml (767 B at 256 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml (281 B at 94 kB/s)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] module-one ......................................... SUCCESS [  2.970 s]
+[INFO] pom-root ........................................... SUCCESS [  0.131 s]
+[INFO] module-two ......................................... SUCCESS [  0.652 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.905 s
+[INFO] Finished at: 2019-05-15T11:16:10-06:00
+[INFO] Final Memory: 19M/309M
+[INFO] ------------------------------------------------------------------------
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Odd. The deployment happened perfectly. Then why wasn’t it happening with the production build?&lt;/p&gt;
+
+&lt;p&gt;I decided to debug. I added &lt;a href=&quot;https://github.com/apache/maven-deploy-plugin/releases/tag/maven-deploy-plugin-2.8.2&quot;&gt;the source for version 2.8.2&lt;/a&gt; of the &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt; to my IDE and ran the same command except this time with &lt;code class=&quot;highlighter-rouge&quot;&gt;mvnDebug&lt;/code&gt; and &lt;a href=&quot;https://stackoverflow.com/a/14853683/277133&quot;&gt;a Remote Debug configuration setup&lt;/a&gt;. I put a breakpoint &lt;a href=&quot;https://github.com/apache/maven-deploy-plugin/blob/maven-deploy-plugin-2.8.2/src/main/java/org/apache/maven/plugin/deploy/DeployMojo.java#L152&quot;&gt;in the &lt;code class=&quot;highlighter-rouge&quot;&gt;execute()&lt;/code&gt; method of the &lt;code class=&quot;highlighter-rouge&quot;&gt;DeployMojo&lt;/code&gt; class&lt;/a&gt; and hoped to see what was causing the deployment not to be executed:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * When building with multiple threads, reaching the last project doesn't have to mean that all projects are ready
+ * to be deployed
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;readyProjectsCounter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    
+&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;execute&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MojoExecutionException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MojoFailureException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addedDeployRequest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;skip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;getLog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Skipping artifact deployment&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;failIfOffline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;DeployRequest&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentExecutionDeployRequest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;DeployRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setUpdateReleaseInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isUpdateReleaseInfo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setRetryFailedDeploymentCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getRetryFailedDeploymentCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setAltReleaseDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;altReleaseDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setAltSnapshotDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;altSnapshotDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setAltDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;altDeploymentRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deployAtEnd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;deployProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;currentExecutionDeployRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;deployRequests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;currentExecutionDeployRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;addedDeployRequest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;projectsReady&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;readyProjectsCounter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;incrementAndGet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reactorProjects&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;projectsReady&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deployRequests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deployRequests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isEmpty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;deployProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deployRequests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addedDeployRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;getLog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Deploying &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getGroupId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;:&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getArtifactId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;:&quot;&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getVersion&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; at end&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It looked clear that the &lt;code class=&quot;highlighter-rouge&quot;&gt;projectsReady&lt;/code&gt; boolean would be key. Its value was determined by the equality of a static &lt;code class=&quot;highlighter-rouge&quot;&gt;AtomicInteger&lt;/code&gt; called &lt;code class=&quot;highlighter-rouge&quot;&gt;readyProjectsCounter&lt;/code&gt; and the size of the &lt;code class=&quot;highlighter-rouge&quot;&gt;reactorProjects&lt;/code&gt; collection. The only way for the build to log that it was going to deploy at the end and then not deploy the final module, would be if the &lt;code class=&quot;highlighter-rouge&quot;&gt;readyProjectsCounter&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;reactorProjects&lt;/code&gt; size had some kind of off-by-X error. Indeed, the debugger showed that, for the production build, &lt;code class=&quot;highlighter-rouge&quot;&gt;readyProjectsCounter&lt;/code&gt; was one less than the collection size. But what would cause that?&lt;/p&gt;
+
+&lt;p&gt;I dived into the debug logs of the production build to try to see if I could identify anything of note. After trying quite a few different things, something caught my eye.&lt;/p&gt;
+
+&lt;p&gt;When “slbugs” was running its &lt;code class=&quot;highlighter-rouge&quot;&gt;deploy&lt;/code&gt; phase with the &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt;, it logged:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEBUG] Created new class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG] Importing foreign packages into class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG]   Imported:  &amp;lt; maven.api
+[DEBUG] Populating class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG]   Included: org.apache.maven.plugins:maven-deploy-plugin:jar:2.8.2
+[DEBUG]   Included: backport-util-concurrent:backport-util-concurrent:jar:3.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.11
+[DEBUG]   Included: junit:junit:jar:3.8.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.15
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy from plugin realm ClassRealm[plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2, parent: sun.misc.Launcher$AppClassLoader@3d4eac69]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When the parent POM was running, this was logged:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEBUG] Created new class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG] Importing foreign packages into class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG]   Imported:  &amp;lt; maven.api
+[DEBUG] Populating class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG]   Included: org.apache.maven.plugins:maven-deploy-plugin:jar:2.8.2
+[DEBUG]   Included: backport-util-concurrent:backport-util-concurrent:jar:3.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.11
+[DEBUG]   Included: junit:junit:jar:3.8.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.15
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy from plugin realm ClassRealm[plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130, parent: sun.misc.Launcher$AppClassLoader@3d4eac69]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This &lt;code class=&quot;highlighter-rouge&quot;&gt;-932771130&lt;/code&gt; suffix was strange. When I turned on debug logging for &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; by running &lt;code class=&quot;highlighter-rouge&quot;&gt;mvn -X clean deploy&lt;/code&gt;, I saw no such recreation of a “class realm”. In fact, every plugin was “initialized” once.&lt;/p&gt;
+
+&lt;p&gt;But in the production build, many plugins (&lt;code class=&quot;highlighter-rouge&quot;&gt;maven-install-plugin&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-resources-plugin&lt;/code&gt; etc.), all seem to have been “recreated” when the build moved on to the root pom (after the initial “slbugs” module had been deployed). What was triggering that? I started to consume some articles from the web, including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://maven.apache.org/guides/mini/guide-maven-classloading.html&quot;&gt;The official “Guide to Maven Classloading”&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.semsur-it.com/2011/11/java-class-loader-and-maven-plugin.html&quot;&gt;Semsur IT’s “Java class loader and Maven plugin”&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://takari.io/book/91-maven-classloading.html&quot;&gt;takari’s “Maven classloading”&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.chalda.cz/2018/02/17/Maven-plugin-and-fight-with-classloading.html#_class_loading_troubles&quot;&gt;chalda’s “Maven plugin and fight with classloading”&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I’ll admit that I was a bit puzzled. Neither build had any custom extensions defined, but I started focusing on whether there was anything non-standard defined in the production build POM, looking at things like &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;properties&amp;gt;&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;build&amp;gt;&lt;/code&gt;, or anything around &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;plugins&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Sure enough, I noticed the following:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;pluginRepositories&amp;gt;
+    &amp;lt;pluginRepository&amp;gt;
+        &amp;lt;id&amp;gt;apache.snapshots&amp;lt;/id&amp;gt;
+        &amp;lt;name&amp;gt;Apache Snapshots&amp;lt;/name&amp;gt;
+        &amp;lt;url&amp;gt;http://repository.apache.org/content/groups/snapshots-group/&amp;lt;/url&amp;gt;
+        &amp;lt;releases&amp;gt;
+            &amp;lt;enabled&amp;gt;true&amp;lt;/enabled&amp;gt;
+        &amp;lt;/releases&amp;gt;
+        &amp;lt;snapshots&amp;gt;
+            &amp;lt;enabled&amp;gt;true&amp;lt;/enabled&amp;gt;
+        &amp;lt;/snapshots&amp;gt;
+    &amp;lt;/pluginRepository&amp;gt;
+&amp;lt;/pluginRepositories&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This was added many years ago to the build, probably to avail of some SNAPSHOT-versioned plugin. So I decided to replicate this in the standalone test’s &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt;’s pom.xml by adding the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;pluginRepositories&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;pluginRepository&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;id&amp;gt;&lt;/span&gt;temp.repo&lt;span class=&quot;nt&quot;&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Temp Repo&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;url&amp;gt;&lt;/span&gt;file://${user.home}/.m2/temp-repository&lt;span class=&quot;nt&quot;&gt;&amp;lt;/url&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/pluginRepository&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/pluginRepositories&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I re-ran the build and I finally I had reproduced the problem (the non-deployment of &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;module-two&lt;/code&gt;):&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;...
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-two ---
+[INFO] Deploying com.snaplogic:module-two:1.0-SNAPSHOT at end
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] module-one ......................................... SUCCESS [  3.477 s]
+[INFO] pom-root ........................................... SUCCESS [  0.228 s]
+[INFO] module-two ......................................... SUCCESS [  1.446 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 5.308 s
+[INFO] Finished at: 2019-05-15T12:10:55-06:00
+[INFO] Final Memory: 24M/437M
+[INFO] ------------------------------------------------------------------------
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Similarly, the debug log shows the two initializations of the &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[DEBUG] Created new class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+...
+[DEBUG] Created new class realm plugin&amp;gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-1119294797
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So, the addition of the new module (“slbugs”) in our production build (that didn’t define a &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;pluginRespositories&amp;gt;&lt;/code&gt; and didn’t use the root POM as its parent), created a new context that resulted in new classloaders being used when the root POM (and its child modules) executed. This caused the &lt;code class=&quot;highlighter-rouge&quot;&gt;maven-deploy-plugin&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;readyProjectsCounter&lt;/code&gt; static &lt;code class=&quot;highlighter-rouge&quot;&gt;AtomicInteger&lt;/code&gt; to start once again from &lt;code class=&quot;highlighter-rouge&quot;&gt;0&lt;/code&gt; (instead of &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt; as it should have been incremented when the first module was deployed), resulting in the off-by-one error when compared to the count of the reactor module (which wasn’t static), meaning the parent and child modules never meeting the condition that would trigger the deployment.&lt;/p&gt;
+
+&lt;p&gt;As for resolving this, I found that if both &lt;code class=&quot;highlighter-rouge&quot;&gt;pom-root&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;module-one&lt;/code&gt; “matched” when it came to defining the &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;pluginRepositories&amp;gt;&lt;/code&gt;, then the deployment would work; meaning:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;if neither defined it, the deployment worked&lt;/li&gt;
+  &lt;li&gt;if both defined it, the deployment worked (however the &lt;code class=&quot;highlighter-rouge&quot;&gt;pluginRepository&lt;/code&gt;’s &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;url&lt;/code&gt;s must be the same)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The standalone project I created to demonstrate this is available on GitHub here: https://github.com/robinhowlett/maven-deploy-plugin-gotcha&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/robinhowlett/maven-deploy-plugin-gotcha/tree/master&quot;&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;master&lt;/code&gt; branch&lt;/a&gt; represents the non-working deployment, and &lt;a href=&quot;https://github.com/robinhowlett/maven-deploy-plugin-gotcha/tree/fix&quot;&gt;the &lt;code class=&quot;highlighter-rouge&quot;&gt;fix&lt;/code&gt; branch&lt;/a&gt; represents the working example (with the &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;pluginRepositories&amp;gt;&lt;/code&gt; &lt;a href=&quot;https://github.com/robinhowlett/maven-deploy-plugin-gotcha/compare/fix?expand=1#diff-600376dffeb79835ede4a0b285078036&quot;&gt;removed from the root POM&lt;/a&gt;).&lt;/p&gt;
+</description>
+        <pubDate>Wed, 15 May 2019 00:00:00 -0600</pubDate>
+        <link>/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/</link>
+        <guid isPermaLink="true">/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/</guid>
+        
+        <category>code</category>
+        
+        <category>maven</category>
+        
+        <category>snaplogic</category>
+        
+        
+      </item>
     
       <item>
         <title>Visualizing inefficient multi-ticket horizontal wagering tickets</title>
@@ -493,6 +844,8 @@
         <pubDate>Sat, 12 Nov 2016 00:27:43 -0700</pubDate>
         <link>/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/</link>
         <guid isPermaLink="true">/blog/2016/11/12/building-a-google-chrome-extension-including-keyboard-shortcuts-and-copying-to-the-clipboard/</guid>
+        
+        <category>code</category>
         
         <category>chrome</category>
         
@@ -2305,6 +2658,8 @@ public class ITEverythingSSL {&lt;/p&gt;
         <link>/blog/2016/01/05/everything-you-ever-wanted-to-know-about-ssl-but-were-afraid-to-ask/</link>
         <guid isPermaLink="true">/blog/2016/01/05/everything-you-ever-wanted-to-know-about-ssl-but-were-afraid-to-ask/</guid>
         
+        <category>code</category>
+        
         <category>ssl</category>
         
         <category>tls</category>
@@ -2385,6 +2740,8 @@ public class ITEverythingSSL {&lt;/p&gt;
         <pubDate>Thu, 06 Aug 2015 22:13:17 -0600</pubDate>
         <link>/blog/2015/08/06/farewell-sportslabs/</link>
         <guid isPermaLink="true">/blog/2015/08/06/farewell-sportslabs/</guid>
+        
+        <category>career</category>
         
         <category>snaplogic</category>
         
@@ -2497,6 +2854,8 @@ It also aids us when integrating with new data providers lacking documentation, 
         <link>/blog/2015/04/26/spring-social-bootstrap-create-rest-api-sdks-and-clis-that-can-record-and-replay-http-requests/</link>
         <guid isPermaLink="true">/blog/2015/04/26/spring-social-bootstrap-create-rest-api-sdks-and-clis-that-can-record-and-replay-http-requests/</guid>
         
+        <category>code</category>
+        
         <category>spring</category>
         
         
@@ -2605,6 +2964,8 @@ public @interface CliStepIndicator {
         <link>/blog/2015/03/19/supporting-multi-step-commands-with-spring-shell/</link>
         <guid isPermaLink="true">/blog/2015/03/19/supporting-multi-step-commands-with-spring-shell/</guid>
         
+        <category>code</category>
+        
         <category>spring-shell</category>
         
         
@@ -2639,6 +3000,8 @@ public @interface CliStepIndicator {
         <pubDate>Thu, 19 Mar 2015 13:58:12 -0600</pubDate>
         <link>/blog/2015/03/19/adding-java-config-support-to-spring-shell/</link>
         <guid isPermaLink="true">/blog/2015/03/19/adding-java-config-support-to-spring-shell/</guid>
+        
+        <category>code</category>
         
         <category>java</category>
         
@@ -2713,6 +3076,8 @@ public @interface CliStepIndicator {
         <link>/blog/2015/03/19/custom-jackson-polymorphic-deserialization-without-type-metadata/</link>
         <guid isPermaLink="true">/blog/2015/03/19/custom-jackson-polymorphic-deserialization-without-type-metadata/</guid>
         
+        <category>code</category>
+        
         <category>jackson</category>
         
         
@@ -2768,6 +3133,8 @@ public @interface CliStepIndicator {
         <pubDate>Thu, 01 Jan 2015 21:35:31 -0700</pubDate>
         <link>/blog/2015/01/01/building-a-custom-jackson-deserializer/</link>
         <guid isPermaLink="true">/blog/2015/01/01/building-a-custom-jackson-deserializer/</guid>
+        
+        <category>code</category>
         
         <category>java</category>
         
@@ -3510,6 +3877,8 @@ INFO : org.springframework.web.context.support.AnnotationConfigWebApplicationCon
         <pubDate>Wed, 13 Feb 2013 10:46:00 -0700</pubDate>
         <link>/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/</link>
         <guid isPermaLink="true">/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/</guid>
+        
+        <category>code</category>
         
         <category>java</category>
         

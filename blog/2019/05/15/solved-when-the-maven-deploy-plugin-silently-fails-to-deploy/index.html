@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+        <title>Solved: When the Maven Deploy Plugin silently fails to deploy</title>
+        <meta name="description" content="At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly...">
+        <link rel="canonical" href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">
+    
+
+    <!-- Site Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/png" />
+
+    <!-- Font Embed Code -->
+	<link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i|Karla:400,400i,700,700i" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+</head>
+
+
+
+<body class="layout-post">
+    <div id="page" class="site">
+        <header id="masthead" class="site-header">
+    <div class="site-header-wrap">
+        <div class="site-header-inside">
+
+            <div class="site-branding">
+                
+                <p class="profile">
+                    <a href="/">
+                        <img src="/assets/images/authorimage_robin-gravatar.png" alt="'s Picture"
+                            class="avatar" />
+                    </a>
+                </p>
+                <div class="site-identity">
+                    
+                    <h1 class="site-title">
+                        <a href="/">The Boy Wonders</a>
+                    </h1>
+                    
+                    
+                    <p class="site-description">A Blog by Robin Howlett</p>
+                    
+                </div><!-- .site-identity -->
+                
+                <button id="menu-toggle" class="menu-toggle"><span class="screen-reader-text">Main Menu</span><span
+                        class="icon-menu" aria-hidden="true"></span></button>
+            </div><!-- .site-branding -->
+
+            <nav id="main-navigation" class="site-navigation" aria-label="Main Navigation">
+                <div class="site-nav-wrap">
+                    <div class="site-nav-inside">
+                    <ul class="menu">
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/">Home</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/code/">Code</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/horseracing/">Horse Racing</a></li>
+                        
+                    </ul>
+                    <p class="social-links">
+    
+    <a href="https://twitter.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    <a href="https://github.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+</p>
+                    </div><!-- .site-nav-inside -->
+                </div><!-- .site-nav-wrap -->
+            </nav><!-- .site-navigation -->
+
+        </div><!-- .site-header-inside -->
+    </div><!-- .site-header-wrap -->
+</header><!-- .site-header -->
+        <div id="content" class="site-content fadeInDown delay_075s">
+            <div class="inner-wide">
+                    <main id="main" class="site-main">
+    
+        <article class="post-full inner">
+
+            <header class="post-header">
+                <div class="post-meta">
+                    <time class="post-date" datetime="2019-05-15">May 15,
+                        2019</time>
+                </div><!-- .post-meta -->
+                <h1 class="post-title">Solved: When the Maven Deploy Plugin silently fails to deploy</h1>
+                
+                <div class="post-tags">
+                     
+                    <a href='tag/code/'>code</a>
+                    
+                     
+                    <a href='tag/maven/'>maven</a>
+                    
+                     
+                    <a href='tag/snaplogic/'>snaplogic</a>
+                    
+                    
+                </div>
+                
+            </header><!-- .post-header -->
+
+            
+            <div class="post-content">
+                <p>At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly stopped, well, deploying. What was odd was that no error of any kind was being communicated, even in DEBUG mode.</p>
+
+<p>Examining the history of the repository, what had changed was the addition of a new module (“slbugs”) to the existing multi-module Maven build. This module’s reposibility was to run some code health checks using Google’s <a href="https://github.com/google/error-prone">error-prone</a> static analysis tool to catch some programming mistakes that our developers occassionally made that had a negative effect at runtime.</p>
+
+<p>What was different about this module versus the others was that it did not use the root POM as a parent (as it was sufficiently different from the other more product-focused modules). The other modules were also configured to use the <a href="https://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html#deployAtEnd"><code class="highlighter-rouge">deployAtEnd</code></a> parameter of the parent’s <a href="https://maven.apache.org/plugins/maven-deploy-plugin"><code class="highlighter-rouge">maven-deploy-plugin</code></a> plugin configuration.</p>
+
+<p>The problem was that each of the product modules would log that they would be deployed at the end of the build, but after the last module ran its <code class="highlighter-rouge">deploy</code> phase, nothing would happen - no uploading of artifacts would be attempted, no warnings or debug messages logged to explain the inaction, and the build would just end with a SUCCESS status.</p>
+
+<p>The solution turned out to be related to the wonderful world of Maven classloaders.</p>
+
+<!-- more -->
+
+<p>When the problem was reported and some obvious things had been tried (changing plugin versions etc.), I started to look into it. The first thing I did was create a standalone test that mirrored the basic structure of the multi-module project and chose what I deemed to be the pertinent configurations from the production POMs.</p>
+
+<p>It looked like this:</p>
+
+<p><img src="/assets/images/posts/2019/multi-module-layout.png" alt="multi-module project layout" /></p>
+
+<p>Quite standard as you can see. <code class="highlighter-rouge">pom-root</code> defines the modules (<code class="highlighter-rouge">module-one</code> and <code class="highlighter-rouge">module-two</code>), where <code class="highlighter-rouge">module-one</code> does not use <code class="highlighter-rouge">pom-root</code> as its parent but <code class="highlighter-rouge">module-two</code> does. All dependency and plugin versions are identical, but <code class="highlighter-rouge">pom-root</code> (and therefore <code class="highlighter-rouge">module-two</code> by inheritence) uses the <code class="highlighter-rouge">deployAtEnd</code> configuration for the <code class="highlighter-rouge">maven-deploy-plugin</code>. For running the <code class="highlighter-rouge">deploy</code> phase, I setup a local empty temporary repository via the <code class="highlighter-rouge">distributionManagement</code> definition.</p>
+
+<p>So, I ran <code class="highlighter-rouge">mvn clean deploy</code> and expected to see the problem reproduced:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; mvn clean deploy
+[MVNVM] Using maven: 3.5.2
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] module-one
+[INFO] pom-root
+[INFO] module-two
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building module-one 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ module-one ---
+[INFO] Deleting /Users/rhowlett/dev/tmp/pom-root/module-one/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ module-one ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-one/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ module-one ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-one/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ module-one ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-one/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ module-one ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-one/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ module-one ---
+[INFO] Surefire report directory: /Users/rhowlett/dev/tmp/pom-root/module-one/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.snaplogic.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ module-one ---
+[INFO] Building jar: /Users/rhowlett/dev/tmp/pom-root/module-one/target/module-one-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ module-one ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-one/target/module-one-1.0-SNAPSHOT.jar to /Users/rhowlett/.m2/repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-one/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-one ---
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.jar
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.jar (2.4 kB at 237 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/module-one-1.0-20190515.171609-1.pom (1.4 kB at 702 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/1.0-SNAPSHOT/maven-metadata.xml (767 B at 192 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-one/maven-metadata.xml (281 B at 94 kB/s)
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building pom-root 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ pom-root ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ pom-root ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ pom-root ---
+[INFO] Deploying com.snaplogic:pom-root:1.0-SNAPSHOT at end
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building module-two 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ module-two ---
+[INFO] Deleting /Users/rhowlett/dev/tmp/pom-root/module-two/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ module-two ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-two/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ module-two ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-two/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ module-two ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/rhowlett/dev/tmp/pom-root/module-two/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ module-two ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /Users/rhowlett/dev/tmp/pom-root/module-two/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ module-two ---
+[INFO] Surefire report directory: /Users/rhowlett/dev/tmp/pom-root/module-two/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.snaplogic.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ module-two ---
+[INFO] Building jar: /Users/rhowlett/dev/tmp/pom-root/module-two/target/module-two-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.4:install (default-install) @ module-two ---
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-two/target/module-two-1.0-SNAPSHOT.jar to /Users/rhowlett/.m2/repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/rhowlett/dev/tmp/pom-root/module-two/pom.xml to /Users/rhowlett/.m2/repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-two ---
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-20190515.171609-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/pom-root-1.0-20190515.171609-1.pom (1.8 kB at 602 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/1.0-SNAPSHOT/maven-metadata.xml (594 B at 119 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/pom-root/maven-metadata.xml (279 B at 70 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.jar
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.jar (2.1 kB at 710 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.pom
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/module-two-1.0-20190515.171610-1.pom (533 B at 178 kB/s)
+Downloading from dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/1.0-SNAPSHOT/maven-metadata.xml (767 B at 256 kB/s)
+Uploading to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml
+Uploaded to dev: file:///Users/rhowlett/.m2/temp-repository/com/snaplogic/module-two/maven-metadata.xml (281 B at 94 kB/s)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] module-one ......................................... SUCCESS [  2.970 s]
+[INFO] pom-root ........................................... SUCCESS [  0.131 s]
+[INFO] module-two ......................................... SUCCESS [  0.652 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.905 s
+[INFO] Finished at: 2019-05-15T11:16:10-06:00
+[INFO] Final Memory: 19M/309M
+[INFO] ------------------------------------------------------------------------
+</code></pre></div></div>
+
+<p>Odd. The deployment happened perfectly. Then why wasn’t it happening with the production build?</p>
+
+<p>I decided to debug. I added <a href="https://github.com/apache/maven-deploy-plugin/releases/tag/maven-deploy-plugin-2.8.2">the source for version 2.8.2</a> of the <code class="highlighter-rouge">maven-deploy-plugin</code> to my IDE and ran the same command except this time with <code class="highlighter-rouge">mvnDebug</code> and <a href="https://stackoverflow.com/a/14853683/277133">a Remote Debug configuration setup</a>. I put a breakpoint <a href="https://github.com/apache/maven-deploy-plugin/blob/maven-deploy-plugin-2.8.2/src/main/java/org/apache/maven/plugin/deploy/DeployMojo.java#L152">in the <code class="highlighter-rouge">execute()</code> method of the <code class="highlighter-rouge">DeployMojo</code> class</a> and hoped to see what was causing the deployment not to be executed:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * When building with multiple threads, reaching the last project doesn't have to mean that all projects are ready
+ * to be deployed
+ */</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">readyProjectsCounter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">();</span>
+    
+<span class="o">...</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span>
+        <span class="kd">throws</span> <span class="n">MojoExecutionException</span><span class="o">,</span> <span class="n">MojoFailureException</span> <span class="o">{</span>
+    <span class="kt">boolean</span> <span class="n">addedDeployRequest</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">skip</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">getLog</span><span class="o">().</span><span class="na">info</span><span class="o">(</span><span class="s">"Skipping artifact deployment"</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">failIfOffline</span><span class="o">();</span>
+
+        <span class="n">DeployRequest</span> <span class="n">currentExecutionDeployRequest</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="nf">DeployRequest</span><span class="o">().</span><span class="na">setProject</span><span class="o">(</span><span class="n">project</span><span class="o">).</span><span class="na">setUpdateReleaseInfo</span><span class="o">(</span><span class="n">isUpdateReleaseInfo</span><span class="o">()).</span><span class="na">setRetryFailedDeploymentCount</span><span class="o">(</span><span class="n">getRetryFailedDeploymentCount</span><span class="o">()).</span><span class="na">setAltReleaseDeploymentRepository</span><span class="o">(</span><span class="n">altReleaseDeploymentRepository</span><span class="o">).</span><span class="na">setAltSnapshotDeploymentRepository</span><span class="o">(</span><span class="n">altSnapshotDeploymentRepository</span><span class="o">).</span><span class="na">setAltDeploymentRepository</span><span class="o">(</span><span class="n">altDeploymentRepository</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">deployAtEnd</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">deployProject</span><span class="o">(</span><span class="n">currentExecutionDeployRequest</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">deployRequests</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">currentExecutionDeployRequest</span><span class="o">);</span>
+            <span class="n">addedDeployRequest</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kt">boolean</span> <span class="n">projectsReady</span> <span class="o">=</span> <span class="n">readyProjectsCounter</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">()</span> <span class="o">==</span> <span class="n">reactorProjects</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">projectsReady</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">deployRequests</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">(!</span><span class="n">deployRequests</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">deployProject</span><span class="o">(</span><span class="n">deployRequests</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">addedDeployRequest</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">getLog</span><span class="o">().</span><span class="na">info</span><span class="o">(</span><span class="s">"Deploying "</span> <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="na">getGroupId</span><span class="o">()</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="na">getArtifactId</span><span class="o">()</span> <span class="o">+</span> <span class="s">":"</span>
+                <span class="o">+</span> <span class="n">project</span><span class="o">.</span><span class="na">getVersion</span><span class="o">()</span> <span class="o">+</span> <span class="s">" at end"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>It looked clear that the <code class="highlighter-rouge">projectsReady</code> boolean would be key. Its value was determined by the equality of a static <code class="highlighter-rouge">AtomicInteger</code> called <code class="highlighter-rouge">readyProjectsCounter</code> and the size of the <code class="highlighter-rouge">reactorProjects</code> collection. The only way for the build to log that it was going to deploy at the end and then not deploy the final module, would be if the <code class="highlighter-rouge">readyProjectsCounter</code> and <code class="highlighter-rouge">reactorProjects</code> size had some kind of off-by-X error. Indeed, the debugger showed that, for the production build, <code class="highlighter-rouge">readyProjectsCounter</code> was one less than the collection size. But what would cause that?</p>
+
+<p>I dived into the debug logs of the production build to try to see if I could identify anything of note. After trying quite a few different things, something caught my eye.</p>
+
+<p>When “slbugs” was running its <code class="highlighter-rouge">deploy</code> phase with the <code class="highlighter-rouge">maven-deploy-plugin</code>, it logged:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[DEBUG] Created new class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG] Importing foreign packages into class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG]   Imported:  &lt; maven.api
+[DEBUG] Populating class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+[DEBUG]   Included: org.apache.maven.plugins:maven-deploy-plugin:jar:2.8.2
+[DEBUG]   Included: backport-util-concurrent:backport-util-concurrent:jar:3.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.11
+[DEBUG]   Included: junit:junit:jar:3.8.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.15
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy from plugin realm ClassRealm[plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2, parent: sun.misc.Launcher$AppClassLoader@3d4eac69]
+</code></pre></div></div>
+
+<p>When the parent POM was running, this was logged:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[DEBUG] Created new class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG] Importing foreign packages into class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG]   Imported:  &lt; maven.api
+[DEBUG] Populating class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130
+[DEBUG]   Included: org.apache.maven.plugins:maven-deploy-plugin:jar:2.8.2
+[DEBUG]   Included: backport-util-concurrent:backport-util-concurrent:jar:3.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.11
+[DEBUG]   Included: junit:junit:jar:3.8.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.0.15
+[DEBUG] Configuring mojo org.apache.maven.plugins:maven-deploy-plugin:2.8.2:deploy from plugin realm ClassRealm[plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-932771130, parent: sun.misc.Launcher$AppClassLoader@3d4eac69]
+</code></pre></div></div>
+
+<p>This <code class="highlighter-rouge">-932771130</code> suffix was strange. When I turned on debug logging for <code class="highlighter-rouge">pom-root</code> by running <code class="highlighter-rouge">mvn -X clean deploy</code>, I saw no such recreation of a “class realm”. In fact, every plugin was “initialized” once.</p>
+
+<p>But in the production build, many plugins (<code class="highlighter-rouge">maven-install-plugin</code>, <code class="highlighter-rouge">maven-resources-plugin</code> etc.), all seem to have been “recreated” when the build moved on to the root pom (after the initial “slbugs” module had been deployed). What was triggering that? I started to consume some articles from the web, including:</p>
+
+<ul>
+  <li><a href="https://maven.apache.org/guides/mini/guide-maven-classloading.html">The official “Guide to Maven Classloading”</a></li>
+  <li><a href="http://blog.semsur-it.com/2011/11/java-class-loader-and-maven-plugin.html">Semsur IT’s “Java class loader and Maven plugin”</a></li>
+  <li><a href="http://takari.io/book/91-maven-classloading.html">takari’s “Maven classloading”</a></li>
+  <li><a href="http://blog.chalda.cz/2018/02/17/Maven-plugin-and-fight-with-classloading.html#_class_loading_troubles">chalda’s “Maven plugin and fight with classloading”</a></li>
+</ul>
+
+<p>I’ll admit that I was a bit puzzled. Neither build had any custom extensions defined, but I started focusing on whether there was anything non-standard defined in the production build POM, looking at things like <code class="highlighter-rouge">&lt;properties&gt;</code>, <code class="highlighter-rouge">&lt;build&gt;</code>, or anything around <code class="highlighter-rouge">&lt;plugins&gt;</code>.</p>
+
+<p>Sure enough, I noticed the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;pluginRepositories&gt;
+    &lt;pluginRepository&gt;
+        &lt;id&gt;apache.snapshots&lt;/id&gt;
+        &lt;name&gt;Apache Snapshots&lt;/name&gt;
+        &lt;url&gt;http://repository.apache.org/content/groups/snapshots-group/&lt;/url&gt;
+        &lt;releases&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+        &lt;/releases&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+    &lt;/pluginRepository&gt;
+&lt;/pluginRepositories&gt;
+</code></pre></div></div>
+
+<p>This was added many years ago to the build, probably to avail of some SNAPSHOT-versioned plugin. So I decided to replicate this in the standalone test’s <code class="highlighter-rouge">pom-root</code>’s pom.xml by adding the following:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;pluginRepositories&gt;</span>
+    <span class="nt">&lt;pluginRepository&gt;</span>
+        <span class="nt">&lt;id&gt;</span>temp.repo<span class="nt">&lt;/id&gt;</span>
+        <span class="nt">&lt;name&gt;</span>Temp Repo<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;url&gt;</span>file://${user.home}/.m2/temp-repository<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;/pluginRepository&gt;</span>
+<span class="nt">&lt;/pluginRepositories&gt;</span>
+</code></pre></div></div>
+
+<p>I re-ran the build and I finally I had reproduced the problem (the non-deployment of <code class="highlighter-rouge">pom-root</code> and <code class="highlighter-rouge">module-two</code>):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+[INFO] --- maven-deploy-plugin:2.8.2:deploy (default-deploy) @ module-two ---
+[INFO] Deploying com.snaplogic:module-two:1.0-SNAPSHOT at end
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] module-one ......................................... SUCCESS [  3.477 s]
+[INFO] pom-root ........................................... SUCCESS [  0.228 s]
+[INFO] module-two ......................................... SUCCESS [  1.446 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 5.308 s
+[INFO] Finished at: 2019-05-15T12:10:55-06:00
+[INFO] Final Memory: 24M/437M
+[INFO] ------------------------------------------------------------------------
+</code></pre></div></div>
+
+<p>Similarly, the debug log shows the two initializations of the <code class="highlighter-rouge">maven-deploy-plugin</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[DEBUG] Created new class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2
+...
+[DEBUG] Created new class realm plugin&gt;org.apache.maven.plugins:maven-deploy-plugin:2.8.2-1119294797
+</code></pre></div></div>
+
+<p>So, the addition of the new module (“slbugs”) in our production build (that didn’t define a <code class="highlighter-rouge">&lt;pluginRespositories&gt;</code> and didn’t use the root POM as its parent), created a new context that resulted in new classloaders being used when the root POM (and its child modules) executed. This caused the <code class="highlighter-rouge">maven-deploy-plugin</code>’s <code class="highlighter-rouge">readyProjectsCounter</code> static <code class="highlighter-rouge">AtomicInteger</code> to start once again from <code class="highlighter-rouge">0</code> (instead of <code class="highlighter-rouge">1</code> as it should have been incremented when the first module was deployed), resulting in the off-by-one error when compared to the count of the reactor module (which wasn’t static), meaning the parent and child modules never meeting the condition that would trigger the deployment.</p>
+
+<p>As for resolving this, I found that if both <code class="highlighter-rouge">pom-root</code> and <code class="highlighter-rouge">module-one</code> “matched” when it came to defining the <code class="highlighter-rouge">&lt;pluginRepositories&gt;</code>, then the deployment would work; meaning:</p>
+
+<ul>
+  <li>if neither defined it, the deployment worked</li>
+  <li>if both defined it, the deployment worked (however the <code class="highlighter-rouge">pluginRepository</code>’s <code class="highlighter-rouge">id</code> and <code class="highlighter-rouge">url</code>s must be the same)</li>
+</ul>
+
+<p>The standalone project I created to demonstrate this is available on GitHub here: https://github.com/robinhowlett/maven-deploy-plugin-gotcha</p>
+
+<p><a href="https://github.com/robinhowlett/maven-deploy-plugin-gotcha/tree/master">The <code class="highlighter-rouge">master</code> branch</a> represents the non-working deployment, and <a href="https://github.com/robinhowlett/maven-deploy-plugin-gotcha/tree/fix">the <code class="highlighter-rouge">fix</code> branch</a> represents the working example (with the <code class="highlighter-rouge">&lt;pluginRepositories&gt;</code> <a href="https://github.com/robinhowlett/maven-deploy-plugin-gotcha/compare/fix?expand=1#diff-600376dffeb79835ede4a0b285078036">removed from the root POM</a>).</p>
+
+            </div>
+            <footer class="post-footer">
+                <div class="post-share">
+                    <span class="post-share-title">Share:</span>
+                    <a target="_blank" href="https://twitter.com/share?text=Solved%3A+When+the+Maven+Deploy+Plugin+silently+fails+to+deploy&amp;url=http://www.robinhowlett.com/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">Twitter</a>
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.robinhowlett.com/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">Facebook</a>
+                </div><!-- .share-post -->
+            </footer>
+            
+<section id="comments-area" class="comments-area">
+    <h2 class="comments-title">Comments</h2>
+    <div class="comments-inside">
+        <div id="disqus_thread"></div>
+    </div><!-- .comments-inside -->
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section><!-- .comments-area -->
+<script type="text/javascript">
+    var disqus_shortname = 'robinhowlett';
+    var disqus_developer = 0;
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+</section>
+
+        </article>
+        
+        <section class="read-next inner">
+            <h2 class="read-next-title">Read Next</h2>
+            
+            <article class="post">
+                <header class="post-header">
+                    <div class="post-meta">
+                        <time class="published" datetime="August 12, 2018">August 12, 2018</time>
+                    </div>
+                    <h3 class="post-title"><a href="/blog/2018/08/12/visualizing-inefficient-multi-ticket-horizontal-wagering-tickets/">Visualizing inefficient multi-ticket horizontal wagering tickets</a></h3>
+                    <p class="post-tags">
+                        
+                        
+                        
+                        <a href='/tag/dataviz/'>Dataviz</a>
+                        
+                        
+                        
+                        <a href='/tag/horseracing/'>Horseracing</a>
+                        
+                        
+                        
+                        <a href='/tag/wagering/'>Wagering</a>
+                        
+                        
+                        
+                        <a href='/tag/sankey/'>Sankey</a>
+                        
+                        
+                        
+                    </p>
+                </header>
+            </article>
+            
+            
+        </section><!-- .read-next -->
+
+        <!-- Create a sorted array of tags -->
+         
+        <section class="tagcloud inner">
+            <h2 class="tagcloud-title">Tags</h2>
+            <div class="tag-links">
+                
+                <a href='http://www.robinhowlett.com/tag/career/'>career</a>
+                
+                <a href='http://www.robinhowlett.com/tag/chrome/'>chrome</a>
+                
+                <a href='http://www.robinhowlett.com/tag/code/'>code</a>
+                
+                <a href='http://www.robinhowlett.com/tag/dataviz/'>dataviz</a>
+                
+                <a href='http://www.robinhowlett.com/tag/horseracing/'>horseracing</a>
+                
+                <a href='http://www.robinhowlett.com/tag/jackson/'>jackson</a>
+                
+                <a href='http://www.robinhowlett.com/tag/java/'>java</a>
+                
+                <a href='http://www.robinhowlett.com/tag/maven/'>maven</a>
+                
+                <a href='http://www.robinhowlett.com/tag/rest/'>rest</a>
+                
+                <a href='http://www.robinhowlett.com/tag/sankey/'>sankey</a>
+                
+                <a href='http://www.robinhowlett.com/tag/snaplogic/'>snaplogic</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring/'>spring</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring-shell/'>spring-shell</a>
+                
+                <a href='http://www.robinhowlett.com/tag/ssl/'>ssl</a>
+                
+                <a href='http://www.robinhowlett.com/tag/tls/'>tls</a>
+                
+                <a href='http://www.robinhowlett.com/tag/wagering/'>wagering</a>
+                
+            </div><!-- .tag-links -->
+        </section><!-- .tagcloud -->
+
+    </main><!-- .site-main -->
+
+                
+
+                
+                <footer id="colophon" class="site-footer">
+    <p class="site-info inner">
+        <a href="#">The Boy Wonders</a> &copy; 2019. Royce theme by
+        <a target="_blank" href="https://justgoodthemes.com/">JustGoodThemes</a>.
+        <br />
+        Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a>.
+    </p>
+    <a id="back-to-top" class="back-to-top" href="#page">
+        <span class="icon-arrow-up" aria-hidden="true"></span>
+        <span class="screen-reader-text">Back to top</span>
+    </a>
+</footer><!-- .site-footer -->
+            </div><!-- .inner-wide -->
+        </div><!-- .site-content -->
+    </div><!-- .site -->
+
+    
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-35552317-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-35552317-2', { 'anonymize_ip': true });
+  </script>
+
+    <!-- Javascript Assets -->
+    <script src="/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/custom.js"></script>
+
+</body>
+
+</html>
