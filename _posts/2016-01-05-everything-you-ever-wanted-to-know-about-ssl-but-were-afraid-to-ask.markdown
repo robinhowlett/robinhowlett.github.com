@@ -3,7 +3,7 @@ layout: post
 title: "Everything you ever wanted to know about SSL (but were afraid to ask)"
 date: 2016-01-05 16:17:53 -0700
 comments: true
-tags: [ssl, tls, rest]
+tags: [code, ssl, tls, rest]
 ---
 
 > Or perhaps more accurately, "practical things I've learned about SSL". This post (and the [companion Spring Boot application](https://github.com/robinhowlett/everything-ssl)) will demonstrate using SSL certificates to validate and authenticate connections to secure endpoints over HTTPS for some common use cases (web servers, browser authentication, unit and integration testing). It shows how to configure Apache HTTP server for two-way SSL, unit testing SSL authentication with Apache's `HttpClient` and `HttpServer` (Java), and integration testing a REST API within a Spring Boot application running on an embedded Tomcat container.

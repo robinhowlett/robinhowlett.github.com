@@ -3,7 +3,7 @@ layout: post
 title: "Spring Social Bootstrap: Create REST API SDKs and CLIs that can Record and Replay HTTP requests"
 date: 2015-04-26 16:50:33 -0600
 comments: true
-tags: [spring]
+tags: [code, spring]
 ---
 
 I joined [SportsLabs](http://sportslabs.com) (then still under the [Silver Chalice](http://www.silverchalice.com/) brand) way back [in 2011](https://www.linkedin.com/in/robinhowlett) as one of its earliest employees and the first engineer. 

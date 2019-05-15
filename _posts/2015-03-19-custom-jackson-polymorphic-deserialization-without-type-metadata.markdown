@@ -3,7 +3,7 @@ layout: post
 title: "Custom Jackson Polymorphic Deserialization without Type Metadata"
 date: 2015-03-19 11:28:24 -0700
 comments: true
-tags: [jackson]
+tags: [code, jackson]
 ---
 
 At [SportsLabs](http://sportslabs.com) we regularly encounter proprietary, non-standard APIs and formats. Our job is to integrate with these APIs, normalize them, and distribute the data in web- and mobile-friendly web services.

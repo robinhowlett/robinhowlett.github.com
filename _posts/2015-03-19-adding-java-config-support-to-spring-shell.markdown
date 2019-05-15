@@ -3,7 +3,7 @@ layout: post
 title: "Adding Java Config support to Spring Shell"
 date: 2015-03-19 13:58:12 -0600
 comments: true
-tags: [java, spring, spring-shell]
+tags: [code, java, spring, spring-shell]
 ---
 
 Be it [DVCS workflows](https://github.com/nvie/gitflow), [JSON transformations](http://stedolan.github.io/jq/), or [blogging frameworks](http://octopress.org/), I always favor tools that allow me to use the terminal.

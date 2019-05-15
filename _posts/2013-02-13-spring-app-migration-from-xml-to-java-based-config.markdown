@@ -3,7 +3,7 @@ layout: post
 title: "Spring app migration: from XML to Java-based config"
 date: 2013-02-13 10:46
 comments: true
-tags: [java, spring]
+tags: [code, java, spring]
 ---
 Our team recently built a Spring MVC 3.1 application for a web service API. We had used the traditional XML-based configuration but I wanted to see how easy would it be to migrate a Spring application from an XML-based to a Java annotation-based configuration.	
 

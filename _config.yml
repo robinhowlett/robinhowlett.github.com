@@ -28,11 +28,13 @@ github: 'robinhowlett'
 linkedin: 'robinhowlett'
 
 # Navigation
-#navigation:
-#  - text: Home
-#    url: /
-#  - text: Contact Me
-#    url: /contact
+navigation:
+ - text: Home
+   url: /
+ - text: Code
+   url: /tag/code/
+ - text: Horse Racing
+   url: /tag/horseracing/
 
 # Required Plugins
 plugins_dir:

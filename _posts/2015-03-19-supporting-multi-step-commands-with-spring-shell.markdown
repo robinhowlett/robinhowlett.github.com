@@ -3,7 +3,7 @@ layout: post
 title: "Supporting Multi-Step Commands with Spring Shell"
 date: 2015-03-19 15:44:25 -0600
 comments: true
-tags: [spring-shell]
+tags: [code, spring-shell]
 ---
 
 Out of the box, [Spring Shell](http://docs.spring.io/spring-shell/docs/current/reference/htmlsingle/) supports printing command results to the terminal in a fairly basic way.
