@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+        <title>Parsing structured data within PDF documents with Apache PDFBox</title>
+        <meta name="description" content="PDF continues to be a popular document publishing format because users see them as the digital equivalent of paper documents. Unlike websites, often what you...">
+        <link rel="canonical" href="/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/">
+    
+
+    <!-- Site Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/png" />
+
+    <!-- Font Embed Code -->
+	<link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i|Karla:400,400i,700,700i" rel="stylesheet">
+
+    <!-- CSS Styles -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+</head>
+
+
+
+<body class="layout-post">
+    <div id="page" class="site">
+        <header id="masthead" class="site-header">
+    <div class="site-header-wrap">
+        <div class="site-header-inside">
+
+            <div class="site-branding">
+                
+                <p class="profile">
+                    <a href="/">
+                        <img src="/assets/images/authorimage_robin-gravatar.png" alt="'s Picture"
+                            class="avatar" />
+                    </a>
+                </p>
+                <div class="site-identity">
+                    
+                    <h1 class="site-title">
+                        <a href="/">The Boy Wonders</a>
+                    </h1>
+                    
+                    
+                    <p class="site-description">A Blog by Robin Howlett</p>
+                    
+                </div><!-- .site-identity -->
+                
+                <button id="menu-toggle" class="menu-toggle"><span class="screen-reader-text">Main Menu</span><span
+                        class="icon-menu" aria-hidden="true"></span></button>
+            </div><!-- .site-branding -->
+
+            <nav id="main-navigation" class="site-navigation" aria-label="Main Navigation">
+                <div class="site-nav-wrap">
+                    <div class="site-nav-inside">
+                    <ul class="menu">
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/">Home</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/code/">Code</a></li>
+                        
+                        
+                        
+                        <li class="menu-item "><a href="/tag/horseracing/">Horse Racing</a></li>
+                        
+                    </ul>
+                    <p class="social-links">
+    
+    <a href="https://twitter.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    <a href="https://github.com/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/robinhowlett" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+<!--
+Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+-->
+    </a>
+    
+    
+    
+</p>
+                    </div><!-- .site-nav-inside -->
+                </div><!-- .site-nav-wrap -->
+            </nav><!-- .site-navigation -->
+
+        </div><!-- .site-header-inside -->
+    </div><!-- .site-header-wrap -->
+</header><!-- .site-header -->
+        <div id="content" class="site-content fadeInDown delay_075s">
+            <div class="inner-wide">
+                    <main id="main" class="site-main">
+    
+        <article class="post-full inner">
+
+            <header class="post-header">
+                <div class="post-meta">
+                    <time class="post-date" datetime="2019-11-29">November 29,
+                        2019</time>
+                </div><!-- .post-meta -->
+                <h1 class="post-title">Parsing structured data within PDF documents with Apache PDFBox</h1>
+                
+                <div class="post-tags">
+                     
+                    <a href='tag/code/'>code</a>
+                    
+                     
+                    <a href='tag/java/'>java</a>
+                    
+                     
+                    <a href='tag/horseracing/'>horseracing</a>
+                    
+                     
+                    <a href='tag/pdfbox/'>pdfbox</a>
+                    
+                    
+                </div>
+                
+            </header><!-- .post-header -->
+
+            
+            <div class="post-content">
+                <p>PDF continues to be a popular document publishing format because users see them as the digital equivalent of paper documents. Unlike websites, often what you see on the PDF will be exactly how it will be printed on a physical page, with the added benefits of easily distributable files and near-ubiquitous support of software able to read this format on almost any standard digital device.</p>
+
+<p>However, when information, especially structured data, is contained within a PDF document and one wishes to extract that content, the format becomes quite difficult for developers to interact with.</p>
+
+<p>In this post, I outline a real-world example of parsing a large PDF file that contains repeated tables of data. I show how the raw text can be extracted and then detail much more low-level control over the text characters positioned within the pages. I also touch on the actual mechanics of working through a problem like this - using tools like Excel to explore and analyze both the nature of the PDF, as well as the vagaries of the data itself.</p>
+
+<p><img src="/assets/images/posts/2019/bcbc_snippet_2018.png" alt="BCBC Results Snippet" /></p>
+
+<!-- more -->
+
+<h3 id="breeders-cup-betting-challenge">Breeders’ Cup Betting Challenge</h3>
+
+<p>The <a href="https://www.breederscup.com/bcbc">Breeders’ Cup Betting Challenge (BCBC)</a> is an annual $10,000 buy-in, live-money horse racing handicapping tournament tied to the two-day, 14-race $30 million Breeders’ Cup World Championships event. In 2018, 391 entries competed for the $1 million prize pool. It would also be the first time that the Breeders’ Cup had <a href="https://www.breederscup.com/article/breeders-cup-announces-rule-changes-2018-breeders-cup-betting-challenge">taken the decision to publish all the players’ tournament wagers placed</a> at the conclusion of the event.</p>
+
+<p>A few days after the competition ended, <a href="http://www.breederscup.com/sites/default/files/2018%20BCBC%20Final.pdf">a 900+ page PDF file</a> was posted to the Breeders’ Cup website containing a breakdown of all of the wagers placed by each player.</p>
+
+<p>Intrigued by this rare example of transparency into how professional and advanced horse racing tournament players approached this format, I decided to see if I could extricate the data within to conduct some analysis for educational and entertainment purposes.</p>
+
+<h3 id="apache-pdfbox">Apache PDFBox</h3>
+
+<p>The <a href="https://pdfbox.apache.org/">Apache PDFBox library</a> is an open-source Java tool for interacting with PDF documents.</p>
+
+<p>It allows the “creation of new PDF documents, manipulation of existing documents and the ability to extract content from documents”.</p>
+
+<p>I’ve found that even for PDFs that turn off the ability to copy text from the document, PDFBox can still extract the content.</p>
+
+<h4 id="1-of-3-basic-outputting-the-raw-text-line-by-line">(1 of 3) Basic: outputting the raw text line-by-line</h4>
+
+<p>When attempting to parse a PDF generally you first want to just output the raw text to examine if there are any obvious patterns that can be used.</p>
+
+<p>A <code class="highlighter-rouge">File</code> can be read by PDFBox as a PDF document by using <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html#load-java.io.File-"><code class="highlighter-rouge">PDDocument.load()</code></a>.</p>
+
+<p>Once the file is a <code class="highlighter-rouge">PDDocument</code>, <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html"><code class="highlighter-rouge">PDFTextStripper</code></a>’s <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeText-org.apache.pdfbox.pdmodel.PDDocument-java.io.Writer-"><code class="highlighter-rouge">writeText()</code></a> method can be used to strip just the text (without any of the formatting and such) and write it to a file:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">BCBCParser</span> <span class="kd">extends</span> <span class="n">PDFTextStripper</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">parse</span><span class="o">(</span><span class="n">File</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="n">PDDocument</span> <span class="n">document</span> <span class="o">=</span> <span class="n">PDDocument</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">source</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// The order of the text tokens in a PDF file may not be in the same as they appear </span>
+            <span class="c1">// visually on the screen, so tell PDFBox to sort by text position </span>
+            <span class="n">setSortByPosition</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">try</span> <span class="o">(</span><span class="n">BufferedWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">newBufferedWriter</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"bcbc.txt"</span><span class="o">),</span> <span class="n">UTF_8</span><span class="o">))</span> <span class="o">{</span>
+            	<span class="c1">// This will take a PDDocument and write the text of that document to the writer.</span>
+                <span class="n">writeText</span><span class="o">(</span><span class="n">document</span><span class="o">,</span> <span class="n">writer</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidPasswordException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>This resulted in output like the following in <code class="highlighter-rouge">bcbc.txt</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Grubbs Charles 10603
+Churchill Downs
+Charles Grubbs
+Date: 20181102
+Race: 1
+Pool Bets Refunds Winnings Runners
+EXA $250.00 $0.00 $0.00 W1-6/6
+WIN $250.00 $0.00 $0.00 6
+WIN $100.00 $0.00 $0.00 6
+$600.00 $0.00 $0.00 
+Race: 3
+Pool Bets Refunds Winnings Runners
+WIN $400.00 $0.00 $0.00 B3,10
+EXA $200.00 $0.00 $0.00 W1,8/3,10
+EXA $250.00 $0.00 $0.00 W1,4-6,8/3,10
+WIN $50.00 $0.00 $0.00 B3,10
+$900.00 $0.00 $0.00 
+Race: 5
+Pool Bets Refunds Winnings Runners
+WIN $150.00 $0.00 $0.00 B8,11,12
+WIN $150.00 $0.00 $0.00 B8,11,12
+WIN $150.00 $0.00 $0.00 B8,11,12
+WIN $150.00 $0.00 $0.00 B8,11,12
+WIN $100.00 $0.00 $0.00 8
+$700.00 $0.00 $0.00 
+Race: 6
+Pool Bets Refunds Winnings Runners
+WIN $200.00 $0.00 $0.00 14
+TRI $240.00 $0.00 $11,154.00 W6/14/1-14
+TRI $60.00 $0.00 $0.00 W6/1-14/14
+TRI $60.00 $0.00 $0.00 W6/1-14/14
+...
+$934.00 $0.00 $4,136.00 
+Race: 9
+Pool Bets Refunds Winnings Runners
+TRI $240.00 $0.00 $0.00 W6,9/2,4-6,9,10,12,13/2,
+13
+$240.00 $0.00 $0.00 
+Race: 10
+...
+2-Day Totals $53,420.00 $0.00 $132,250.00 
+Penalty Amount: $0.00 Final Score: 86,330.00
+Engler Monte 900000778
+Twinspires
+Monte Engler
+Date: 20181102
+Race: 4
+Pool Bets Refunds Winnings Runners
+DOUBLE $50.00 $0.00 $0.00 2/4
+DOUBLE $40.00 $0.00 $0.00 W3/1,4
+$90.00 $0.00 $0.00 
+Race: 6
+Pool Bets Refunds Winnings Runners
+TRIFECTA $360.00 $0.00 $0.00 W6/2,11,12/1-14
+TRIFECTA $120.00 $0.00 $0.00 W1,6/1-14/1,6
+DOUBLE $150.00 $0.00 $0.00 W1,11,12/1-10
+</code></pre></div></div>
+
+<p>Immediately, it could be seen that there are aspects of the output that could prove fruitful:</p>
+
+<ul>
+  <li>there are repeated text values (e.g. “Final Score: “) that could be used to mark where sections began and ended e.g. the player’s name, ID and home track always follow that line.</li>
+  <li>as it was a two-day event, the exact race that the wagers were for could be figured out by combining for the “Date: YYYYMMDD” and “Race: N” patterns.</li>
+  <li>some of the data is derived e.g. the bets/refunds/winnings totals-per-day and the Final Score; I generally prefer to parse just the minimum data and calculate those independently.</li>
+</ul>
+
+<p>However, there were some things of concern that were noted:</p>
+
+<ul>
+  <li>For wagers with many combinations, the textual representation of the bet often wrapped to the next line - great care would have to be taken to detect and handle that.</li>
+  <li>Oddly, a mix of bet type keys was being used. For example for Trifecta bets, some players had “TRI”, others had “TRIFECTA”. Some people seems to have made bets that were actually against the rules (yet possibly not detected by the tournament software). Clearly some data sanitation would be required. It also means that you can’t always rely on the consistency of specific “special” values but rather try to be rules- and/or pattern-based instead.</li>
+</ul>
+
+<h4 id="2-of-3-basic-parsing-the-raw-text-word-by-word">(2 of 3) Basic: parsing the raw text word-by-word</h4>
+
+<p>The BCBC table data is simple enough however to figure most of this out with basic rules and some regexes. By overriding</p>
+
+<p>Here is the main parser for the BCBC PDF files (the entire project <a href="https://github.com/robinhowlett/breeders-cup-betting-challenge-parser">is available on GitHub</a>).</p>
+
+<p>It builds a list of <code class="highlighter-rouge">BCBCEntry</code> objects (corresponding to tournament players), each of which contain a list of the parsed bets.</p>
+
+<p>The <code class="highlighter-rouge">writeText()</code> call triggers a variety of calls to other methods that can be overridden to further control the parsing of the <code class="highlighter-rouge">PDDocument</code>, including <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writePage--"><code class="highlighter-rouge">writePage()</code></a>, <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeCharacters-org.apache.pdfbox.text.TextPosition-"><code class="highlighter-rouge">writeCharacters(TextPosition text)</code></a>, and <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeString-java.lang.String-java.util.List-"><code class="highlighter-rouge">writeString(String text, List&lt;TextPosition&gt; textPositions)</code></a> among others.</p>
+
+<p>The latter is leveraged below to capture specific words that are expected, along with setting various marker booleans that instruct subsequent iterations to extract the desired information. Some pre-processing and sanitation is done by the <code class="highlighter-rouge">BCBCEntry</code> and <code class="highlighter-rouge">Bet</code> classes (see GitHub for the details):</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BCBCParser</span> <span class="kd">extends</span> <span class="n">PDFTextStripper</span> <span class="kd">implements</span> <span class="n">Parser</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">BCBCEntry</span><span class="o">&gt;,</span> <span class="n">File</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">BCBCParser</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="c1">// regex to match bets e.g. EX, TRI, DD, WIN</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Pattern</span> <span class="n">BET_TYPE</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">"^([A-Z-])+$"</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">BCBCConfig</span> <span class="n">config</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">bcbcEntryRelatedText</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">BCBCEntry</span><span class="o">&gt;</span> <span class="n">bcbcEntries</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * Instantiate a new PDFTextStripper object.
+     *
+     * @throws IOException If there is an error loading the properties.
+     */</span>
+    <span class="kd">public</span> <span class="nf">BCBCParser</span><span class="o">(</span><span class="n">BCBCConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">;</span>
+        <span class="n">bcbcEntryRelatedText</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="n">bcbcEntries</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="c1">// see https://pdfbox.apache.org/2.0/getting-started.html</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"sun.java2d.cmm"</span><span class="o">,</span> <span class="s">"sun.java2d.cmm.kcms.KcmsServiceProvider"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">BCBCEntry</span><span class="o">&gt;</span> <span class="nf">parse</span><span class="o">(</span><span class="n">File</span> <span class="n">bcbcResults</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="n">PDDocument</span> <span class="n">bcbcResultsPdf</span> <span class="o">=</span> <span class="n">PDDocument</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">bcbcResults</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">setSortByPosition</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">try</span> <span class="o">(</span><span class="n">Writer</span> <span class="n">devNullWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span><span class="k">new</span> <span class="n">OutputStream</span><span class="o">()</span> <span class="o">{</span>
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">// discard everything</span>
+                <span class="o">}</span>
+            <span class="o">},</span> <span class="n">UTF_8</span><span class="o">))</span> <span class="o">{</span>
+                <span class="c1">// this will end up calling #writeString() below with the text of each line</span>
+                <span class="c1">// each line of text can then be examined in the context of the text already</span>
+                <span class="c1">// parsed, so can figure out if the text is related to the player or the bet etc</span>
+                <span class="c1">// the line of text itself will be pulled apart to extract the actual bets</span>
+                <span class="n">writeText</span><span class="o">(</span><span class="n">bcbcResultsPdf</span><span class="o">,</span> <span class="n">devNullWriter</span><span class="o">);</span>
+                <span class="c1">// at this point, all the players' start-end line indexes have been saved</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidPasswordException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"PDF Password incorrect"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Error parsing PDF"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">bcbcEntries</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">bcbcEntry</span> <span class="o">-&gt;</span>
+                <span class="n">bcbcEntry</span><span class="o">.</span><span class="na">getBets</span><span class="o">().</span><span class="na">addAll</span><span class="o">(</span><span class="n">createBetsForEntry</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">bcbcEntry</span><span class="o">)));</span>
+
+        <span class="k">return</span> <span class="n">bcbcEntries</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// triggered during stripper.writeText() execution above (by the private stripper.writeLine()</span>
+    <span class="c1">// method) and called for each "word" of a line processed when parsing the PDF (sometimes a word</span>
+    <span class="c1">// may actually be a single space-separated piece of text)</span>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">writeString</span><span class="o">(</span><span class="n">String</span> <span class="n">string</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">TextPosition</span><span class="o">&gt;</span> <span class="n">textPositions</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="c1">// collect all the words relevant for this entry</span>
+        <span class="n">bcbcEntryRelatedText</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">string</span><span class="o">);</span>
+
+        <span class="c1">// if "Final Score" was found, then we at the end of content about this player</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">string</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">"Final Score"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">BCBCEntry</span> <span class="n">entry</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BCBCEntry</span><span class="o">(</span><span class="n">bcbcEntryRelatedText</span><span class="o">);</span>
+            <span class="n">bcbcEntries</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">entry</span><span class="o">);</span>
+
+            <span class="c1">// reset</span>
+            <span class="n">bcbcEntryRelatedText</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// word-by-word parsing and building the data structure</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Bet</span><span class="o">&gt;</span> <span class="nf">createBetsForEntry</span><span class="o">(</span><span class="n">BCBCConfig</span> <span class="n">config</span><span class="o">,</span> <span class="n">BCBCEntry</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Bet</span><span class="o">&gt;</span> <span class="n">bets</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="kt">boolean</span> <span class="n">day2Found</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">betTypeFound</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">activeBetComplete</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">penaltyAmountFound</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">race</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+        <span class="n">Bet</span><span class="o">.</span><span class="na">Builder</span> <span class="n">betBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bet</span><span class="o">.</span><span class="na">Builder</span><span class="o">();</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">word</span> <span class="o">:</span> <span class="n">entry</span><span class="o">.</span><span class="na">getPlayerText</span><span class="o">())</span> <span class="o">{</span>
+            <span class="c1">// if it's Saturday's date, then Friday bets must be done</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"Date: "</span> <span class="o">+</span> <span class="n">config</span><span class="o">.</span><span class="na">getDay2Date</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">day2Found</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">continue</span><span class="o">;</span> <span class="c1">// go to the next word (it should be the race number)</span>
+            <span class="o">}</span>
+
+            <span class="c1">// track the race these bets were for</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"Race: "</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">race</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">lastIndexOf</span><span class="o">(</span><span class="sc">' '</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">));</span>
+                <span class="k">continue</span><span class="o">;</span> <span class="c1">// go to the next word (it should be the start of the betBuilder table)</span>
+            <span class="o">}</span>
+
+            <span class="c1">// update the entry with the total amount of penalties incurred</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">penaltyAmountFound</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">entry</span><span class="o">.</span><span class="na">setPenalty</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+                <span class="n">penaltyAmountFound</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> <span class="c1">// reset</span>
+            <span class="o">}</span>
+
+            <span class="c1">// only betBuilder types (Exacta, Trifecta etc.) are in all-caps around the</span>
+            <span class="c1">// betBuilder data</span>
+            <span class="c1">// set this market because next word/line (or two, if wrapped) will be related to</span>
+            <span class="c1">// a betBuilder</span>
+            <span class="kt">boolean</span> <span class="n">betTypeDetected</span> <span class="o">=</span> <span class="n">BET_TYPE</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">word</span><span class="o">).</span><span class="na">find</span><span class="o">();</span>
+            <span class="c1">// race totals are derived summary data that aggregate the lines above it</span>
+            <span class="c1">// we don't need to parse it but it is a marker that all bets for this race have</span>
+            <span class="c1">// been parsed</span>
+            <span class="kt">boolean</span> <span class="n">raceTotalsSummaryLineDetected</span> <span class="o">=</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">" "</span><span class="o">).</span><span class="na">length</span> <span class="o">==</span> <span class="mi">3</span><span class="o">);</span>
+
+            <span class="c1">// first check for any bets that have not yet been fully parsed</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">betTypeFound</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kt">boolean</span> <span class="n">completionOfActiveBetDetected</span> <span class="o">=</span>
+                        <span class="o">(</span><span class="n">betTypeDetected</span> <span class="o">||</span> <span class="n">raceTotalsSummaryLineDetected</span><span class="o">);</span>
+                <span class="c1">// check if a betBuilder description has wrapped to the next line and update it</span>
+                <span class="c1">// if so</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">completionOfActiveBetDetected</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">// because of trailing spaces between the "Bets", "Refunds", "Winnings", and</span>
+                    <span class="c1">// "Runners" column values, this "word" contains values intended for</span>
+                    <span class="c1">// multiple columns</span>
+                    <span class="c1">//</span>
+                    <span class="c1">// the setter handles splitting this into its respective components as well as</span>
+                    <span class="c1">// handling line-wraps and inconsistent delimiters</span>
+                    <span class="n">betBuilder</span><span class="o">.</span><span class="na">compositeBetInfo</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="n">activeBetComplete</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// build and save the bet if it is ready</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">activeBetComplete</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// set the date and race number as they can apply to multiple bets</span>
+                <span class="n">betBuilder</span><span class="o">.</span><span class="na">date</span><span class="o">(</span><span class="n">day2Found</span> <span class="o">?</span> <span class="n">config</span><span class="o">.</span><span class="na">getDay2Date</span><span class="o">()</span> <span class="o">:</span> <span class="n">config</span><span class="o">.</span><span class="na">getDay1Date</span><span class="o">());</span>
+                <span class="n">betBuilder</span><span class="o">.</span><span class="na">race</span><span class="o">(</span><span class="n">race</span><span class="o">);</span>
+
+                <span class="n">bets</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">betBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+                <span class="c1">// start clean for the next betBuilder</span>
+                <span class="n">betBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bet</span><span class="o">.</span><span class="na">Builder</span><span class="o">();</span>
+                <span class="n">betTypeFound</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="n">activeBetComplete</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// set the marker that a betBuilder is active (ready to be parsed)</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">betTypeDetected</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">betTypeFound</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="n">betBuilder</span><span class="o">.</span><span class="na">type</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+                <span class="c1">// go to the next word (it should be the composite betBuilder information)</span>
+            <span class="o">}</span>
+
+            <span class="c1">// set a flag that the next word parsed contains the penalty amount for the entry</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">"Penalty Amount:"</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">penaltyAmountFound</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">bets</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>I was able to validate the parsing logic by picking a player (I chose 7th-placed Allen Harberg as he was the highest placed finisher that incurred a penalty) and calculated their final score just using the individual bets they placed:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">parse_With2018Results_FinalScoreCalculatedCorrectly</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">File</span> <span class="n">bcbcResults</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span>
+                <span class="n">getClass</span><span class="o">().</span><span class="na">getClassLoader</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="s">"bcbc_2018.pdf"</span><span class="o">).</span><span class="na">getFile</span><span class="o">());</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">BCBCEntry</span><span class="o">&gt;</span> <span class="n">bcbcEntries</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BCBCParser</span><span class="o">(</span><span class="k">new</span> <span class="n">Config2018</span><span class="o">()).</span><span class="na">parse</span><span class="o">(</span><span class="n">bcbcResults</span><span class="o">);</span>
+
+        <span class="c1">// the Final Score is the starting bankroll of $7,500 plus all winnings minus all bets</span>
+        <span class="c1">// minus all penalties</span>
+        <span class="kt">double</span> <span class="n">finalScore</span> <span class="o">=</span> <span class="n">bcbcEntries</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">bcbcEntry</span> <span class="o">-&gt;</span> <span class="n">bcbcEntry</span><span class="o">.</span><span class="na">getUuid</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">"900000129"</span><span class="o">))</span> <span class="c1">// Allen Harberg</span>
+                <span class="o">.</span><span class="na">flatMapToDouble</span><span class="o">(</span><span class="n">bcbcEntry</span> <span class="o">-&gt;</span> <span class="n">DoubleStream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">bcbcEntry</span><span class="o">.</span><span class="na">getBets</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">summarizingDouble</span><span class="o">(</span><span class="n">bet</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">bet</span><span class="o">.</span><span class="na">getWinnings</span><span class="o">()</span> <span class="o">-</span> <span class="n">bet</span><span class="o">.</span><span class="na">getBets</span><span class="o">())))</span>
+                        <span class="o">.</span><span class="na">getSum</span><span class="o">()</span> <span class="o">-</span> <span class="n">bcbcEntry</span><span class="o">.</span><span class="na">getPenalty</span><span class="o">()</span> <span class="o">+</span> <span class="mi">7500</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">findAny</span><span class="o">().</span><span class="na">getAsDouble</span><span class="o">();</span>
+
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertThat</span><span class="o">(</span><span class="n">finalScore</span><span class="o">,</span> <span class="n">equalTo</span><span class="o">(</span><span class="mi">43025</span><span class="n">d</span><span class="o">));</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>What’s more, I was able to reuse this solution again in 2019, and even created a bar chart race visualization that simulated how the leaderboard changed race-by-race using the data extracted with this solution:</p>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A live leaderboard visualization of the <a href="https://twitter.com/BreedersCup?ref_src=twsrc%5Etfw">@BreedersCup</a> Betting Challenge 2019 (<a href="https://twitter.com/hashtag/BCBC?src=hash&amp;ref_src=twsrc%5Etfw">#BCBC</a>) feat. <a href="https://twitter.com/PatCummingsTIF?ref_src=twsrc%5Etfw">@PatCummingsTIF</a>, <a href="https://twitter.com/truxtonstables?ref_src=twsrc%5Etfw">@truxtonstables</a>, <a href="https://twitter.com/stoolpresidente?ref_src=twsrc%5Etfw">@stoolpresidente</a> and <a href="https://twitter.com/DickJerardi?ref_src=twsrc%5Etfw">@DickJerardi</a> among others.<br /><br />Based on a recent bar chart race demo by <a href="https://twitter.com/mbostock?ref_src=twsrc%5Etfw">@mbostock</a> using <a href="https://twitter.com/observablehq?ref_src=twsrc%5Etfw">@observablehq</a> : <a href="https://t.co/PVVPjCpNAo">https://t.co/PVVPjCpNAo</a> <a href="https://t.co/OhlVROozLG">pic.twitter.com/OhlVROozLG</a></p>&mdash; Robin Howlett (@robinhowlett) <a href="https://twitter.com/robinhowlett/status/1195117366612332544?ref_src=twsrc%5Etfw">November 14, 2019</a></blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<h4 id="3-of-3-advanced-outputting-each-characters-metadata">(3 of 3) Advanced: outputting each character’s metadata</h4>
+
+<p>While I was able to certainly use the basic output of the PDF document’s text for parsing, PDFBox enables exposing the metadata of each individual character present within the document, including:</p>
+
+<ul>
+  <li>the X-Y coordinates of the character within the page</li>
+  <li>the font size (even font name)</li>
+  <li>the height and width of the printed character</li>
+  <li>the unicode character value</li>
+</ul>
+
+<p>By leveraging the character metadata, much more fine-grained control of the parsing can be conducted. By using the actual measurements of the positioning of the text within the PDF (for instance, inferring columns in a table and grouping the values), we can avoid regex-driven development of trying to parse the purely textual output returned above, which may be very error prone for less predicatably-structured documents.</p>
+
+<p>We saw earlier that <a href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/TextPosition.html"><code class="highlighter-rouge">TextPosition</code></a> is part of the <code class="highlighter-rouge">writeString()</code> method signature, but we did not use it above. <code class="highlighter-rouge">TextPosition</code> represents “a string and a position on the screen of those characters”.</p>
+
+<p>The following variables within <code class="highlighter-rouge">TextPosition</code> can be useful for understanding the positioning, size, spacing, and unicode value:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>xDirAdj</td>
+      <td>The horizontal positioning of the character within a particular page</td>
+    </tr>
+    <tr>
+      <td>yDirAdj</td>
+      <td>The vertical positioning of the character within a particular page</td>
+    </tr>
+    <tr>
+      <td>fontSize</td>
+      <td>The size of the font for this character</td>
+    </tr>
+    <tr>
+      <td>height</td>
+      <td>The visible height of the character</td>
+    </tr>
+    <tr>
+      <td>widthDirAdj</td>
+      <td>The visible width of the character</td>
+    </tr>
+    <tr>
+      <td>widthOfSpace</td>
+      <td>The measurement of the space character that applies to the character</td>
+    </tr>
+    <tr>
+      <td>unicode</td>
+      <td>The unicode value of the character</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>There are others too like <code class="highlighter-rouge">xScale</code> that may be appropriate for your use cases. View the PDFBox documentation for more.</p>
+</blockquote>
+
+<p>When comparing the various metadata values of each <code class="highlighter-rouge">TextPosition</code> instance with another, certain inferences can be made, for example:</p>
+
+<ul>
+  <li>If the difference between the <code class="highlighter-rouge">yDirAdj</code> values of two characters is greater than the <code class="highlighter-rouge">height</code> of the characters (or some other logical value), then the characters are on different lines.</li>
+  <li>If the difference between the <code class="highlighter-rouge">xDirAdj</code> values of two characters is greater than the <code class="highlighter-rouge">widthDirAdj</code> value, then some form of whitespace exists between characters within the string/text (some PDFs store space characters, some do not and must be calculated).</li>
+  <li><code class="highlighter-rouge">fontSize</code> and similar can also be used to identify superscript values.</li>
+</ul>
+
+<p>An effective way to rapidly identify patterns within the text positions of the characters in the PDF is to use a spreadsheet. To do that, we need to create a CSV where each row is character within the PDF and its relevant <code class="highlighter-rouge">TextPosition</code> metadata.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BCBCParser</span> <span class="kd">extends</span> <span class="n">PDFTextStripper</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">BCBCParser</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">TextPosition</span><span class="o">&gt;</span> <span class="nf">parse</span><span class="o">(</span><span class="n">File</span> <span class="n">bcbcResults</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="n">PDDocument</span> <span class="n">document</span> <span class="o">=</span> <span class="n">PDDocument</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">bcbcResults</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">setSortByPosition</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">try</span> <span class="o">(</span><span class="n">BufferedWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">newBufferedWriter</span><span class="o">(</span>
+                    <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"text-positions.csv"</span><span class="o">),</span> <span class="n">UTF_8</span><span class="o">))</span> <span class="o">{</span>
+                <span class="c1">// the first row is the header column names</span>
+                <span class="n">String</span><span class="o">[]</span> <span class="n">headers</span> <span class="o">=</span> <span class="o">{</span><span class="s">"xDirAdj"</span><span class="o">,</span> <span class="s">"yDirAdj"</span><span class="o">,</span> <span class="s">"fontSize"</span><span class="o">,</span> <span class="s">"xScale"</span><span class="o">,</span> <span class="s">"height"</span><span class="o">,</span>
+                        <span class="s">"widthOfSpace"</span><span class="o">,</span> <span class="s">"widthDirAdj"</span><span class="o">,</span> <span class="s">"unicode"</span><span class="o">};</span>
+                <span class="c1">// use pipe as a delimiter (just as a personal preference)</span>
+                <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">"|"</span><span class="o">,</span> <span class="n">headers</span><span class="o">));</span>
+                <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">lineSeparator</span><span class="o">());</span>
+                <span class="c1">// this will call #writeString() below with the line text and positions of each char</span>
+                <span class="n">writeText</span><span class="o">(</span><span class="n">document</span><span class="o">,</span> <span class="n">writer</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidPasswordException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">writeWordSeparator</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="c1">// do nothing as we don't need spaces</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">writeLineSeparator</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="c1">// do nothing as writeString(String, List&lt;TextPosition&gt;) below handles the new lines</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">writeString</span><span class="o">(</span><span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">TextPosition</span><span class="o">&gt;</span> <span class="n">textPositions</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">text</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">textPositions</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">textPosition</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                	<span class="c1">// call the parent's writeString(String) to write to the output writer</span>
+                    <span class="n">writeString</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">"|"</span><span class="o">,</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getXDirAdj</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getYDirAdj</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getFontSize</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getXScale</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getHeight</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getWidthOfSpace</span><span class="o">()),</span>
+                            <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">textPosition</span><span class="o">.</span><span class="na">getWidthDirAdj</span><span class="o">()),</span>
+                            <span class="n">textPosition</span><span class="o">.</span><span class="na">getUnicode</span><span class="o">()));</span>
+                    <span class="c1">// write a line/row after each character</span>
+                    <span class="n">writeString</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">lineSeparator</span><span class="o">());</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>This outputs to a file called <code class="highlighter-rouge">text-positions.csv</code> the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xDirAdj|yDirAdj|fontSize|xScale|height|widthOfSpace|widthDirAdj|unicode
+18.0|28.950012|1.0|10.65|7.364475|2.6625|8.2857|G
+26.2857|28.950012|1.0|10.65|7.364475|2.6625|4.7285995|r
+31.0143|28.950012|1.0|10.65|7.364475|2.6625|5.9214|u
+36.9357|28.950012|1.0|10.65|7.364475|2.6625|5.921398|b
+42.857098|28.950012|1.0|10.65|7.364475|2.6625|5.921398|b
+48.778496|28.950012|1.0|10.65|7.364475|2.6625|4.142849|s
+162.0|28.950012|1.0|10.65|7.364475|2.6625|7.6893005|C
+169.6893|28.950012|1.0|10.65|7.364475|2.6625|5.921402|h
+175.6107|28.950012|1.0|10.65|7.364475|2.6625|5.324997|a
+180.9357|28.950012|1.0|10.65|7.364475|2.6625|4.728607|r
+185.6643|28.950012|1.0|10.65|7.364475|2.6625|2.9606934|l
+188.625|28.950012|1.0|10.65|7.364475|2.6625|4.728607|e
+193.3536|28.950012|1.0|10.65|7.364475|2.6625|4.142853|s
+558.3|27.0|1.0|8.95|6.02335|2.2375|4.4749756|1
+562.77496|27.0|1.0|8.95|6.02335|2.2375|4.4749756|0
+567.24994|27.0|1.0|8.95|6.02335|2.2375|4.4749756|6
+571.7249|27.0|1.0|8.95|6.02335|2.2375|4.4749756|0
+576.1999|27.0|1.0|8.95|6.02335|2.2375|4.4749756|3
+...
+</code></pre></div></div>
+
+<p>When opening the same file in Excel (and using Data &gt; Text to Columns to instruct that the pipe character is a delimiter, plus adding some basic decimal formatting), we can now look at the patterns of the character metadata, to make some inferences:</p>
+
+<p><img src="/assets/images/posts/2019/excel-columns.png" alt="Excel Columns" /></p>
+
+<p>Let’s look at the table that corresponds to the bets made for a particular race (see page 2 of the 2018 BCBC results PDF, race 3 of the second day):</p>
+
+<p><img src="/assets/images/posts/2019/bcbc_bet-table.png" alt="Bet Table" /></p>
+
+<p>This entry is interesting because some of the bet details (under the “Runners” column) have been wrapped to the next line. Also, the “Pool” column is left-aligned, but all other columns are right-aligned.</p>
+
+<p>A little scroll-and-search within Excel finds the character metadata that corresponds:</p>
+
+<p><img src="/assets/images/posts/2019/bcbc-related.png" alt="Related Cells" /></p>
+
+<p>This may be hard to see but I’ve split the Excel sheet and on top highlighted the “Pool”, “Bets”, and “Refunds” column header characters, and, below, the first row character values that correspond (“WIN”, “$200,00 “, and “$0.00 “ respectively).</p>
+
+<p>This allows us create rules for detecting when text has been wrapped. For example, see how the <code class="highlighter-rouge">yDirAdj</code> value of the “0” character (that was wrapped above in the PDF’s “Runners” columns) of the highlighted row is unlike the rows above and below but that it has a high <code class="highlighter-rouge">xDirAdj</code> value, indicating it is positioned to the right of the page:</p>
+
+<p><img src="/assets/images/posts/2019/bcbc-related-newline.png" alt="Related Cells New Line" /></p>
+
+<p>Again, the BCBC PDF was simple enough in its structure to not need this level of control, but I do have experience with far more complex PDF layouts.</p>
+
+<p>Consider the following PDF from <a href="http://www.equibase.com/">Equibase</a> for a horse racing result chart:</p>
+
+<p><img src="/assets/images/posts/2019/equibase-chart.png" alt="Equibase Chart" /></p>
+
+<p>In this case, there are a variety of layouts within the document - multi-line text, multiple key-value pairs on the same line, multiple tables whose text and even number of rows and columns are fully dynamic and based on the nature of the content, superscript text, fractions, even embedded images.</p>
+
+<p>To outline just one technique, for grouping related columns of data within the table (which had semi-predicable headers), I built a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html"><code class="highlighter-rouge">TreeSet</code></a> of <code class="highlighter-rouge">xDirAdj</code> and column header indices, so that for any character found within the table, I could find the nearest starting header column using the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html#floor-E-"><code class="highlighter-rouge">floor()</code></a> method:</p>
+
+<p><img src="/assets/images/posts/2019/handycapper-floor.png" alt="Using TreeSet.floor to indexing column ranges" /></p>
+
+<p>I was able to fully parse this document (and over a million others like it) into a highly-specialized domain-specific data structure that powered a variety of data-centric tools, APIs and SDKs:</p>
+
+<p><img src="/assets/images/posts/2019/handycapper-json.png" alt="Handycapper JSON" /></p>
+
+<p>Unfortunately, <a href="https://www.thoroughbreddailynews.com/getting-from-cease-and-desist-to-come-work-with-us/">I ran into some <em>issues</em> when distributing this open-source software</a>, but the general procedure I used was the same as what I have been describing in this post.</p>
+
+<p>Between eyeballing the PDF, noting where obvious patterns exist, and potentionally building a data model using the character position metadata, you can start to construct a collection of data structures that capture the particular domain values you wish to extract from the PDF.</p>
+
+            </div>
+            <footer class="post-footer">
+                <div class="post-share">
+                    <span class="post-share-title">Share:</span>
+                    <a target="_blank" href="https://twitter.com/share?text=Parsing+structured+data+within+PDF+documents+with+Apache+PDFBox&amp;url=http://www.robinhowlett.com/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/">Twitter</a>
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://www.robinhowlett.com/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/">Facebook</a>
+                </div><!-- .share-post -->
+            </footer>
+            
+<section id="comments-area" class="comments-area">
+    <h2 class="comments-title">Comments</h2>
+    <div class="comments-inside">
+        <div id="disqus_thread"></div>
+    </div><!-- .comments-inside -->
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section><!-- .comments-area -->
+<script type="text/javascript">
+    var disqus_shortname = 'robinhowlett';
+    var disqus_developer = 0;
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+</section>
+
+        </article>
+        
+        <section class="read-next inner">
+            <h2 class="read-next-title">Read Next</h2>
+            
+            <article class="post">
+                <header class="post-header">
+                    <div class="post-meta">
+                        <time class="published" datetime="May 15, 2019">May 15, 2019</time>
+                    </div>
+                    <h3 class="post-title"><a href="/blog/2019/05/15/solved-when-the-maven-deploy-plugin-silently-fails-to-deploy/">Solved: When the Maven Deploy Plugin silently fails to deploy</a></h3>
+                    <p class="post-tags">
+                        
+                        
+                        
+                        <a href='/tag/code/'>Code</a>
+                        
+                        
+                        
+                        <a href='/tag/maven/'>Maven</a>
+                        
+                        
+                        
+                        <a href='/tag/snaplogic/'>Snaplogic</a>
+                        
+                        
+                        
+                    </p>
+                </header>
+            </article>
+            
+            
+        </section><!-- .read-next -->
+
+        <!-- Create a sorted array of tags -->
+         
+        <section class="tagcloud inner">
+            <h2 class="tagcloud-title">Tags</h2>
+            <div class="tag-links">
+                
+                <a href='http://www.robinhowlett.com/tag/career/'>career</a>
+                
+                <a href='http://www.robinhowlett.com/tag/chrome/'>chrome</a>
+                
+                <a href='http://www.robinhowlett.com/tag/code/'>code</a>
+                
+                <a href='http://www.robinhowlett.com/tag/dataviz/'>dataviz</a>
+                
+                <a href='http://www.robinhowlett.com/tag/horseracing/'>horseracing</a>
+                
+                <a href='http://www.robinhowlett.com/tag/jackson/'>jackson</a>
+                
+                <a href='http://www.robinhowlett.com/tag/java/'>java</a>
+                
+                <a href='http://www.robinhowlett.com/tag/maven/'>maven</a>
+                
+                <a href='http://www.robinhowlett.com/tag/pdfbox/'>pdfbox</a>
+                
+                <a href='http://www.robinhowlett.com/tag/rest/'>rest</a>
+                
+                <a href='http://www.robinhowlett.com/tag/sankey/'>sankey</a>
+                
+                <a href='http://www.robinhowlett.com/tag/snaplogic/'>snaplogic</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring/'>spring</a>
+                
+                <a href='http://www.robinhowlett.com/tag/spring-shell/'>spring-shell</a>
+                
+                <a href='http://www.robinhowlett.com/tag/ssl/'>ssl</a>
+                
+                <a href='http://www.robinhowlett.com/tag/tls/'>tls</a>
+                
+                <a href='http://www.robinhowlett.com/tag/wagering/'>wagering</a>
+                
+            </div><!-- .tag-links -->
+        </section><!-- .tagcloud -->
+
+    </main><!-- .site-main -->
+
+                
+
+                
+                <footer id="colophon" class="site-footer">
+    <p class="site-info inner">
+        <a href="#">The Boy Wonders</a> &copy; 2019. Royce theme by
+        <a target="_blank" href="https://justgoodthemes.com/">JustGoodThemes</a>.
+        <br />
+        Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a>.
+    </p>
+    <a id="back-to-top" class="back-to-top" href="#page">
+        <span class="icon-arrow-up" aria-hidden="true"></span>
+        <span class="screen-reader-text">Back to top</span>
+    </a>
+</footer><!-- .site-footer -->
+            </div><!-- .inner-wide -->
+        </div><!-- .site-content -->
+    </div><!-- .site -->
+
+    
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-35552317-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-35552317-2', { 'anonymize_ip': true });
+  </script>
+
+    <!-- Javascript Assets -->
+    <script src="/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/custom.js"></script>
+
+</body>
+
+</html>

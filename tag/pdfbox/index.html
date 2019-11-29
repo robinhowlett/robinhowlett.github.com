@@ -9,7 +9,7 @@
     
         <title>Tag Page</title>
         <meta name="description" content="A Blog by Robin Howlett">
-        <link rel="canonical" href="/tag/java/">
+        <link rel="canonical" href="/tag/pdfbox/">
     
 
     <!-- Site Favicon -->
@@ -120,8 +120,8 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
                 <main id="main" class="site-main">
     <div class="post-feed inner">
         <header class="page-header">
-            <h1 class="page-title">java</h1>
-            <p class="page-description">A collection of 4 posts</p>
+            <h1 class="page-title">pdfbox</h1>
+            <p class="page-description">A collection of 1 post</p>
         </header>
         <div class="post-feed inner-wide">
             <article class="post">
@@ -161,140 +161,6 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
             
             
             <a href='/tag/pdfbox/'>pdfbox</a>
-            
-            
-            
-        </p>
-    </div><!-- .post-content -->
-</article><article class="post">
-    <header class="post-header">
-        <div class="post-meta">
-            <time class="published" datetime="2015-03-19">March 19, 2015</time>
-        </div><!-- .post-meta -->
-        <h2 class="post-title">
-            <a href="/blog/2015/03/19/adding-java-config-support-to-spring-shell/" rel="bookmark">Adding Java Config support to Spring Shell</a>
-        </h2>
-    </header><!-- .post-header -->
-    <div class="post-content">
-        <p><p>Be it <a href="https://github.com/nvie/gitflow">DVCS workflows</a>, <a href="http://stedolan.github.io/jq/">JSON transformations</a>, or <a href="http://octopress.org/">blogging frameworks</a>, I always favor tools that allow me to use the terminal.</p>
-
-<p>I’ve recently started using <a href="http://docs.spring.io/spring-shell/docs/current/reference/htmlsingle/">Spring Shell</a> for rapidly experimenting with consuming data from a series of APIs I had created.</p>
-
-<p>I have become allergic to XML configuration for Spring applications in recent times, so I was disappointed to see a lack of support for Java configuration within Spring Shell.</p>
-
-<p>However, I did find a <a href="https://jira.spring.io/browse/SHL-106">JIRA issue tracking the feature request</a>. The ticket creator had even submitted a pull request with a potential solution. However, Spring Shell lead <a href="https://twitter.com/markpollack">Mark Pollack</a> responded that the feature could be provided in a simpler manner and even provided guidance to the solution.</p>
-
-<p>Implementing this solution seemed quite straightforward, so I gave it a go and it turned out well.</p>
-
-<p>I’ve submitted the following pull request to the Spring Shell GitHub repository: <a href="https://github.com/spring-projects/spring-shell/pull/66">SHL-106: Java Configuration support #66</a></p>
-
-</p>
-        <p><a href="/blog/2015/03/19/adding-java-config-support-to-spring-shell/">Read on &rarr;</a></p>
-        <p class="post-tags">
-            
-            
-            
-            <a href='/tag/code/'>code</a>
-            
-            
-            
-            <a href='/tag/java/'>java</a>
-            
-            
-            
-            <a href='/tag/spring/'>spring</a>
-            
-            
-            
-            <a href='/tag/spring-shell/'>spring-shell</a>
-            
-            
-            
-        </p>
-    </div><!-- .post-content -->
-</article><article class="post">
-    <header class="post-header">
-        <div class="post-meta">
-            <time class="published" datetime="2015-01-01">January 1, 2015</time>
-        </div><!-- .post-meta -->
-        <h2 class="post-title">
-            <a href="/blog/2015/01/01/building-a-custom-jackson-deserializer/" rel="bookmark">Building a Custom Jackson Deserializer</a>
-        </h2>
-    </header><!-- .post-header -->
-    <div class="post-content">
-        <p><p>A partner recently provided a useful HTTP-based API for me at short notice.</p>
-
-<p>The API returned simple JSON representations of the current state of various events they had periodically ingested from our REST APIs.</p>
-
-<p>A decision they made was to use <code class="highlighter-rouge">"yes"</code>/<code class="highlighter-rouge">"no"</code> values in the response, rather than booleans e.g.</p>
-
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-</span><span class="err">...</span><span class="w">
-	</span><span class="s2">"exists"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yes"</span><span class="p">,</span><span class="w">
-	</span><span class="s2">"has_ended"</span><span class="p">:</span><span class="w"> </span><span class="s2">"no"</span><span class="w">
-</span><span class="err">...</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p>I had written a <a href="http://projects.spring.io/spring-social/">Spring Social</a>-based API client to interact with their API but wanted to deserialize their API response representation into a POJO that followed Java convention.</p>
-
-<p><a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a> is a great Java library for processing JSON data format. It’s quite straightforward to use it to solve a problem like the above with a custom <a href="http://fasterxml.github.io/jackson-databind/javadoc/2.4/com/fasterxml/jackson/databind/JsonDeserializer.html"><code class="highlighter-rouge">JsonDeserializer</code></a>.</p>
-
-</p>
-        <p><a href="/blog/2015/01/01/building-a-custom-jackson-deserializer/">Read on &rarr;</a></p>
-        <p class="post-tags">
-            
-            
-            
-            <a href='/tag/code/'>code</a>
-            
-            
-            
-            <a href='/tag/java/'>java</a>
-            
-            
-            
-            <a href='/tag/jackson/'>jackson</a>
-            
-            
-            
-        </p>
-    </div><!-- .post-content -->
-</article><article class="post">
-    <header class="post-header">
-        <div class="post-meta">
-            <time class="published" datetime="2013-02-13">February 13, 2013</time>
-        </div><!-- .post-meta -->
-        <h2 class="post-title">
-            <a href="/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/" rel="bookmark">Spring app migration: from XML to Java-based config</a>
-        </h2>
-    </header><!-- .post-header -->
-    <div class="post-content">
-        <p><p>Our team recently built a Spring MVC 3.1 application for a web service API. We had used the traditional XML-based configuration but I wanted to see how easy would it be to migrate a Spring application from an XML-based to a Java annotation-based configuration.</p>
-
-<p>I referenced three great resources for this migration:</p>
-
-<ul>
-  <li><a href="http://www.twitter.com/baeldung">@baeldung</a>’s excellent <a href="http://www.baeldung.com/2011/10/20/bootstraping-a-web-application-with-spring-3-1-and-java-based-configuration-part-1/">Bootstrapping a web application with Spring 3.1 and Java based Configuration</a> series</li>
-  <li><a href="http://www.twitter.com/doughaber">@doughaber</a>’s post, <a href="http://blog.fawnanddoug.com/2012/05/pagination-with-spring-mvc-spring-data.html">Pagination with Spring MVC, Spring Data and Java Config</a>, included some great “gotchas”, especially around web tier configuration</li>
-  <li><a href="http://www.twitter.com/cbeam">@cbeam</a> and <a href="http://www.twitter.com/rstoya05">@rstoya05</a>’s presentation, <a href="http://cbeams.github.com/spring-3.1-config">Configuration Enhancements in Spring 3.1</a>, laid out in terrific detail how Spring configuration has evolved and how most XML configurations could be achieved through Java annotations</li>
-</ul>
-
-</p>
-        <p><a href="/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/">Read on &rarr;</a></p>
-        <p class="post-tags">
-            
-            
-            
-            <a href='/tag/code/'>code</a>
-            
-            
-            
-            <a href='/tag/java/'>java</a>
-            
-            
-            
-            <a href='/tag/spring/'>spring</a>
             
             
             

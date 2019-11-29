@@ -121,10 +121,52 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
     <div class="post-feed inner">
         <header class="page-header">
             <h1 class="page-title">code</h1>
-            <p class="page-description">A collection of 9 posts</p>
+            <p class="page-description">A collection of 10 posts</p>
         </header>
         <div class="post-feed inner-wide">
             <article class="post">
+    <header class="post-header">
+        <div class="post-meta">
+            <time class="published" datetime="2019-11-29">November 29, 2019</time>
+        </div><!-- .post-meta -->
+        <h2 class="post-title">
+            <a href="/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/" rel="bookmark">Parsing structured data within PDF documents with Apache PDFBox</a>
+        </h2>
+    </header><!-- .post-header -->
+    <div class="post-content">
+        <p><p>PDF continues to be a popular document publishing format because users see them as the digital equivalent of paper documents. Unlike websites, often what you see on the PDF will be exactly how it will be printed on a physical page, with the added benefits of easily distributable files and near-ubiquitous support of software able to read this format on almost any standard digital device.</p>
+
+<p>However, when information, especially structured data, is contained within a PDF document and one wishes to extract that content, the format becomes quite difficult for developers to interact with.</p>
+
+<p>In this post, I outline a real-world example of parsing a large PDF file that contains repeated tables of data. I show how the raw text can be extracted and then detail much more low-level control over the text characters positioned within the pages. I also touch on the actual mechanics of working through a problem like this - using tools like Excel to explore and analyze both the nature of the PDF, as well as the vagaries of the data itself.</p>
+
+<p><img src="/assets/images/posts/2019/bcbc_snippet_2018.png" alt="BCBC Results Snippet" /></p>
+
+</p>
+        <p><a href="/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/">Read on &rarr;</a></p>
+        <p class="post-tags">
+            
+            
+            
+            <a href='/tag/code/'>code</a>
+            
+            
+            
+            <a href='/tag/java/'>java</a>
+            
+            
+            
+            <a href='/tag/horseracing/'>horseracing</a>
+            
+            
+            
+            <a href='/tag/pdfbox/'>pdfbox</a>
+            
+            
+            
+        </p>
+    </div><!-- .post-content -->
+</article><article class="post">
     <header class="post-header">
         <div class="post-meta">
             <time class="published" datetime="2019-05-15">May 15, 2019</time>
@@ -291,48 +333,6 @@ License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL
             
             
             <a href='/tag/spring/'>spring</a>
-            
-            
-            
-        </p>
-    </div><!-- .post-content -->
-</article><article class="post">
-    <header class="post-header">
-        <div class="post-meta">
-            <time class="published" datetime="2015-03-19">March 19, 2015</time>
-        </div><!-- .post-meta -->
-        <h2 class="post-title">
-            <a href="/blog/2015/03/19/supporting-multi-step-commands-with-spring-shell/" rel="bookmark">Supporting Multi-Step Commands with Spring Shell</a>
-        </h2>
-    </header><!-- .post-header -->
-    <div class="post-content">
-        <p><p>Out of the box, <a href="http://docs.spring.io/spring-shell/docs/current/reference/htmlsingle/">Spring Shell</a> supports printing command results to the terminal in a fairly basic way.</p>
-
-<p>Spring Shell also provides the <a href="http://docs.spring.io/spring-shell/docs/current/api/org/springframework/shell/core/ExecutionProcessor.html"><code class="highlighter-rouge">ExecutionProcessor</code></a> interface, allowing a “command provider to be called in a generic fashion just before, and right after, executing a command”.</p>
-
-<p>The interface defines three lifecycle events that can be intercepted:</p>
-
-<ul>
-  <li>before a command has been invoked</li>
-  <li>after an invocation has been returned</li>
-  <li>after an exception was thrown</li>
-</ul>
-
-<p>I was interested in hooking into the <code class="highlighter-rouge">afterReturningInvocation</code> to provide “step logic” - potentially allowing user or system input to execute additional logic based on the result of the initial command result (and/or each step result) e.g. paging backwards or forwards on the command line through lists of data.</p>
-
-<p>I was able to achieve this and opened <a href="https://jira.spring.io/browse/SHL-174">a JIRA ticket</a> and the following pull request on Spring Shell’s GitHub repo: <a href="https://github.com/spring-projects/spring-shell/pull/67">SHL-174: Multi-Step Commands #67</a></p>
-
-</p>
-        <p><a href="/blog/2015/03/19/supporting-multi-step-commands-with-spring-shell/">Read on &rarr;</a></p>
-        <p class="post-tags">
-            
-            
-            
-            <a href='/tag/code/'>code</a>
-            
-            
-            
-            <a href='/tag/spring-shell/'>spring-shell</a>
             
             
             

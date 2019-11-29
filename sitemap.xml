@@ -45,6 +45,10 @@
 <lastmod>2019-05-15T00:00:00-06:00</lastmod>
 </url>
 <url>
+<loc>/blog/2019/11/29/parsing-structured-data-complex-pdf-layouts/</loc>
+<lastmod>2019-11-29T00:00:00-07:00</lastmod>
+</url>
+<url>
 <loc>/about/</loc>
 </url>
 <url>
@@ -109,6 +113,9 @@
 </url>
 <url>
 <loc>/tag/maven/</loc>
+</url>
+<url>
+<loc>/tag/pdfbox/</loc>
 </url>
 <url>
 <loc>/Changelog/</loc>
