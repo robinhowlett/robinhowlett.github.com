@@ -522,6 +522,8 @@ If the codified message received was invalid, we would let them know also so the
 
 ![invalid](https://i.imgur.com/qQW6sXk.png)
 
+The code used in this project is available here: https://github.com/robinhowlett/accessible-sms
+
 ## Epilogue
 
 There wasn't anything particularly brilliant on my part about this application. Yes, the prime number seed approach can require some focus to follow, but the idea came from the InSTEDD team and I just applied a simplified version of it.
