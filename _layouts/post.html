@@ -14,16 +14,12 @@ post_class: post-template
                         %Y" }}</time>
                 </div><!-- .post-meta -->
                 <h1 class="post-title">{{ page.title }}</h1>
-                {% if page.tags.size > 0 %}
-                <div class="post-tags">
-                    {% for tag in page.tags %} {% if forloop.index == page.tags.size %}
-                    <a href='{{ site.baseurl }}tag/{{ tag | downcase | replace: ' ', '- ' }}/'>{{ tag | camelcase }}</a>
-                    {% else %}
-                    <a href='{{ site.baseurl }}tag/{{ tag | downcase | replace: ' ', '- ' }}/'>{{ tag | camelcase }}</a>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-                {% endif %}
+				<span>[
+				  {% for tag in page.tags %}
+					{% capture tag_name %}{{ tag }}{% endcapture %}
+					<a href="/tag/{{ tag_name }}"><code class="highligher-rouge"><nobr>{{ tag_name }}</nobr></code>&nbsp;</a>
+				  {% endfor %}
+				]</span>
             </header><!-- .post-header -->
 
             {% if page.featured_image %}
