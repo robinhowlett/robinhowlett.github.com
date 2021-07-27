@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Parsing structured data within PDF documents with Apache PDFBox"
-tags: [code, java, horseracing, pdfbox]
+tags: code java horseracing
 ---
 
 PDF continues to be a popular document publishing format because users see them as the digital equivalent of paper documents. Unlike websites, often what you see on the PDF will be exactly how it will be printed on a physical page, with the added benefits of easily distributable files and near-ubiquitous support of software able to read this format on almost any standard digital device.
@@ -136,13 +136,13 @@ However, there were some things of concern that were noted:
 
 #### (2 of 3) Basic: parsing the raw text word-by-word
 
-The BCBC table data is simple enough however to figure most of this out with basic rules and some regexes. By overriding
+The BCBC table data is simple enough however to figure most of this out with basic rules and some regexes.
 
-Here is the main parser for the BCBC PDF files (the entire project [is available on GitHub](https://github.com/robinhowlett/breeders-cup-betting-challenge-parser)).
+The following is the main parser for the BCBC PDF files (the entire project [is available on GitHub](https://github.com/robinhowlett/breeders-cup-betting-challenge-parser)).
 
 It builds a list of `BCBCEntry` objects (corresponding to tournament players), each of which contain a list of the parsed bets.
 
-The `writeText()` call triggers a variety of calls to other methods that can be overridden to further control the parsing of the `PDDocument`, including [`writePage()`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writePage--), [`writeCharacters(TextPosition text)`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeCharacters-org.apache.pdfbox.text.TextPosition-), and [`writeString(String text, List<TextPosition> textPositions)`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeString-java.lang.String-java.util.List-) among others.
+The overridden `writeText()` method triggers a variety of calls to other methods that can also be overridden to further control the parsing of the `PDDocument`, including [`writePage()`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writePage--), [`writeCharacters(TextPosition text)`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeCharacters-org.apache.pdfbox.text.TextPosition-), and [`writeString(String text, List<TextPosition> textPositions)`](https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html#writeString-java.lang.String-java.util.List-) among others.
 
 The latter is leveraged below to capture specific words that are expected, along with setting various marker booleans that instruct subsequent iterations to extract the desired information. Some pre-processing and sanitation is done by the `BCBCEntry` and `Bet` classes (see GitHub for the details):
 

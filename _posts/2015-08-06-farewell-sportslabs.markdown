@@ -3,7 +3,7 @@ layout: post
 title: "Farewell SportsLabs, Hello SnapLogic"
 date: 2015-08-06 22:13:17 -0600
 comments: true
-tags: [career, snaplogic]
+tags: career snaplogic
 ---
 
 After close to 5 years with [Silver Chalice/SportsLabs](http://sportslabs.com), today, Friday August 7th 2015, will be my last day with the company. On Monday, I join [SnapLogic](http://www.snaplogic.com/), an enterprise integration platform-as-a-service (iPaaS) provider that I believe has an amazing future.

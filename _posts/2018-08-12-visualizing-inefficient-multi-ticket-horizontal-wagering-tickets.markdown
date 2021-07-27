@@ -3,7 +3,7 @@ layout: post
 title: "Visualizing inefficient multi-ticket horizontal wagering tickets"
 date: 2018-08-12 13:44:27 -0600
 comments: true
-tags: [dataviz, horseracing, wagering, sankey]
+tags: dataviz horseracing
 ---
 
 Between PPs, result charts, and wagering ticket summaries, the way that horse racing information has been presented to regular fans hasn't changed very much over the years. In this post, I use data visualizations to try to increase comprehension of advanced wagering advice.

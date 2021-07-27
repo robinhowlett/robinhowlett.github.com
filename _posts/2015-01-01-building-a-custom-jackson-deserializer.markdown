@@ -3,7 +3,7 @@ layout: post
 title: "Building a Custom Jackson Deserializer"
 date: 2015-01-01 21:35:31 -0700
 comments: true
-tags: [code, java, jackson]
+tags: code java jackson
 ---
 
 A partner recently provided a useful HTTP-based API for me at short notice. 

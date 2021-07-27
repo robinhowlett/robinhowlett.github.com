@@ -3,7 +3,7 @@ layout: post
 title: "Building a Google Chrome Extension (Keyboard Shortcuts, Copying to the Clipboard, and Notifications)"
 date: 2016-11-12 00:27:43 -0700
 comments: true
-tags: [code, chrome, snaplogic]
+tags: code chrome snaplogic
 ---
 
 I recently had the quite enjoyable and productive experience of writing [Pipeline Linker](https://chrome.google.com/webstore/detail/snaplogic-pipeline-linker/cmngkccmjnhnjhjcnmajoiacacnjefgb), my first [Google Chrome Extension](https://www.google.com/chrome/webstore/extensions.html).

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Accessible communication with Twilio's Programmable Messaging API, JBang, and PicoCLI"
-tags: [code, java, communications, sms, twilio, jbang, picocli]
+tags: code java
 ---
 
 ![demo](https://i.imgur.com/g3GA6Ms.png)

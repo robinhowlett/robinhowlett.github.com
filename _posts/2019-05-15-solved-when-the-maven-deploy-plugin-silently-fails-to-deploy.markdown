@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Solved: When the Maven Deploy Plugin silently fails to deploy"
-tags: [code, maven, snaplogic]
+tags: code maven snaplogic
 ---
 
 At SnapLogic, we recently noticed that a particular build job that was responsible for deploying build artifacts to a Nexus repository via Maven had suddenly stopped, well, deploying. What was odd was that no error of any kind was being communicated, even in DEBUG mode. 
