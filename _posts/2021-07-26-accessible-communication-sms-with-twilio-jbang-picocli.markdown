@@ -6,11 +6,11 @@ tags: [code, java, communications, sms, twilio, jbang, picocli]
 
 ![demo](https://i.imgur.com/g3GA6Ms.png)
 
-In the mid-to-late 1990s when I was in secondary school in Ireland, I chose to participate in the optional one-year Transition Year (TY) school program. TY offers students to combine a regular academic school year with opportunities to participate in independent activites including volunteer engagements.
+In the mid-to-late 1990s when I was in secondary school in Ireland, I chose to participate in the optional one-year Transition Year (TY) school program. TY lets students combine a regular academic school year with opportunities to participate in independent activites, including volunteer engagements.
 
-I worked one month with the [Rehab Group](https://www.rehab.ie), a charity that provides people with a disability or disadvantage educational services and professional training. As I had developed a decent familiarity with personal computers by then, my responsibility was to train individuals basic computer skills.
+I worked one month with the [Rehab Group](https://www.rehab.ie), a charity that provides people with a disability or disadvantage educational services and professional training. As I had developed a decent familiarity with personal computers by then, my responsibility was to train basic computer skills.
 
-Those individuals' disadvantages included prosthetic limbs, speech impediments, and learning difficulties, among others. Many had never used a computer before. For those that struggled to type, I introduced voice recognition software (Dragon Dictate) so could speak into a microphone to "write" emails to relatives. I showed them how to use Microsoft Word and find information using a web browser.
+Those individuals' disadvantages included prosthetic limbs, speech impediments, and learning difficulties, among others. Many had never used a computer before. For those that struggled to type, I introduced voice recognition software (Dragon Dictate), so they could speak into a microphone to "write" emails to relatives. I showed them how to use Microsoft Word and find information using a web browser.
 
 There was one incident however that stuck with me all these years later. An elderly gentleman entered the training room and sat down at the computer, visibly nervous. 
 
@@ -24,9 +24,9 @@ Once Windows had loaded and the desktop was displayed, it was time for the first
 
 He glanced at me, nodded, and looked at the mouse. He then picked it up, raising it into the air and held it to the bottom-left corner of the monitor's screen.
 
-I do not tell this story to mock him. What I realized that day is the interfaces we use with computers should not be assumed to be natural, that the language we use to provide instructions to people is often abstract and assumes a level of technical familiarity above what they may be comfortable or experienced with, or even capable of.
+I do not tell this story to mock him. What I realized that day is the interfaces we use with computers should not be assumed to be natural. That the instructional language we use is often abstract and assumes a level of technical familiarity above what people may be comfortable with, or even capable of.
 
-Ever since then, I've always been drawn to designs and solutions that leveraged technology so that people like that gentleman at Rehab could understand and avail of.
+Ever since then, I've always been drawn to designs and solutions that leveraged technology in a manner that people like that gentleman at Rehab could avail of.
 
 <!-- more -->
 
@@ -51,11 +51,11 @@ The InSTEDD team devised an ingenious solution to this - physical reporting whee
 ![recording-wheel-1](http://3.bp.blogspot.com/_vWSpQpYPpFE/TBuG_CFNCEI/AAAAAAAAAB8/dtZ6hLucLKg/s400/reporting-wheel.png)
 ![recording-wheel-2](http://2.bp.blogspot.com/_vWSpQpYPpFE/TBuG_vzCu3I/AAAAAAAAACM/M5NdKLOibnc/s400/reporting-wheel3.png)
 
-Cheap and easy to build but sturdy, with no batteries required and intuitive within minutes. Children have used similar devices, called decoder wheels, to create "secret codes" to exchange with each other. 
+The wheels were cheap and easy to build but sturdy, with no batteries required and intuitive within minutes. You may have seen children using similar devices, called decoder wheels, to create "secret codes" to exchange with each other. 
 
-The reporting wheel the team created enabled health center workes align 3 independently-rotating wheels, each with a 3-digit code for each of the enumerated values that could be chosen, for the respective data point (the day of the month, the disease, and the number of cases being reported).
+The reporting wheel the team created enabled health center workers align 3 independently-rotating wheels, each with a 3-digit code for choosing one of an enumerated set values for the respective data point (in this case, the day of the month, the disease, and the number of cases being reported).
 
-Once each value has been chosen and aligned with a indicator, the health worker will have a nine-digit code that codifies the data values and can then send that code via SMS to a cell phone number. The service will then reverse engineer that code back into the original data values.
+Once each value has been chosen and aligned with a indicator, the health worker would have a nine-digit code that codifies the data values and could send that code via SMS to a cell phone number. The service will then reverse engineer that code back into the original data values.
 
 ### Codification of the nine-digit message
 
@@ -64,7 +64,7 @@ Most interestingly of all, the system also needed to address some major usabilit
 * How could typos or data entry mistakes be identified to prevent misreporting disease case data?
 * How could this solution scale to different kinds of reports without having to ask the user to identify the type of wheel being used?
 
-While not outlined explicity in the post, the image above provides the answer. For each wheel, the first code value is a prime number and each subsequent value is a multiple of it. Indeed, they are sequential primes being used - 23, 29, 31. 
+While not outlined explicity in the post, the images above provide the answer. For each wheel, the first code value is a prime number and each subsequent value is a multiple of it. The other wheels also started with a prime number - indeed, sequential primes are being used - 23, 29, 31. 
 
 This seemed like a fun idea to experiment with to try out Twilio's SDK and some other libraries that had recently caught my attention.
 
@@ -74,13 +74,13 @@ This seemed like a fun idea to experiment with to try out Twilio's SDK and some 
 
 At SnapLogic, it's been brilliant for my team to use it for rapid exploration of various SDKs and APIs, and to reproduce specific scenarios quickly.
 
-Indeed, I believe I first heard about JBang via Twilio's Developer Evangelist, [Matthew Gillard](https://www.twitch.tv/maximumgilliard)'s Twitch channel.
+In fact, I believe I first heard about JBang via Twilio's Developer Evangelist, [Matthew Gillard's Twitch channel](https://www.twitch.tv/maximumgilliard).
 
 ### Simulating the Reporting Wheel
 
-The first thing was to build a script to simulate the reporting wheel shown above. I wanted a command-line interface (CLI) approach where the user could provide the data points as arguments or be prompted for each data point, validating the input as it went.
+The first action was to build a script to simulate the reporting wheel demonstrated above. I wanted a command-line interface (CLI) approach where the user could provide the data points as arguments or be prompted for each one, validating the input as it went.
 
-JBang's demo used [PicoCLI](https://picocli.info/) so that was good enough for me and I was able to quickly define the options the user would provide:
+JBang's landing page demo used [PicoCLI](https://picocli.info/) so that was good enough for me and I was able to quickly define the options the user would provide:
 
 ```java
 //usr/bin/env jbang "$0" "$@" ; exit $?
@@ -127,7 +127,7 @@ JBang will download Java 11 if the user does not have it installed, it will down
 
 ### Codification of the message via Prime numbers
 
-I wanted to simulate using different reporting wheels targeting the same reporting service number, so I randomized which prime would be used as the intial seed value for the first "wheel" value. The next 2 prime numbers would then be used as the prime seeds for the second and third wheel values respectively.
+I wanted to simulate using different reporting wheel types targeting the same reporting service number, so I randomized which prime would be used as the intial seed value for the first "wheel" value. The next 2 prime numbers would then be used as the prime seeds for the second and third wheel values respectively.
 
 ```java
 @Override
@@ -177,7 +177,7 @@ This is how I would ask the user for input, re-asking until valid input values h
     }
 ```
 
-Using PicoCLI like this allowed both a direct and interactive choice of user input, for example, consider the direct invocation:
+Using PicoCLI like this allowed both a direct and interactive choice of user input. For example, consider the direct invocation:
 
 ```
 > jbang ReportingWheel.java -d 26 -di m -c 9
@@ -224,19 +224,19 @@ Please text this code 130021099 to +14158493243
 THANK YOU FOR YOUR REPORT!
 ```
 
-You may notice that the nine-digit codes generated are different ("182033117" vs "130021099") for the same input values, but that is due to the randomized prime seed selection simulating different wheel types being used.
+You may notice that the nine-digit codes generated are different ("182033117" vs "130021099") for the same input values, but that is due to the randomized prime seed selection simulating different wheel types being used (even though the data points being used are the same).
 
 ### Decoding the message and replying via Twilio-enabled SMS
 
-To decode the message being sent, I need a few things first:
+To decode the message being sent, I needed a few things first:
 
 * A phone number to send SMS messages to
 * A programmable mechanism to receive the message that was sent
 * A way to reply to the received SMS with the decoded data values
 
-My team had built the Twilio Snap Pack and has reported excellent feedback on the quality of the APIs and SDKs provided. 
+My team had built the [Twilio Snap Pack](https://community.snaplogic.com/t/launched-twilio-snap-pack/9645) and had reported on the excellent quality of the APIs and SDKs provided. 
 
-I purchased an SMS-capable phone number from Twilio for $1 in about ten seconds.
+I purchased an SMS-capable [phone number](https://www.twilio.com/docs/phone-numbers) from Twilio for $1 in about ten seconds.
 
 Next, I read up about [webhooks](https://www.twilio.com/docs/glossary/what-is-a-webhook) that could be used to receive callback requests when messages had been received by the newly-purchased Twilio number. I didn't really want to set up a server on the public internet for this, but Twilio's CLI came to the rescue with an excellent developer-friendly feature.
 
@@ -254,7 +254,7 @@ This updated my Messaging Service's configuration automatically:
 
 ![clever](https://i.imgur.com/Kujx7oY.png)
 
-Finally, it was time to build the web service that would receive the webhook request from Twilio containing the codified message. I tweaked [an existing Twilio example](https://www.twilio.com/docs/sms/quickstart/java?code-sample=code-respond-to-an-incoming-text-message&code-language=Java&code-sdk-version=8.x) that used the Spark library to create an `/sms` API endpoint that received the POST request:
+Finally, it was time to build the web service that would receive the webhook request from Twilio containing the codified message. I tweaked [an existing Twilio example](https://www.twilio.com/docs/sms/quickstart/java?code-sample=code-respond-to-an-incoming-text-message&code-language=Java&code-sdk-version=8.x) that used the [Spark Java Framework](http://sparkjava.com/) to create an `/sms` API endpoint that received the POST request:
 
 ```java
 /**
@@ -303,7 +303,7 @@ public class ReportingServer {
     ...
 ```
 
-Run the server via JBang like so - it will start listening for messages:
+Run the server via JBang like so - it will start listening for requests from the Twilio webhook:
 
 ```
 > jbang ReportingServer.java 
@@ -457,7 +457,7 @@ static Map<Integer, List<String>> buildPrimeLookupByCasesCode(
 
 #### Identify the prime seeds used in the original message
 
-Through a process of elimiation, only one combination will be valid. Once that combination is found, we can fully decode the message. If no combinations applied, then the code received is invalid (i.e. a typo occurred):
+Through a process of elimiation, only one combination will be valid. Once that combination is found, we can fully decode the message via the indexes of the matched codes. If no combinations applied, then the code received is invalid (i.e. likely a typo occurred):
 
 ```java
 // the first 3 digits correspond the codified day of the month
@@ -532,4 +532,4 @@ Twilio also did all the heavy lifting with running virtual phone numbers, on-mes
 
 I'm sure there is plenty of other material out there showing much more sophisticated demonstrations of communication platforms with richer user interfaces and experiences.
 
-But what is worth remembering is that when communications techology is used in a way that accomodates *everybody*, even those sometimes forgotten because resources, language, education, opportunity or accessibility, it can still provide life-changing benefits to real people, even in the farthest reaches of the globe.
+But what is worth remembering is that when communications techology is used in a way that accomodates *everybody*, even those sometimes forgotten because of resources, language, education, opportunity or accessibility, it can still provide life-changing benefits to real people, even in the farthest reaches of the globe.
