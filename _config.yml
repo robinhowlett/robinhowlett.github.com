@@ -6,7 +6,7 @@ logo:
 # Author image is used in site sidebar and greetings in the home page hero text
 author:
   image: 'authorimage_robin-gravatar.png'
-  greetings: "I'm Robin Howlett, Software Development Manager at <a href=\"https://advertising.amazon.com/solutions/products/amazon-dsp\">Amazon DSP</a>, a demand-side platform that allows you to programmatically buy ads to reach new and existing audiences on and off Amazon. Married to <a href=\"http://sarahhowlett.com/\">Sarah Howlett</a>. Father of twins. Boulder, 
+  greetings: "I'm Robin Howlett, Software Development Manager at <a href=\"https://advertising.amazon.com/solutions/products/amazon-dsp\">Amazon Ads DSP</a>. Married to <a href=\"http://sarahhowlett.com/\">Sarah Howlett</a>. Father of twins. Boulder, 
       Colorado-based. Made in Ireland."
 favicon: 'assets/images/favicon.ico'
 baseurl: 
