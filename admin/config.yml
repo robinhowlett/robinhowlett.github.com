@@ -1,8 +1,9 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: robinhowlett/robinhowlett.github.com
   branch: source
 
-media_folder: "assets/images" # Where uploaded images will be stored
+media_folder: "assets/images"
 public_folder: "/assets/images"
 
 collections:
