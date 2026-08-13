@@ -9,12 +9,26 @@ author:
   greetings: "I'm Robin Howlett, Software Development Manager at <a href=\"https://advertising.amazon.com/solutions/products/amazon-dsp\">Amazon Ads DSP</a>. Married to <a href=\"http://sarahhowlett.com/\">Sarah Howlett</a>. Father of twins. Boulder, 
       Colorado-based. Made in Ireland."
 favicon: 'assets/images/favicon.ico'
-baseurl: 
-production_url: http://www.robinhowlett.com/
+baseurl:
+url: https://robinhowlett.com
+production_url: https://robinhowlett.com/
 disqus: 'robinhowlett'
+
+# giscus comments (GitHub Discussions). Once all four IDs are filled in, posts
+# use giscus instead of Disqus automatically. Get the IDs from https://giscus.app
+# after enabling Discussions on the repo and installing the giscus GitHub App.
+giscus:
+  repo: 'robinhowlett/robinhowlett.github.com'
+  repo_id:
+  category: 'Announcements'
+  category_id:
+  mapping: 'pathname'
 #mailchimp_url: '//mailchi.mp/aba2a859dd29/subscribe-for-updates'
-# Add your GA Tracking Id
-ga_analytics: UA-35552317-2
+# Google Analytics 4 Measurement ID (looks like G-XXXXXXXXXX). The old
+# Universal Analytics property (UA-35552317-2) stopped collecting in July 2023,
+# so it's removed. Drop a GA4 ID here to re-enable analytics (loads in
+# production builds only). Leave blank for no analytics.
+ga_analytics:
 
 # Contact form setings
 email: robin.howlett@gmail.com
@@ -35,10 +49,12 @@ navigation:
  - text: Horse Racing
    url: /tag/horseracing/
 
-# Required Plugins
-plugins_dir:
+# Plugins (correct Jekyll key is `plugins:`, not `plugins_dir:`).
+# Tag pages are generated from the committed tag/*.md files, so no tag-generator
+# plugin is needed. jekyll-feed is intentionally omitted (we keep the hand-rolled
+# feed.xml so existing subscriber URLs/format don't change).
+plugins:
   - jekyll-paginate
-  - jekyll-tagsgenerator
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-gist
@@ -55,6 +71,12 @@ permalink: "/blog/:year/:month/:day/:title/"
 
 # Other
 markdown: kramdown
+
+# Build in UTC so post permalinks match how GitHub Pages built them.
+# Two posts (2015-01-01 21:35 -0700 and 2015-08-06 22:13 -0600) roll to the
+# next UTC day, so their live URLs are /blog/2015/01/02/... and
+# /blog/2015/08/07/... — this keeps that behaviour deterministic everywhere.
+timezone: Etc/UTC
 
 # Sass
 sass:
