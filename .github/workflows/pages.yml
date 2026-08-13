@@ -48,6 +48,9 @@ jobs:
 
   deploy:
     needs: build
+    # Only publish from the production branch. This lets us dry-run the build
+    # (via workflow_dispatch on other branches) without attempting a deploy.
+    if: github.ref == 'refs/heads/source'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
