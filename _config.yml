@@ -90,6 +90,14 @@ markdown: kramdown
 # /blog/2015/08/07/... — this keeps that behaviour deterministic everywhere.
 timezone: Etc/UTC
 
+# Embed gists client-side only. The default (noscript: true) makes jekyll-gist
+# fetch each gist from the GitHub API at build time for a <noscript> fallback —
+# that call 404s for these gist refs and crashes jekyll-gist 1.5 on Ruby 3.3
+# (uninitialized TimeoutError), failing the whole build. Gists still render via
+# their JS embed (verified working), so we skip the fragile server-side fetch.
+gist:
+  noscript: false
+
 # Sass
 sass:
   sass_dir: _sass
