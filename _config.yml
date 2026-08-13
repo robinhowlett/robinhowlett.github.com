@@ -19,9 +19,9 @@ disqus: 'robinhowlett'
 # after enabling Discussions on the repo and installing the giscus GitHub App.
 giscus:
   repo: 'robinhowlett/robinhowlett.github.com'
-  repo_id:
+  repo_id: 'MDEwOlJlcG9zaXRvcnk4MTczMzE4'
   category: 'Announcements'
-  category_id:
+  category_id: 'DIC_kwDOAHy3Bs4DDThQ'
   mapping: 'pathname'
 #mailchimp_url: '//mailchi.mp/aba2a859dd29/subscribe-for-updates'
 # Google Analytics 4 Measurement ID (looks like G-XXXXXXXXXX). The old
