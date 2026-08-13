@@ -36,7 +36,9 @@ contact_page_description: "Ask me a question."
 thankyou_page_description: "Your message has been successfully sent."
 
 # Social links
-twitter: 'robinhowlett'
+twitter:
+  username: robinhowlett
+  card: summary
 github: 'robinhowlett'
 linkedin: 'robinhowlett'
 
@@ -68,6 +70,16 @@ excerpt_separator: "<!-- more -->"
 
 # Permalinks
 permalink: "/blog/:year/:month/:day/:title/"
+
+# Front-matter defaults. `image` is the fallback Open Graph / Twitter share
+# image for any page that doesn't set its own `image:` (jekyll-seo-tag reads it
+# per-page). Swap for a 1200x630 banner + set `twitter.card: summary_large_image`
+# above to use big image cards. Set `image:` in a post's front matter to override.
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/images/authorimage_robin-gravatar.png
 
 # Other
 markdown: kramdown
