@@ -1,120 +1,79 @@
-# Royce Jekyll Theme v1.0.0
+# robinhowlett.com
 
-[Theme Live Demo](https://royce.netlify.com/)
+Personal blog of Robin Howlett — built with [Jekyll](https://jekyllrb.com/) on the
+"Royce" theme, published to [robinhowlett.com](https://robinhowlett.com/) via GitHub Pages.
 
-## Features
+## Local development
 
-* Mobile-ready
-* Contact form built-in 
-* Social icons built-in
-* Social sharing built-in
-* Mailchimp subscription form
-* Code Syntax Highlight with [Prism.js](https://prismjs.com/)
-* Support for Disqus comments
+Requires Ruby 3.x and Bundler.
 
-## Getting Started
+```bash
+bundle install
+bundle exec jekyll serve      # http://localhost:4000/
+```
 
-**Table of Contents**
+The site builds in `Etc/UTC` (`timezone:` in `_config.yml`) so post permalinks match
+production regardless of your machine's timezone — don't remove that setting.
 
-* 1. Theme Configuration
-* 2. Contact form setings
-* 3. Social Links
-* 4. Site Navigation
-* 5. Images
-* 6. Local Installation
-* 7. Deployment
-* 8. Support
+### macOS toolchain note
 
-### 1. Theme Configuration
+`bundle install` compiles the native `eventmachine` gem (a Jekyll dependency). On this
+Mac the Command Line Tools install is missing its C++ headers, so a plain
+`bundle install` fails to compile it. The proper fix is to reinstall the CLT:
 
-The theme configuration options can be found within the **_config.yml** file. More information about Jekyll configuration can be found in the [Jekyll documentation](https://jekyllrb.com/docs/configuration/).
+```bash
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
+```
 
-* name - the title of your blog, shown in the page and description areas.
-* description - the description of your site for social meta tag, search engines, and feed.xml.
-* logo - the image for site logo.
-* author-image - the author profile image, shown in the sidebar/header intro section. The author image can be found in the royce/assets/images/authorimage.jpg location.
-* author-greetings - used in the home page for the text intro section.
-* favicon - the icon for your site.
-* baseurl - the subpath of your site, e.g. /blog, for generating urls. If baseurl is set, you will need to prepend the baseurl to these settings: author image, site navigation, post images.
-* production_url - the base hostname and protocol of your site for where absolute urls are needed.
-* disqus - your Disqus shortname. Enter the Disqus shortname here if you wish to have Disqus comments enabled, leave blank to disable comments.
-* mailchimp_url - your form action URL for MailChimp newsletter signup form.
+Until then, this one-time workaround compiles it against the SDK's libc++:
 
-### 2. Contact form setings
-To make contact form work make sure you have defined "email: youremail@email.com" in _config.yml file and verify your form on formspree.io.
+```bash
+CPLUS_INCLUDE_PATH="$(xcrun --show-sdk-path)/usr/include/c++/v1" \
+  MAKEFLAGS='CXX=clang++' bundle install
+```
 
-* email - email used for contact form.
-* contact_page_description: - description used in contact form page (contact.html).
-* thankyou_page_description - description used in thank you page (thank-you.html).
+(Only needed for `bundle install`; `jekyll serve`/`build` need no special flags.)
 
-### 3. Social Links
+## Writing a post
 
-To enable social links on your blog simply enter your social profile username, for example, twitter: "justgoodthemes" . If a field is left blank, the social icon will not be shown.
+Add a Markdown file to `_posts/` named `YYYY-MM-DD-title-slug.markdown` with front matter:
 
-### 4. Site Navigation
+```yaml
+---
+layout: post
+title: "Your Title"
+tags: code java      # space-separated, no commas
+---
+```
 
-The site navigation can be found in the **_config.yml** file. To add a page to the site navigation simply add your new page in the markdown format (e.g. newpage.md) in the theme root folder. Next edit your navigation menu located in **_config.yml** file on line 37. To add a new item to the navigation you have to add the item name and url. For example:
+The URL is `/blog/:year/:month/:day/:title/` (do not change the `permalink` in
+`_config.yml` — it preserves 15 years of existing links).
 
-~~~~
-navigation:
-- text: New Page
-url: /newpage/
-~~~~
+If a post introduces a **new tag**, regenerate the tag pages and commit them:
 
-### 5. Images
+```bash
+python3 tag_generator.py     # rewrites tag/*.md (read by _layouts/tagpage.html)
+```
 
-Images for pages are located in the royce/assets/images folder and images for posts are located in the royce/assets/images/posts directory.
+## Deployment
 
-#### Image With Caption
+Deploys run via GitHub Actions (`.github/workflows/pages.yml`): push to `source`
+builds with Jekyll 4 and publishes to Pages.
 
-Within your blog posts you can include captions for images. This requires using some HTML markup.
+> **One-time cutover:** the repo currently still uses the *legacy* Pages branch build.
+> To switch to the Actions build, go to **Settings → Pages → Build and deployment →
+> Source** and choose **GitHub Actions**. This is reversible (switch back to
+> "Deploy from a branch" → `source`).
 
-The example below illustrates how to include an image with a caption in a blog post:
+## Comments
 
-~~~~
-{% include image-caption.html imageurl="/images/posts/Apple-Watch-In-Car.jpg" 
-title="Apple Super" caption="supertest" %}
-~~~~
+Comments use Disqus by default. To switch to [giscus](https://giscus.app) (GitHub
+Discussions): enable Discussions on the repo, install the giscus GitHub App, then fill
+in the four `giscus:` IDs in `_config.yml`. Posts switch to giscus automatically once
+those are set.
 
-Add the following code into your post/page markdown and change its attributes accordingly.
+## Analytics
 
-#### Full Width Image With Caption
-
-To have wide images in posts or pages simply add #wide word with the hashtag at the end of image path like in the example below:
-
-~~~~
-{% include image-caption.html imageurl="/images/posts/Apple-Watch-In-Car.jpg#wide" 
-title="Apple" caption="This is caption" %}
-~~~~
-
-Add the following code into your post/page markdown and change its attributes accordingly.
-
-### 6. Local Instalation
-
-To set up Jekyll on local machine please follow the official documentation that can be found here -> https://jekyllrb.com/docs/.
-
-### 7. Deployment
-
-Sites built using Jekyll can be deployed in a large number of ways due to the static nature of the generated output. Here are some of the most common ways:
-
-#### Manual Deployment
-
-Jekyll generates your static site to the **_site** directory by default. You can transfer the contents of this directory to almost any hosting provider to get your site live. Here are some manual ways of achieving this:
-
-##### Netlify
-
-This theme is prepared to be hosted on [Netlify](https://www.netlify.com/). All you need to do is create a new private repository on GitHub or GitLab. Upload the theme to the repository and link your repo to Netlify. Please check [this link](https://www.netlify.com/blog/2015/10/28/a-step-by-step-guide-jekyll-3.0-on-netlify/#step-2-link-to-your-github) with the step by step guidelines.
-
-##### FTP
-
-Most traditional web hosting providers let you upload files to their servers over FTP. To upload a Jekyll site to a web host using FTP, run the jekyll build command and copy the contents of the generated **_site** folder to the root folder of your hosting account. This is most likely to be the httpdocs or public_html folder on most hosting providers.
-
-##### Amazon S3
-
-If you want to host your site on Amazon S3, you can do so by using the [s3_website application](https://github.com/laurilehmijoki/s3_website). It will push your site to Amazon S3 where it can be served like any web server, dynamically scaling to almost unlimited traffic.
-
-### 8. Support
-
-The documentation included provides all the information you need to get started with the theme. However, if you have any questions you can email us at hello@justgoodthemes.com, and we will be happy to help you.
-
-*Also, if you have any bug reports, or feature requests, please let us know!*
+Set a GA4 Measurement ID (`G-XXXXXXXXXX`) as `ga_analytics:` in `_config.yml` to enable
+Google Analytics (loads in production builds only). Left blank = no analytics.

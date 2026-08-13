@@ -1,0 +1,60 @@
+name: Build and deploy (GitHub Pages)
+
+# Builds the site with Jekyll 4 and deploys via GitHub Actions.
+# NOTE: this only publishes once the repo's Pages "Source" is switched from
+# the legacy branch build to "GitHub Actions" (Settings > Pages). Until then
+# the live site is unaffected and this workflow just builds/validates.
+on:
+  push:
+    branches: [source]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress prod deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        env:
+          JEKYLL_ENV: production
+          # Lets jekyll-gist fetch embeds without hitting anonymous rate limits.
+          JEKYLL_GITHUB_TOKEN: ${{ github.token }}
+        run: bundle exec jekyll build
+      - name: Check internal links & images
+        run: |
+          bundle exec htmlproofer _site \
+            --disable-external \
+            --allow-hash-href \
+            --ignore-empty-alt \
+            --no-enforce-https
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    # Only publish from the production branch. This lets us dry-run the build
+    # (via workflow_dispatch on other branches) without attempting a deploy.
+    if: github.ref == 'refs/heads/source'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

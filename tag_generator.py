@@ -1,54 +1,69 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-'''
+"""
 tag_generator.py
 
-Copyright 2017 Long Qian
-Contact: lqian8@jhu.edu
+Regenerates the tag/<name>.md stub pages from the tags declared in _posts/.
+Each stub renders through _layouts/tagpage.html at /tag/<name>/.
 
-This script creates tags for your Jekyll blog hosted by Github page.
-No plugins required.
-'''
+Originally by Long Qian (2017); hardened to tolerate comma-separated tags so
+front matter like `tags: code, security` no longer produces a bogus `code,`
+tag. Run this after adding/removing posts or changing their tags, then commit
+the tag/ changes:
+
+    python3 tag_generator.py
+
+Note: keep post front matter comma-free (`tags: code security`) so Jekyll's own
+site.tags keys match the files this script writes.
+"""
 
 import glob
 import os
+import re
 
-post_dir = '_posts/'
-tag_dir = 'tag/'
+POST_DIR = "_posts/"
+TAG_DIR = "tag/"
 
-filenames = glob.glob(post_dir + '*markdown')
 
-total_tags = []
-for filename in filenames:
-    f = open(filename, 'r', encoding='utf8')
-    crawl = False
-    for line in f:
-        if crawl:
-            current_tags = line.strip().split()
-            if current_tags[0] == 'tags:':
-                total_tags.extend(current_tags[1:])
-                crawl = False
-                break
-        if line.strip() == '---':
-            if not crawl:
-                crawl = True
-            else:
-                crawl = False
-                break
-    f.close()
-total_tags = set(total_tags)
+def tags_in(filename):
+    """Return the tag tokens from a post's YAML front matter."""
+    with open(filename, encoding="utf8") as f:
+        in_front_matter = False
+        for line in f:
+            stripped = line.strip()
+            if stripped == "---":
+                if in_front_matter:
+                    break
+                in_front_matter = True
+                continue
+            if in_front_matter and stripped.startswith("tags:"):
+                raw = stripped[len("tags:"):]
+                # Split on whitespace and/or commas, drop empties.
+                return [t for t in re.split(r"[,\s]+", raw) if t]
+    return []
 
-old_tags = glob.glob(tag_dir + '*.md')
-for tag in old_tags:
-    os.remove(tag)
-    
-if not os.path.exists(tag_dir):
-    os.makedirs(tag_dir)
 
-for tag in total_tags:
-    tag_filename = tag_dir + tag + '.md'
-    f = open(tag_filename, 'a')
-    write_str = '---\nlayout: tagpage\ntitle: \"Tag: ' + tag + '\"\ntag: ' + tag + '\nrobots: noindex\n---\n'
-    f.write(write_str)
-    f.close()
-print("Tags generated, count", total_tags.__len__())
+def main():
+    all_tags = set()
+    for filename in glob.glob(POST_DIR + "*.markdown"):
+        all_tags.update(tags_in(filename))
+
+    os.makedirs(TAG_DIR, exist_ok=True)
+    for old in glob.glob(TAG_DIR + "*.md"):
+        os.remove(old)
+
+    for tag in sorted(all_tags):
+        with open(os.path.join(TAG_DIR, tag + ".md"), "w", encoding="utf8") as f:
+            f.write(
+                "---\n"
+                "layout: tagpage\n"
+                f'title: "Tag: {tag}"\n'
+                f"tag: {tag}\n"
+                "robots: noindex\n"
+                "---\n"
+            )
+    print(f"Tags generated, count {len(all_tags)}")
+
+
+if __name__ == "__main__":
+    main()

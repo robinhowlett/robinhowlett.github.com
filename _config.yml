@@ -9,12 +9,26 @@ author:
   greetings: "I'm Robin Howlett, Software Development Manager at <a href=\"https://advertising.amazon.com/solutions/products/amazon-dsp\">Amazon Ads DSP</a>. Married to <a href=\"http://sarahhowlett.com/\">Sarah Howlett</a>. Father of twins. Boulder, 
       Colorado-based. Made in Ireland."
 favicon: 'assets/images/favicon.ico'
-baseurl: 
-production_url: http://www.robinhowlett.com/
+baseurl:
+url: https://robinhowlett.com
+production_url: https://robinhowlett.com/
 disqus: 'robinhowlett'
+
+# giscus comments (GitHub Discussions). Once all four IDs are filled in, posts
+# use giscus instead of Disqus automatically. Get the IDs from https://giscus.app
+# after enabling Discussions on the repo and installing the giscus GitHub App.
+giscus:
+  repo: 'robinhowlett/robinhowlett.github.com'
+  repo_id: 'MDEwOlJlcG9zaXRvcnk4MTczMzE4'
+  category: 'Announcements'
+  category_id: 'DIC_kwDOAHy3Bs4DDThQ'
+  mapping: 'pathname'
 #mailchimp_url: '//mailchi.mp/aba2a859dd29/subscribe-for-updates'
-# Add your GA Tracking Id
-ga_analytics: UA-35552317-2
+# Google Analytics 4 Measurement ID (looks like G-XXXXXXXXXX). The old
+# Universal Analytics property (UA-35552317-2) stopped collecting in July 2023,
+# so it's removed. Drop a GA4 ID here to re-enable analytics (loads in
+# production builds only). Leave blank for no analytics.
+ga_analytics: G-BE6XN08038
 
 # Contact form setings
 email: robin.howlett@gmail.com
@@ -22,7 +36,9 @@ contact_page_description: "Ask me a question."
 thankyou_page_description: "Your message has been successfully sent."
 
 # Social links
-twitter: 'robinhowlett'
+twitter:
+  username: robinhowlett
+  card: summary
 github: 'robinhowlett'
 linkedin: 'robinhowlett'
 
@@ -35,10 +51,12 @@ navigation:
  - text: Horse Racing
    url: /tag/horseracing/
 
-# Required Plugins
-plugins_dir:
+# Plugins (correct Jekyll key is `plugins:`, not `plugins_dir:`).
+# Tag pages are generated from the committed tag/*.md files, so no tag-generator
+# plugin is needed. jekyll-feed is intentionally omitted (we keep the hand-rolled
+# feed.xml so existing subscriber URLs/format don't change).
+plugins:
   - jekyll-paginate
-  - jekyll-tagsgenerator
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-gist
@@ -53,8 +71,32 @@ excerpt_separator: "<!-- more -->"
 # Permalinks
 permalink: "/blog/:year/:month/:day/:title/"
 
+# Front-matter defaults. `image` is the fallback Open Graph / Twitter share
+# image for any page that doesn't set its own `image:` (jekyll-seo-tag reads it
+# per-page). Swap for a 1200x630 banner + set `twitter.card: summary_large_image`
+# above to use big image cards. Set `image:` in a post's front matter to override.
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/images/authorimage_robin-gravatar.png
+
 # Other
 markdown: kramdown
+
+# Build in UTC so post permalinks match how GitHub Pages built them.
+# Two posts (2015-01-01 21:35 -0700 and 2015-08-06 22:13 -0600) roll to the
+# next UTC day, so their live URLs are /blog/2015/01/02/... and
+# /blog/2015/08/07/... — this keeps that behaviour deterministic everywhere.
+timezone: Etc/UTC
+
+# Embed gists client-side only. The default (noscript: true) makes jekyll-gist
+# fetch each gist from the GitHub API at build time for a <noscript> fallback —
+# that call 404s for these gist refs and crashes jekyll-gist 1.5 on Ruby 3.3
+# (uninitialized TimeoutError), failing the whole build. Gists still render via
+# their JS embed (verified working), so we skip the fragile server-side fetch.
+gist:
+  noscript: false
 
 # Sass
 sass:
