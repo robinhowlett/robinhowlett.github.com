@@ -28,7 +28,7 @@ giscus:
 # Universal Analytics property (UA-35552317-2) stopped collecting in July 2023,
 # so it's removed. Drop a GA4 ID here to re-enable analytics (loads in
 # production builds only). Leave blank for no analytics.
-ga_analytics:
+ga_analytics: G-BE6XN08038
 
 # Contact form setings
 email: robin.howlett@gmail.com
