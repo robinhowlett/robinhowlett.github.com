@@ -6,7 +6,7 @@ title: About
 <!-- DRAFT bio drafted from _config.yml details + blog topics — Robin, please edit to taste. -->
 
 I'm **Robin Howlett** — a software engineer and engineering manager, currently a
-Software Development Manager at [Amazon Advertising](https://advertising.amazon.com/solutions/products/amazon-dsp).
+Software Development Manager at [Amazon Advertising](https://advertising.amazon.com/solutions/products/amazon-marketing-cloud).
 I was made in Ireland and I'm now based in Boulder, Colorado, with my wife
 [Sarah](http://sarahhowlett.com/) and our twins.
 
