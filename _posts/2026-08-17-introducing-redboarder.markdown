@@ -28,7 +28,7 @@ So I built it. It's called [redboarder](https://redboarder.com), and this post i
 
 redboarder deals you a real historical card, race by race, and asks you to commit to a read and a bet before the results are revealed. That's the whole core of it. Your judgement is always on the line, and it's always graded, with no hindsight to lean on.
 
-Not every historical card is fair game. Races have to clear a quality bar to qualify: 2005 or later, at least eight races on the card, at least eight runners per race, real wagering pools behind them, and no Grade 1 or Grade 2 stakes races, which are the most over-analyzed and least representative of the day-to-day grind of handicapping. The idea is to keep the cards genuinely bettable, the way an actual card at the track would be.
+Not every historical card is fair game. Races have to clear a quality bar to qualify: 2005 or later, at least eight races on the card, at least eight runners per race, real wagering pools behind them, and no Grade 1 or Grade 2 stakes races, whose famous outcomes you (and the AI partner) are most likely to already know. The idea is to keep the cards genuinely bettable, the way an actual card at the track would be.
 
 > The rule that shapes the whole experience is simple: you commit before you're allowed to know the answer.
 

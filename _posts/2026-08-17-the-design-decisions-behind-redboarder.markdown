@@ -18,7 +18,7 @@ The choice to use *finished, historical* races isn't just thematic. It's load-be
 
 Because a historical race never changes, there's nothing to compute at request time. I can run the entire analytical pipeline offline, once, and serve the result as static files for a fraction of a cent each. And because the outcome is already known, the app can *grade you honestly* the moment you commit. A live product can't do either of those things. Live racing also can't be practiced with: the real thing trickles out one race every thirty or forty minutes, most of which you don't care about. Historical racing is infinite and on demand.
 
-I leave out the marquee races: no Grade 1 or Grade 2 stakes. Those are the most over-analyzed races in the sport, and the least representative of the day-to-day grind where handicapping skill compounds. A Breeders' Cup race is a spectacle; a Tuesday claimer at Parx is a puzzle you can get good at.
+I leave out the marquee races: no Grade 1 or Grade 2 stakes. The real reason is leakage. The whole exercise depends on nobody in the room already knowing how the race ends, and the AI is in the room. A model that has read the internet knows who won the big ones; ask it about a famous Breeders' Cup and hindsight is baked into its read whether it means to leak the result or not. The obscure races are the safe ones: nobody memorised the result of a Tuesday claimer at Parx, and neither did the model. That those grind-level races are also where handicapping skill compounds is a happy bonus, not the reason.
 
 The rest of the qualification bar exists to keep every dealt card genuinely bettable:
 
@@ -28,7 +28,7 @@ From 2005 on | Chart data quality and completeness
 ≥ 8 races on the card | A full session, not a fragment
 ≥ 8 runners per race | Competitive fields with real exotics
 Trifecta pool ≥ $20,000 | Enough liquidity that the payoffs mean something
-No Grade 1 / Grade 2 | Keep it the representative grind, not the showcase
+No Grade 1 / Grade 2 | The outcome is too well known, to you and to the AI
 ≥ 20 qualifying cards per track | Depth per track, so a venue isn't represented by one fluke day
 
 That last one matters more than it looks: it means you can be dealt the same track repeatedly and start to *learn a circuit*, the way a real regular does.
@@ -53,6 +53,12 @@ The screen is split for a reason: past performances on the left, the AI on the r
 ![The handicapping surface: race tabs, conditions, a pace read, the wagering pools, and expandable past-performance lines per horse](/assets/images/posts/2026/interface.png)
 
 The PP lines expand on demand because past performances are dense; showing everything at once is a wall, showing nothing is useless, so the default is a readable summary that opens into full detail when you want it. Names the AI mentions are clickable and drive the left panel, and the app's own jargon (PR and the like) carries hover-glossary definitions, because the fastest way to lose a newcomer is a wall of unexplained abbreviations.
+
+### Chips: getting past the blank prompt
+
+A chat box has a cold-start problem. A newcomer opens the conversation, sees an empty field, and has no idea what they're allowed to ask. That blank prompt is where a lot of people quietly give up.
+
+So the conversation seeds itself with **chips**: tappable suggestions that turn the next move into one tap instead of a sentence you have to compose. They are fast UX for anyone who doesn't want to type, and a standing answer to "what can I even do here?", surfacing the questions worth asking at each point in a card. The text box is still there for anyone who'd rather write; the chips just mean you never have to start from nothing.
 
 ### Betting: a slip and a conversation
 
@@ -86,9 +92,17 @@ On top of the persona itself: it speaks in the first person, it treats *your* op
 
 Committing is only half the loop; the other half is finding out *why*.
 
-The reveal shows the finish, the payoffs, and each horse's **actual PR**, so you can compare how the field really rated to how you read it. Then there's a **race replay**: an animated reconstruction of the race with a live win-probability curve from gate to wire and a per-horse trip assessment (who got a pace collapse to close into, who was compromised). It's the difference between "you were wrong" and "you were wrong *because the pace didn't fall apart the way you expected*," which is the only kind of feedback that makes you better. The replay is rendered from the chart data itself, which is also how it dodges the licensing swamp of race video.
+The reveal shows the finish, the payoffs, and each horse's **actual PR**, so you can compare how the field really rated to how you read it.
 
 A separate reflection step then debriefs the race around **calibration**: not just did you win, but were you right for the right reasons. You can lose a bet on a good decision and win one on a bad one, and a practice tool that only tracks the money teaches you the wrong lesson.
+
+### The race replay
+
+The reveal had to be more than a verdict. You commit blind, a read and a bet on the line, and that tension has to pay off with something better than a results page telling you flatly whether you were right. So the centrepiece of the reveal is a **race replay**: an animated reconstruction from gate to wire, with a live **win-probability curve** running underneath it and a per-horse **trip assessment** on top, who got the pace collapse to close into, who was stuck, who was compromised.
+
+The curve is what makes it a moment rather than a scoreboard. You watch your horse loom at the top of the stretch and the line climb toward him, then watch a closer you threw out eat the whole thing up in the final sixteenth. That's the difference between "you were wrong" and "you were wrong *because the pace didn't fall apart the way you expected*," and the second one is the only feedback that makes you better.
+
+There's a constraint hiding in here that turned into the best part of it. I don't have race video, and licensing it is a swamp. So the replay is rendered from the **chart data itself**, and that turns out to beat video for this: a data-drawn replay can carry the probability curve and the trip notes synced to every call, which footage never could. The thing I couldn't afford would have been worse than the thing the limitation forced. It stays honest and cheap in the bargain, drawn from the same gated data as everything else.
 
 ### Why three system prompts, not one
 
