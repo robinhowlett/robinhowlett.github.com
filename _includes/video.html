@@ -1,0 +1,6 @@
+<figure>
+    <video src="{{ include.src }}"{% if include.poster %} poster="{{ include.poster }}"{% endif %} {% if include.controls %}controls{% else %}autoplay muted loop{% endif %} playsinline preload="metadata" style="width:100%;height:auto;border-radius:6px" aria-label="{{ include.title }}"></video>
+    {% if include.caption %}
+        <figcaption class="caption-text">{{ include.caption }}</figcaption>
+    {% endif %}
+</figure>
