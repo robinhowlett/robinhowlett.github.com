@@ -27,7 +27,7 @@ It turned out to be my honeymoon. I'd gotten married a few days before, and we s
 </div>
 <p class="caption-text" style="text-align:center">Churchill Downs, November 2010</p>
 
-The first version of the game had you pick a winner to stay alive. Around race three or four on day one, a huge outsider won and knocked everyone out. So I stayed up all night and rewrote it around a budget. Morning-line odds set each horse's price, you had a limited bank balance, and you had to decide where to single and where to spread. It launched that Saturday morning and worked a lot better.
+The first version of the game had you pick a winner to stay alive. Midway through day one, [Shared Account](https://sagamorefarm.com/news/espn-com-shared-account-surprises-in-fm-turf-5/) won the Filly & Mare Turf at 46-1 and knocked everyone out. So I stayed up all night and rewrote it around a budget. Morning-line odds set each horse's price, you had a limited bank balance, and you had to decide where to single and where to spread. It launched that Saturday morning and worked a lot better.
 
 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">
 <img src="/assets/images/posts/2026/14-0/louisville-2010-hotel-rewrite.jpg" alt="Robin at a hotel-room desk in Louisville, typing on a laptop by the window" style="flex:1 1 260px;min-width:0;border-radius:6px">
