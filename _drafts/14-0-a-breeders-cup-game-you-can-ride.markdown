@@ -67,19 +67,27 @@ It was actually one of those one-shot experiences where I asked for a game, and 
 
 {% include image-caption.html imageurl="/assets/images/posts/2026/14-0/flatirons-park-v1.jpg" title="Flatirons Park, the first version: a side-on view of eight horses on a dirt track, with a gas tank and Hold, Rate, Cruise, Press and Drive controls" caption="Flatirons Park, the first version, 14 minutes after I asked for it" %}
 
-<!-- From the logs (UTC, 20-22 Oct 2026): the first prompt at 14:00; Flatirons Park up at 14:14; "the side-on view
-     doesn't work, it needs to be from behind" at 14:19; the idea to merge it with 14–0 at 18:30; launch-ready about
-     38 hours after the first prompt, across 88 commits. Use what helps. -->
-
 I tried to model the controller inputs after reading [*Winning Ways: Raceriding Insights*](https://www.theirishfield.ie/retired-jockey-and-coach-mick-kennedy-passes-away-425136) by Mick Kennedy, an Irish jockey who wrote it in the early 2000s, and it just didn't feel right, especially things regarding rhythm, where you had to keep a tempo. So really the point where I was most despondent was iterating on the controls, trying to do something more complicated than a mobile-first game should be doing. In my testing, I was spending all of the race just looking at the controls rather than the horses, and I questioned if I could invent something different than other people had tried with racing games before.
 
 <figure style="max-width:340px;margin:1.5em auto"><img src="/assets/images/posts/2026/14-0/winning-ways-cover.jpg" alt="The cover of Winning Ways: Raceriding Insights by M. Kennedy" style="border-radius:4px"><figcaption class="caption-text">My copy</figcaption></figure>
 
-<!-- From the commits: the controls went through six versions in about 28 hours - one stick and a whip; rhythm taps
-     from the book; two sticks ("rhythm is soft hands"); a stamina pool with a ghost line; then the whip three ways in
-     40 minutes (a swipe, a press, its own button). -->
-
 The controls got unstuck by just simplifying it, so that you have both a balance control and an effort control and you didn't have to be fiddling with them too much.
+
+<!-- Claude: the chart and the timeline below come straight from the commit history and the session log. The lead-in
+     line is mine; rewrite or cut it. -->
+Here's how those 38 hours went, from the commit history.
+
+<figure style="margin:1.5em 0">
+{% include 14-0-commits-chart.svg %}
+</figure>
+
+1. **Tue 20 Oct, 8:00am:** I asked for "a very simple top down but slightly at an angle horse racing game". Flatirons Park was up 14 minutes later. Five minutes after that: "The side-on view doesn't work, it needs to be from behind."
+2. **12:30pm:** the idea to merge it with 14–0. The first watch-mode commit landed at 12:49pm.
+3. **6:33pm:** the first ride mode, one stick and a whip.
+4. **Wed 21 Oct, 9:11am:** ride mode rebuilt around *Winning Ways*, rhythm taps and all.
+5. **3:32pm:** two sticks, balance and reins. Rhythm became "soft hands".
+6. **6:44pm:** one stamina pool with a ghost line, then the whip three ways in 40 minutes: a swipe, a press, then its own button.
+7. **10:22pm:** copy approved and the device check passed. That's 88 commits, about 38 hours after the first prompt.
 
 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
 <img src="/assets/images/posts/2026/14-0/phone-6-paddock.jpg" alt="The paddock briefing before a ridden race: the plan, the pace, and the field with morning-line odds" style="flex:1 1 200px;max-width:260px;min-width:0;border-radius:6px">
