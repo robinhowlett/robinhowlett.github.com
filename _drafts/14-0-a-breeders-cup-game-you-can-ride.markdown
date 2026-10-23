@@ -23,23 +23,25 @@ tags: horseracing 14-0 games
 
 I had built a very simple and frankly unimpressive fantasy sports type game for the Breeders' Cup back in the year Blame beat Zenyatta. I was part of the Breeders' Cup Fan Advisory Council - they found a few of us by a social media way back then - and they had a draw to determine who would go to the track from the council. I have a feeling they rigged it in my favor. It actually turned out to be my honeymoon. I had gotten married a few days beforehand, we traveled to Churchill Downs and attended the races for the two days.
 
-{% include image-caption.html imageurl="/assets/images/posts/2026/14-0/churchill-2010-honeymoon.jpg" title="Robin and his wife on a balcony above the track at Churchill Downs at night, the infield lit up behind them" caption="Churchill Downs, November 2010" %}
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">
+<img src="/assets/images/posts/2026/14-0/bc-2010-credential.jpg" alt="A Breeders' Cup World Championships 2010 Churchill Downs credential, November 5th-6th" style="flex:1 1 260px;min-width:0;border-radius:6px">
+<img src="/assets/images/posts/2026/14-0/churchill-2010-honeymoon.jpg" alt="Robin and his wife on a balcony high above the track at Churchill Downs at night, the infield lit up behind them" style="flex:1 1 260px;min-width:0;border-radius:6px">
+</div>
+<p class="caption-text" style="text-align:center">Churchill Downs, November 5-6, 2010<!-- Robin: your caption if you'd like one, e.g. "Our honeymoon" --></p>
 
 What was funny was the original version of that game relied on you picking the winner to stay alive in the competition, and I think it was race three or four on day one, a huge outsider won and everyone was knocked out. I stayed up all night and rewrote the game to be more points budget based. I launched the game that Saturday morning and it worked a lot better. The morning-line odds determined how costly a horse was to purchase from a limited bank balance, and so you had to trade off who to pick and who to go wide and spread in certain legs.
 
-<!-- Robin: which photo is the all-nighter? I've guessed the hotel one. A caption in your words for each. -->
-{% include image-caption.html imageurl="/assets/images/posts/2026/14-0/louisville-2010-hotel-rewrite.jpg" title="Robin at a hotel-room desk in Louisville, typing on a laptop by the window" caption="[Robin: caption]" %}
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">
+<img src="/assets/images/posts/2026/14-0/louisville-2010-hotel-rewrite.jpg" alt="Robin at a hotel-room desk in Louisville, typing on a laptop by the window" style="flex:1 1 260px;min-width:0;border-radius:6px">
+<img src="/assets/images/posts/2026/14-0/churchill-2010-laptop.jpg" alt="Robin in a suit at the track, working on a laptop" style="flex:1 1 260px;min-width:0;border-radius:6px">
+</div>
+<p class="caption-text" style="text-align:center">Louisville, that weekend<!-- Robin: a caption in your words, e.g. which one is the all-nighter --></p>
 
 What was hilarious was my father, who's not much of a racing fan, entered the competition in support of me, and I remember going into the last race he was either first or second and I was dreading him winning and me being accused of rigging it on his behalf. Luckily someone else came through and won.
 
 Toby Keith performed a concert on either the Thursday or Friday night of that Churchill Downs Breeders' Cup, and it involved a lot of gyrating in tight jeans, surrounded by Ford pick-up trucks, since he was sponsored by them. I think I saw him in the box that I was invited to watch the races from the next day. I have nothing against the guy. He's an entertainer and that's part of the business.
 
 And I remember Zenyatta prancing around the paddock, the huge interest in her, and then the collective groan when she was beaten.
-
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<img src="/assets/images/posts/2026/14-0/bc-2010-credential.jpg" alt="A Breeders' Cup World Championships 2010 Churchill Downs credential card, November 5th-6th" style="flex:1 1 280px;min-width:0;border-radius:6px">
-<img src="/assets/images/posts/2026/14-0/churchill-2010-laptop.jpg" alt="Robin in a suit at Churchill Downs, working on a laptop" style="flex:1 1 280px;min-width:0;border-radius:6px">
-</div>
 
 ### 14–0
 
