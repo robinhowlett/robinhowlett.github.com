@@ -199,7 +199,7 @@ Riding it on my phone a day later showed up the rest. The reins stick stayed whe
 
 On a phone, the default is now one hand instead of two sticks. You swipe up to pump the reins (a small swipe is a heel click, a big one pushes on toward the drive), pull down to ease off, swipe sideways to steer, and double-tap to re-balance when a turn or a bump knocks you off. In the stretch, one big swipe up puts you in the drive, and you tap WHIP about once a second. The button for switching to two sticks works even mid-race. On a keyboard, it's W and S to ask and ease, A and D to steer, and the arrow keys for balance.
 
-<figure style="max-width:320px;margin:1.5em auto"><img src="/assets/images/posts/2026/14-0/ride-hud.jpg" alt="Riding the Turf on a phone: the progress bar with the poles, the running order, the position strip, and the effort, balance and stamina gauges beside the WHIP button" style="border-radius:6px"><figcaption class="caption-text">Riding on a phone, a furlong in</figcaption></figure>
+<figure style="max-width:320px;margin:1.5em auto"><img src="/assets/images/posts/2026/14-0/ride-hud.jpg" alt="Riding the Turf on a phone: the progress bar with the poles, the running order, the position strip, and the effort, balance and stamina gauges beside the WHIP button" style="border-radius:6px"><figcaption class="caption-text">Riding the Turf on a phone</figcaption></figure>
 
 There's a position strip too, showing how many lengths you are off the lead, with your horse's preferred spot shaded. If you rush a closer up to the lead, or take back a front-runner to last, you pay for it. Ground you give away has to be won back in the stretch, and if it isn't won back by the wire, it counts at the wire.
 
