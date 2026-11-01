@@ -75,7 +75,7 @@ In its first ten days, 14–0 was played 143 times, and 91% of those plays finis
 
 The first problem with a game like this is that you can't just compare ratings. A horse's performance rating is only meaningful relative to the horses it ran against. A turf router and a dirt sprinter don't share one scale, and turf routes in particular tend to rate lower than they should. So the game never compares a rating across divisions. Every field is anchored to its own division's best and worst.
 
-The second problem is that the rating a horse earned in its Breeders' Cup isn't necessarily how good it was. Pace makes figures. The rabbit in a Classic that goes off at a suicidal clip can come out of the race with a big number it never earned on merit. So each horse carries a "true talent" number instead. It blends that day's figure with how good the horse was over its whole season, using the ratings the official handicappers publish (the international classifications and, for two-year-olds, the Experimental Free Handicap), and where those don't exist, what the market thought of it. The raw as-raced figure isn't shipped at all. [Robin: OK to name the classifications and the Free Handicap, or keep it vaguer?]
+The second problem is that the rating a horse earned in its Breeders' Cup isn't necessarily how good it was. Pace makes figures. The rabbit in a Classic that goes off at a suicidal clip can come out of the race with a big number it never earned on merit. So each horse carries a "true talent" number instead. It blends that day's figure with how good the horse was over its whole season, and where there's nothing else to go on, with what the market thought of it. The raw as-raced figure isn't shipped at all.
 
 Each horse has two numbers: a `center` (what it would be expected to run, and the number Weekend Warrior shows you) and a `ceiling`, which is how much upside it has above that. The upside comes from its odds:
 
@@ -225,9 +225,7 @@ In ride mode, a keen horse left alone creeps up a gear, and if you try to hold i
 
 ### What the game won't show
 
-[Robin: a sentence or two in your own words on why. You said: "it's a part of the sport, but it shouldn't be promoted within a game."]
-
-Horses get hurt in racing. It's a part of the sport, but it shouldn't be promoted within a game. So 14–0 never depicts an injury, a breakdown, a horse pulled up or eased, or anything vet-related, for any horse.
+Horses get hurt in racing. It's a part of the sport, but it shouldn't be promoted within a game. There is no need to model injury in the game, and no benefit to it. So 14–0 never depicts an injury, a breakdown, a horse pulled up or eased, or anything vet-related, for any horse.
 
 Four horses in the archive lost their lives in or after their Breeders' Cup: Go for Wand (1990), Pine Island (2006), George Washington (2007) and Mongolian Groom (2019). They're in the game because they were good enough to be there, but they carry their true talent only, nothing from that day, and they're never shown in any contact with another horse. Rivals are only ever drawn from the pool of horses the game offers you, so a horse that didn't finish can never be pulled into your race to lose.
 
@@ -252,15 +250,13 @@ Then there were the scratches. Every time a horse came out, the field was rebuil
 
 You can also ride against other people. Sign in with X, and your horse carries your X avatar on the track in place of the saddlecloth.
 
-There are three ways in. The **Showroom** runs an all-time Breeders' Cup Classic, over and over, with a fresh draw of years each time. **Breeders' Cup 2026** runs this year's 14 races in card order. And a **private race** gives you a link to share, where the host picks the division and can make every horse equal, so it comes down to the riding. On Saturday, the **Featured Race** opened to everyone, following the real card: each real race got a room from 25 minutes before its post time to 10 minutes after it, with the same field you were watching on TV. [Robin: confirm the Featured Race was open for Saturday's races, and anything you saw in it.]
+There are three ways in. The **Showroom** runs an all-time Breeders' Cup Classic, over and over, with a fresh draw of years each time. **Breeders' Cup 2026** runs this year's 14 races in card order. And a **private race** gives you a link to share, where the host picks the division and can make every horse equal, so it comes down to the riding. On Saturday, the **Featured Race** opened to everyone, following the real card: each real race got a room from 25 minutes before its post time to 10 minutes after it, with the same field you were watching on TV. Honestly, it didn't have much of an effect.
 
 The interesting part, technically, is that the server never runs the race. Every random draw in 14–0 goes through one seeded generator, so every phone in a room draws exactly the same race from the room's seed: the field, each horse's performance, the pace, and which horse each rider gets. Each phone rides its own horse and sends where it is ten times a second, and the room relays that to everyone else. The AI horses run as drawn, as they do in the solo game.
 
 At the wire, each phone sends its ride's account - the same bounded "nudge" a ride adds to or takes from the horse's drawn performance - and the official board is just performance plus nudge for every horse. Your screen might have shown a nose the other way, because you were seeing the others through the network's lag, but the board is the result. The schedule is a function of the clock (room ids have the post time in them), so there's no scheduler and no database.
 
 Points are the places you beat, plus two for every place your ride gained over where that horse would have finished with nobody riding it. So a good ride on a poor horse can outscore a passenger on the favorite.
-
-I ran an eight-player test on the 2026 Classic field on the Wednesday before the Breeders' Cup. [Robin: how did it go, from your seat? Anything that broke, or anyone's reaction worth telling?]
 
 ### 14–0 TV
 
@@ -281,9 +277,7 @@ The game plays in six languages: English, Spanish, French, German, Japanese and 
 
 ### How it's built
 
-All of 14–0 was authored by AI. I used Claude Code for all of it, from the first Flatirons Park prompt to the Featured Race. [Robin: anything you want to say about what your part was - the decisions, the testing on your phone, the sign-offs?]
-
-It's also designed to be compatible with the newest tools around AI. [Robin: I couldn't find an MCP server in the 14-0 repo. What I found is an `llms.txt` (a plain summary of the game, its modes and its links, for AI assistants and agents) and structured data on every page that describes it as a free browser game. What should go here?]
+All of 14–0 was authored by AI. I used Claude Code for all of it, from the first Flatirons Park prompt to the Featured Race. It was exceptional at finding reference information to use - the stride timing of a galloping Thoroughbred, how broadcast crews mic a race, how the old jockey games laid out their screens, what a real Breeders' Cup margin looks like. Taste, though, was still human.
 
 The whole game is one HTML file and some JSON, served by a Cloudflare Worker that also draws a preview image for every shared card. Merging to `main` doesn't ship it. A release train ships whatever is on `main` every two hours, behind the full test suite, because every deploy restarts every multiplayer room. There's a pause on race days while the Featured Race runs. The test suite drives a full draft on desktop and a 375-pixel phone, checks that the same seed gives the same race, that no protected horse is ever in contact, that the 2026 card matches its prices, and that the public site only ever contains an exact list of files.
 
@@ -295,6 +289,6 @@ Next is the Melbourne Cup.
 
 The 2026 Melbourne Cup is on Tuesday, November 3, at Flemington. [14-0.net/mc26](https://14-0.net/mc26) has the real field of 24, with the barriers and their own silks: pick a runner, then ride it or watch it, over 3,200 meters. The prices show the Australian way, with a dollar sign.
 
-The riding version of 14–0 found its own audience. [Robin: I read "writing version" in your answer as "riding version" - right?] [Robin: a round number or two, e.g. plays or quick races this week, if you're happy to share.]
+The riding version of 14–0 found its own audience. Over two days in Breeders' Cup week, people rode almost 600 quick races, and finished exactly one full 14-race draft.
 
 **[Play 14–0 at 14-0.net](https://14-0.net)**, jump straight into a [Quick Race](https://14-0.net/race), or leave [14–0 TV](https://14-0.net/tv) running. Follow [@FourteenAndOApp](https://x.com/FourteenAndOApp) on X.
