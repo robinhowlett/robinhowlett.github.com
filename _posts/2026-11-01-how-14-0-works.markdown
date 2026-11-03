@@ -71,6 +71,14 @@ It's an addictive game fans of the sport's champions will love. … I believe I 
 
 In its first ten days, 14–0 was played 143 times, and 91% of those plays finished all 14 picks. Then the interest petered out, and it sat there until October.
 
+### The charts
+
+Before any of that, there were the charts. A game like this is only as good as its archive, and the race charts I had to work with started in 1991. In May, I imported about 123,000 of them into one database, in a little over three hours.
+
+That left the first seven Breeders' Cups, 1984 to 1990: 49 races that only existed as scanned images, one page each, with no text to copy. So I built a small web app for them. AI vision read each race off the image - the track, the conditions, the fractions, and every horse's position at each call - and I corrected it in a form. Its output flagged its own weak spot: "Superscript digits in positions/last raced may have errors."
+
+Each corrected race then went through the same parsing code as every other chart, for the track, the distance and the fractions, and was saved the same way, so the 1984 Juvenile at Hollywood Park looks like any other race in the database. It took a week or two.
+
 ### How a race is drawn
 
 The first problem with a game like this is that you can't just compare ratings. A horse's performance rating is only meaningful relative to the horses it ran against. A turf router and a dirt sprinter don't share one scale, and turf routes in particular tend to rate lower than they should. So the game never compares a rating across divisions. Every field is anchored to its own division's best and worst.
