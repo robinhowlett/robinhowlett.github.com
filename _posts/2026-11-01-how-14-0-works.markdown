@@ -253,10 +253,10 @@ Then there were the scratches. Every time a horse came out, the field was rebuil
 
 ### Multiplayer
 
-<figure style="max-width:320px;margin:1.5em auto"><img src="/assets/images/posts/2026/14-0/showroom-phone.jpg" alt="The Showroom on a phone: sign in with X to race others, or watch the race already under way" style="border-radius:6px"><figcaption class="caption-text">The Showroom, mid-race</figcaption></figure>
+<figure style="max-width:320px;margin:1.5em auto"><img src="/assets/images/posts/2026/14-0/showroom-phone.jpg" alt="The Showroom room card on a phone, with buttons to sign in with X, watch the race, ride on your own, or ride as a guest" style="border-radius:6px"><figcaption class="caption-text">The Showroom, mid-race</figcaption></figure>
 <!-- SHOT NEEDED (needs a signed-in session): a room mid-race with X avatars on the horses, and the leaderboard -->
 
-You can also ride against other people. Sign in with X, and your horse carries your X avatar on the track in place of the saddlecloth.
+You can also ride against other people. In the Showroom, the 2026 card and the Melbourne Cup rooms, you can ride as a guest, under a name the room picks for you (Crimson Falcon, say). Sign in with X, and your horse carries your X avatar on the track in place of the saddlecloth, and your rides count on the leaderboard.
 
 There are three ways in. The **Showroom** runs an all-time Breeders' Cup Classic, over and over, with a fresh draw of years each time. **Breeders' Cup 2026** runs this year's 14 races in card order. And a **private race** gives you a link to share, where the host picks the division and can make every horse equal, so it comes down to the riding. On Saturday, the **Featured Race** opened to everyone, following the real card: each real race got a room from 25 minutes before its post time to 10 minutes after it, with the same field you were watching on TV. Honestly, it didn't have much of an effect.
 
